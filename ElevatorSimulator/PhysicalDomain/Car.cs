@@ -285,9 +285,17 @@ namespace ElevatorSimulator.PhysicalDomain
                 if (this.carState.Floor == this.getNextCall().getFloor())
                 {
                     // Start stopping car
-                    // TODO: Place event on agenda to fire when car has stopped at floor
 
-                    // Requires working out how long it will take to decelerate (function of deceleration rate)
+                    // Calculate time taken to stop
+                    double stoppingTime = this.carState.InitialSpeed / this.deceleration;
+
+                    // Place event on agenda to fire when car has stopped at floor
+
+                    CarState newState = new CarState() { Action = CarAction.DoorsOpening, Direction = this.carState.Direction, Floor = this.carState.Floor, InitialSpeed = 0 };
+
+                    CarStateChange newEvent = new CarStateChange(this, Agenda.Agenda.getCurrentTime().AddSeconds(stoppingTime), newState);
+
+                    Agenda.Agenda.addAgendaItem(newEvent);
                 }
                 else
                 {
