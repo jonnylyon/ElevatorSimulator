@@ -291,12 +291,60 @@ namespace ElevatorSimulator.PhysicalDomain
                 }
                 else
                 {
-                    // TODO: Place event on agenda to fire when car reaches decision point of next floor
+                    int nextFloor = this.carState.Direction == Direction.Up ? this.carState.Floor + 1 : this.carState.Floor - 1;
+                    double nextFloorDistance = (Math.Pow(this.carState.InitialSpeed, 2) / (2 * this.deceleration)) + shaft.getInterfloorDistance(this.carState.Floor, this.carState.Direction);
+                    double nextFloorDecisionPointSpeed;
+                    double nextFloorDecisionPointTime;
 
-                    // Requires working out which floor is the next floor (current floor +/- 1 depending on direction)
-                    // and what the speed will be at the time that we reach the decision point (function of
-                    // current speed, interfloor distance, rate of acceleration and maximum speed of car)
-                    // This is quite complicated, I think.
+                    // First, using linear acc'n and dec'n and assuming no maximum speed, work out the parameters
+                    // of the point Q at which we must finally decide whether or not to stop at the next floor
+                    // (the decision point of the next floor)
+
+                    double Q_D; // The distance to point Q from here
+                    double Q_V; // The speed that this car will have reached by point Q
+                    double Q_T; // The time taken to get to point Q
+
+                    Q_D = ((2 * this.deceleration * nextFloorDistance) - Math.Pow(this.carState.InitialSpeed, 2)) / (2 * (this.acceleration + this.deceleration));
+                    Q_V = Math.Sqrt(Math.Pow(this.carState.InitialSpeed, 2) + (2 * this.acceleration * Q_D));
+                    Q_T = (1 / this.acceleration) * (Q_V - this.carState.InitialSpeed);
+
+                    // If Q_V is less than or equal to the maximum speed, then Q is the decision point for whether or
+                    // not to stop at the next floor.
+                    // Otherwise, we must calculate the decision point R by working out the point P at which we reach
+                    // our maximum speed when accelerating from our current position.
+
+                    if (Q_V > this.maxSpeed)
+                    {
+                        // note that P_V would be equal to the max speed of the car
+                        double P_D; // The distance to point P from here
+                        double P_T; // The time taken to get to point P
+
+                        P_T = (this.maxSpeed - this.carState.InitialSpeed) / this.acceleration;
+                        P_D = this.carState.InitialSpeed + ((1 / 2) * this.acceleration * Math.Pow(P_T, 2));
+
+                        // note that R_V = P_V = the max speed of the car
+                        double R_D; // The distance to point R from here
+                        double R_T; // The time taken to get to point R from here
+
+                        R_D = nextFloorDistance - (Math.Pow(this.maxSpeed, 2) / (2 * this.deceleration));
+                        R_T = P_T + ((R_D - P_D) / this.maxSpeed);
+
+                        nextFloorDecisionPointSpeed = R_D;
+                        nextFloorDecisionPointTime = R_T;
+                    }
+                    else
+                    {
+                        nextFloorDecisionPointSpeed = Q_D;
+                        nextFloorDecisionPointTime = Q_T;
+                    }
+
+                    // Place event on agenda to fire when car reaches decision point of next floor
+
+                    CarState newState = new CarState() { Action = CarAction.Moving, Direction = this.carState.Direction, Floor = nextFloor, InitialSpeed = nextFloorDecisionPointSpeed };
+
+                    CarStateChange newEvent = new CarStateChange(this, Agenda.Agenda.getCurrentTime().AddSeconds(nextFloorDecisionPointTime), newState);
+
+                    Agenda.Agenda.addAgendaItem(newEvent);
                 }
             }
 
