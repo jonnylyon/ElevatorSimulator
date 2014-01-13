@@ -153,7 +153,7 @@ namespace ElevatorSimulator.PhysicalDomain
             {
                 if (p1Calls.isEmpty())
                 {
-                    if (p2Calls.isEmpty() && p2Calls.isEmpty())
+                    if (p2Calls.isEmpty() && p3Calls.isEmpty())
                     {
                         // do nothing
 
@@ -164,6 +164,8 @@ namespace ElevatorSimulator.PhysicalDomain
                     }
                     else
                     {
+                        // TODO: There is a problem with this logic.  If we are going up, p1 is empty and the next call from p2 is higher than
+                        // our current floor then we need to carry on going up to reach it rather than changing direction immediately.
                         // Change state of car to reversing
                         CarState intermediateState = new CarState() { Action = CarAction.Reversing, Direction = this.carState.Direction, Floor = this.carState.Floor, InitialSpeed = 0 };
 
