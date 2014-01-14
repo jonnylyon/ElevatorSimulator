@@ -24,7 +24,7 @@ namespace ElevatorSimulator.PhysicalDomain
 
         private double maxSpeed; // in metres per second
         private double acceleration; // in metres per second squared; assumes linear acc'n
-        private double deceleration; // in positive metres per second squared; assumes linear dec'n 
+        private double deceleration; // in positive metres per second squared; assumes linear dec'n
 
         private double directionChangeTime; // in seconds
         private double passengerBoardTime; // in seconds
