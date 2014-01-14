@@ -8,10 +8,17 @@ namespace ElevatorSimulator.Calls
 {
     class HallCall : Call
     {
-        private int destination; // null if no Destination Control
+        private int? destination; // null if no Destination Control
         private Direction direction;
 
-        public Direction getDirection()
+        public HallCall(int floor, Direction direction, int? destination = null)
+        {
+            this.floor = floor;
+            this.direction = direction;
+            this.destination = destination;
+        }
+
+        public override Direction getDirection()
         {
             return this.direction;
         }

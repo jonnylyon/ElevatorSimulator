@@ -10,7 +10,7 @@ namespace ElevatorSimulator.PhysicalDomain
     {
         private int topFloor;
         private int bottomFloor;
-        private double interfloorDistance;
+        private double interfloorDistance = 10;
 
         private List<Car> cars = new List<Car>();
 

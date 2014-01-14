@@ -9,7 +9,7 @@ namespace ElevatorSimulator.Agenda
     {
         private static List<Event> agendaList = new List<Event>();
 
-        private static DateTime currentTime = new DateTime(0, 0, 0);
+        private static DateTime currentTime = new DateTime(0);
 
         public static void addAgendaItem(Event item)
         {
@@ -42,7 +42,18 @@ namespace ElevatorSimulator.Agenda
                 }
             }
 
+            if (!object.ReferenceEquals(nextEvent, null))
+            {
+                Agenda.removeAgendaItem(nextEvent);
+                currentTime = nextEvent.getTime();
+            }
+
             return nextEvent;
+        }
+
+        internal static bool isEmpty()
+        {
+            return agendaList.Count() == 0;
         }
     }
 }

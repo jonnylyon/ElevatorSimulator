@@ -11,7 +11,8 @@ namespace ElevatorSimulator.AbstractDomain
     enum Direction
     {
         Up,
-        Down
+        Down,
+        None
         // May be extended to include Idle
     }
 }

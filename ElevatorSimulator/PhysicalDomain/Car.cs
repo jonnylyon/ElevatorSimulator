@@ -12,26 +12,24 @@ namespace ElevatorSimulator.PhysicalDomain
     {
         private Shaft shaft;
 
-        private CarState carState;
+        public CarState carState;
 
-        private CallsList p1Calls;
-        private CallsList p2Calls;
-        private CallsList p3Calls;
-
-        private CarStateChange nextAgendaEvent;
+        private CallsList p1Calls = new CallsList();
+        private CallsList p2Calls = new CallsList();
+        private CallsList p3Calls = new CallsList();
 
         private int capacity;
 
-        private double maxSpeed; // in metres per second
-        private double acceleration; // in metres per second squared; assumes linear acc'n
-        private double deceleration; // in positive metres per second squared; assumes linear dec'n
+        private double maxSpeed = 5; // in metres per second
+        private double acceleration = 2; // in metres per second squared; assumes linear acc'n
+        private double deceleration = 4; // in positive metres per second squared; assumes linear dec'n
 
-        private double directionChangeTime; // in seconds
-        private double passengerBoardTime; // in seconds
-        private double passengerAlightTime; // in seconds
+        private double directionChangeTime = 1; // in seconds
+        private double passengerBoardTime = 10; // in seconds
+        private double passengerAlightTime = 10; // in seconds
 
-        private double doorsCloseTime; // in seconds
-        private double doorsOpenTime; // in seconds
+        private double doorsCloseTime = 3; // in seconds
+        private double doorsOpenTime = 3; // in seconds
 
         private bool hasWaitedOnFloor = false; // this is a temporary variable that will be deleted eventually, using for test purposes
 
@@ -53,14 +51,18 @@ namespace ElevatorSimulator.PhysicalDomain
         {
             this.shaft = shaft;
 
-            this.carState = new CarState()
+            carState = new CarState()
             {
+                Action = CarAction.Loading,
                 Floor = shaft.getBottomFloor(),
-                Direction = Direction.Up
+                Direction = Direction.Up,
+                InitialSpeed = 0
             };
+
+            this.changeState(carState);
         }
 
-        internal void addHallCall(HallCall hallCall, DateTime currentTime)
+        internal void addHallCall(HallCall hallCall)
         {
             if (this.carState.Direction == Direction.Up)
             {
@@ -93,7 +95,12 @@ namespace ElevatorSimulator.PhysicalDomain
                 }
             }
 
-            this.updateAgenda();
+            if (this.carState.Action == CarAction.Idle)
+            {
+                CarState newState = new CarState() { Action = CarAction.Loading, Direction = this.carState.Direction, Floor = this.carState.Floor, InitialSpeed = 0 };
+
+                this.changeState(newState);
+            }
         }
 
         public void changeState(CarState newCarState)
@@ -105,11 +112,6 @@ namespace ElevatorSimulator.PhysicalDomain
 
         private void updateAgenda()
         {
-            if (!object.ReferenceEquals(this.nextAgendaEvent, null))
-            {
-                Agenda.Agenda.removeAgendaItem(this.nextAgendaEvent);
-            }
-
             if (this.carState.Action == CarAction.Idle)
             {
                 if (p1Calls.isEmpty() && p2Calls.isEmpty() && p3Calls.isEmpty())
@@ -149,8 +151,12 @@ namespace ElevatorSimulator.PhysicalDomain
                 }
             }
 
-            if (this.carState.Action == CarAction.Loading)
+            else if (this.carState.Action == CarAction.Loading)
             {
+                // Remove all P1 calls assigned to the car relating to this floor and direction
+                // (may need to consider whether or not this is logically valid)
+                this.removeP1Calls(this.carState.Floor, this.carState.Direction);
+
                 if (p1Calls.isEmpty())
                 {
                     if (p2Calls.isEmpty() && p3Calls.isEmpty())
@@ -186,6 +192,8 @@ namespace ElevatorSimulator.PhysicalDomain
 
                         CarStateChange newEvent = new CarStateChange(this, Agenda.Agenda.getCurrentTime().AddSeconds(10), newState);
 
+                        Agenda.Agenda.addAgendaItem(newEvent);
+
                         this.hasWaitedOnFloor = true;
                     }
                     else
@@ -202,7 +210,7 @@ namespace ElevatorSimulator.PhysicalDomain
 
             }
 
-            if (this.carState.Action == CarAction.Reversing)
+            else if (this.carState.Action == CarAction.Reversing)
             {
                 Direction newDirection = this.carState.Direction == Direction.Up ? Direction.Down : Direction.Up;
 
@@ -212,9 +220,13 @@ namespace ElevatorSimulator.PhysicalDomain
                 CarStateChange newEvent = new CarStateChange(this, Agenda.Agenda.getCurrentTime().AddSeconds(this.directionChangeTime), newState);
 
                 Agenda.Agenda.addAgendaItem(newEvent);
+
+                this.p1Calls = this.p2Calls;
+                this.p2Calls = this.p3Calls;
+                this.p3Calls = new CallsList();
             }
 
-            if (this.carState.Action == CarAction.DoorsClosing)
+            else if (this.carState.Action == CarAction.DoorsClosing)
             {
                 // Place event on agenda to fire when doors have finished closing
                 CarState newState = new CarState() { Action = CarAction.Leaving, Direction = this.carState.Direction, Floor = this.carState.Floor, InitialSpeed = 0 };
@@ -224,7 +236,7 @@ namespace ElevatorSimulator.PhysicalDomain
                 Agenda.Agenda.addAgendaItem(newEvent);
             }
 
-            if (this.carState.Action == CarAction.Leaving)
+            else if (this.carState.Action == CarAction.Leaving)
             {
                 int nextFloor = this.carState.Direction == Direction.Up ? this.carState.Floor + 1 : this.carState.Floor - 1;
                 double nextFloorDistance = shaft.getInterfloorDistance(this.carState.Floor, this.carState.Direction);
@@ -255,8 +267,7 @@ namespace ElevatorSimulator.PhysicalDomain
                     double P_T; // The time taken to get to point P
 
                     P_T = this.maxSpeed / this.acceleration;
-                    P_D = (1 / 2) * this.acceleration * Math.Pow(P_T, 2);
-
+                    P_D = 0.5 * this.acceleration * Math.Pow(P_T, 2);
                     // note that R_V = P_V = the max speed of the car
                     double R_D; // The distance to point R from here
                     double R_T; // The time taken to get to point R from here
@@ -264,12 +275,12 @@ namespace ElevatorSimulator.PhysicalDomain
                     R_D = nextFloorDistance - (Math.Pow(this.maxSpeed, 2) / (2 * this.deceleration));
                     R_T = P_T + ((R_D - P_D) / this.maxSpeed);
 
-                    nextFloorDecisionPointSpeed = R_D;
+                    nextFloorDecisionPointSpeed = this.maxSpeed;
                     nextFloorDecisionPointTime = R_T;
                 }
                 else
                 {
-                    nextFloorDecisionPointSpeed = Q_D;
+                    nextFloorDecisionPointSpeed = Q_V;
                     nextFloorDecisionPointTime = Q_T;
                 }
 
@@ -282,7 +293,7 @@ namespace ElevatorSimulator.PhysicalDomain
                 Agenda.Agenda.addAgendaItem(newEvent);
             }
 
-            if (this.carState.Action == CarAction.Moving)
+            else if (this.carState.Action == CarAction.Moving)
             {
                 if (this.carState.Floor == this.getNextCall().getFloor())
                 {
@@ -330,7 +341,7 @@ namespace ElevatorSimulator.PhysicalDomain
                         double P_T; // The time taken to get to point P
 
                         P_T = (this.maxSpeed - this.carState.InitialSpeed) / this.acceleration;
-                        P_D = this.carState.InitialSpeed + ((1 / 2) * this.acceleration * Math.Pow(P_T, 2));
+                        P_D = this.carState.InitialSpeed + (0.5 * this.acceleration * Math.Pow(P_T, 2));
 
                         // note that R_V = P_V = the max speed of the car
                         double R_D; // The distance to point R from here
@@ -339,12 +350,12 @@ namespace ElevatorSimulator.PhysicalDomain
                         R_D = nextFloorDistance - (Math.Pow(this.maxSpeed, 2) / (2 * this.deceleration));
                         R_T = P_T + ((R_D - P_D) / this.maxSpeed);
 
-                        nextFloorDecisionPointSpeed = R_D;
+                        nextFloorDecisionPointSpeed = this.maxSpeed;
                         nextFloorDecisionPointTime = R_T;
                     }
                     else
                     {
-                        nextFloorDecisionPointSpeed = Q_D;
+                        nextFloorDecisionPointSpeed = Q_V;
                         nextFloorDecisionPointTime = Q_T;
                     }
 
@@ -358,7 +369,7 @@ namespace ElevatorSimulator.PhysicalDomain
                 }
             }
 
-            if (this.carState.Action == CarAction.DoorsOpening)
+            else if (this.carState.Action == CarAction.DoorsOpening)
             {
                 // Place an event on the agenda to fire when the doors have finished opening
                 CarState newState = new CarState() { Action = CarAction.Loading, Direction = this.carState.Direction, Floor = this.carState.Floor, InitialSpeed = 0 };
@@ -366,6 +377,24 @@ namespace ElevatorSimulator.PhysicalDomain
                 CarStateChange newEvent = new CarStateChange(this, Agenda.Agenda.getCurrentTime().AddSeconds(this.doorsOpenTime), newState);
 
                 Agenda.Agenda.addAgendaItem(newEvent);
+            }
+        }
+
+        private void removeP1Calls(int floor, Direction direction)
+        {
+            CallsList callsToRemove = new CallsList();
+
+            foreach (Call call in this.p1Calls)
+            {
+                if (call.getFloor() == floor && (!call.hasDirection() || call.getDirection() == direction))
+                {
+                    callsToRemove.addCall(call);
+                }
+            }
+
+            foreach (Call call in callsToRemove)
+            {
+                this.p1Calls.removeCall(call);
             }
         }
 

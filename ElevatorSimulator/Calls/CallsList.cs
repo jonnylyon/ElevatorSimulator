@@ -3,12 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using ElevatorSimulator.AbstractDomain;
+using System.Collections;
 
 namespace ElevatorSimulator.Calls
 {
-    class CallsList
+    class CallsList : IEnumerable
     {
         List<Call> calls = new List<Call>();
+
+        public IEnumerator GetEnumerator()
+        {
+            return calls.GetEnumerator();
+        }
 
         public void addCall(Call call)
         {
@@ -72,6 +78,11 @@ namespace ElevatorSimulator.Calls
             }
 
             return nextCall;
+        }
+
+        internal void removeCall(Call call)
+        {
+            calls.Remove(call);
         }
     }
 }

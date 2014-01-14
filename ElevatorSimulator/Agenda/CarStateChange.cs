@@ -16,5 +16,10 @@ namespace ElevatorSimulator.Agenda
         {
             this.newState = newState;
         }
+
+        public CarState getNewCarState()
+        {
+            return this.newState;
+        }
     }
 }
