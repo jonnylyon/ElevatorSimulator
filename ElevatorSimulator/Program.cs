@@ -21,11 +21,11 @@ namespace ElevatorSimulator
             car.addHallCall(new HallCall(5, Direction.Up));
             car.addHallCall(new HallCall(3, Direction.Down));
 
-            while (!(Agenda.Agenda.isEmpty() && car.carState.Action == CarAction.Idle))
+            while (!(Simulation.agenda.isEmpty() && car.carState.Action == CarAction.Idle))
             {
                 Console.ReadKey();
                 Console.WriteLine("");
-                car.changeState((Agenda.Agenda.moveToNextEvent() as CarStateChange).getNewCarState());
+                car.changeState((Simulation.agenda.moveToNextEvent() as CarStateChange).getNewCarState());
             }
 
             Console.WriteLine("");
@@ -37,12 +37,16 @@ namespace ElevatorSimulator
 
             // Now an problem will because the logic for reversing is not
             // correctly defined (yet)
-            while (!(Agenda.Agenda.isEmpty() && car.carState.Action == CarAction.Idle))
+            while (!(Simulation.agenda.isEmpty() && car.carState.Action == CarAction.Idle))
             {
                 Console.ReadKey();
                 Console.WriteLine("");
-                car.changeState((Agenda.Agenda.moveToNextEvent() as CarStateChange).getNewCarState());
+                car.changeState((Simulation.agenda.moveToNextEvent() as CarStateChange).getNewCarState());
             }
+
+            Console.WriteLine("");
+            Console.WriteLine("End of execution");
+            Console.ReadKey();
         }
     }
 }

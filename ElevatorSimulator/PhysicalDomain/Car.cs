@@ -106,7 +106,7 @@ namespace ElevatorSimulator.PhysicalDomain
         public void changeState(CarState newCarState)
         {
             this.carState = newCarState;
-            Console.WriteLine("{0}: {1}, {2}, {3}, {4}", Agenda.Agenda.getCurrentTime().ToString(), this.carState.Action, this.carState.Direction, this.carState.Floor, this.carState.InitialSpeed);
+            Console.WriteLine("{0}: {1}, {2}, {3}, {4}", Simulation.agenda.getCurrentTime().ToString(), this.carState.Action, this.carState.Direction, this.carState.Floor, this.carState.InitialSpeed);
             this.updateAgenda();
         }
 
@@ -157,28 +157,24 @@ namespace ElevatorSimulator.PhysicalDomain
                 // (may need to consider whether or not this is logically valid)
                 this.removeP1Calls(this.carState.Floor, this.carState.Direction);
 
-                if (p1Calls.isEmpty())
+                bool continueForNextCall = false;
+                Call nextCall = this.getNextCall();
+                if (!object.ReferenceEquals(nextCall, null))
                 {
-                    if (p2Calls.isEmpty() && p3Calls.isEmpty())
+                    if (this.carState.Direction == Direction.Up && nextCall.getFloor() > this.carState.Floor)
                     {
-                        // do nothing
-
-                        // Change state of car to idle
-                        CarState newState = new CarState() { Action = CarAction.Idle, Direction = this.carState.Direction, Floor = this.carState.Floor, InitialSpeed = 0 };
-
-                        this.changeState(newState);
+                        continueForNextCall = true;
                     }
-                    else
+                    else if (this.carState.Direction == Direction.Down && nextCall.getFloor() < this.carState.Floor)
                     {
-                        // TODO: There is a problem with this logic.  If we are going up, p1 is empty and the next call from p2 is higher than
-                        // our current floor then we need to carry on going up to reach it rather than changing direction immediately.
-                        // Change state of car to reversing
-                        CarState intermediateState = new CarState() { Action = CarAction.Reversing, Direction = this.carState.Direction, Floor = this.carState.Floor, InitialSpeed = 0 };
-
-                        this.changeState(intermediateState);
+                        continueForNextCall = true;
                     }
                 }
-                else
+
+                CallsQueue queueToBoard = Simulation.getQueue(this.carState.Floor, this.carState.Direction, this);
+                
+                if (!this.p1Calls.isEmpty() || !queueToBoard.isEmpty()
+                    || (!this.p2Calls.isEmpty() && continueForNextCall))
                 {
                     // TODO: Need to test if there are passengers to load or unload
                     if (!this.hasWaitedOnFloor) // TODO: If there are passengers to load or unload
@@ -190,9 +186,9 @@ namespace ElevatorSimulator.PhysicalDomain
                         // Until this is implemented, we will just wait 10 seconds once on each floor
                         CarState newState = new CarState() { Action = CarAction.Loading, Direction = this.carState.Direction, Floor = this.carState.Floor, InitialSpeed = 0 };
 
-                        CarStateChange newEvent = new CarStateChange(this, Agenda.Agenda.getCurrentTime().AddSeconds(10), newState);
+                        CarStateChange newEvent = new CarStateChange(this, Simulation.agenda.getCurrentTime().AddSeconds(10), newState);
 
-                        Agenda.Agenda.addAgendaItem(newEvent);
+                        Simulation.agenda.addAgendaItem(newEvent);
 
                         this.hasWaitedOnFloor = true;
                     }
@@ -207,7 +203,24 @@ namespace ElevatorSimulator.PhysicalDomain
                         this.hasWaitedOnFloor = false;
                     }
                 }
+                else if (this.p2Calls.isEmpty() && this.p3Calls.isEmpty())
+                {
+                    // do nothing
 
+                    // Change state of car to idle
+                    CarState newState = new CarState() { Action = CarAction.Idle, Direction = this.carState.Direction, Floor = this.carState.Floor, InitialSpeed = 0 };
+
+                    this.changeState(newState);
+                }
+                else
+                {
+                    // do nothing
+
+                    // Change state of car to reversing
+                    CarState intermediateState = new CarState() { Action = CarAction.Reversing, Direction = this.carState.Direction, Floor = this.carState.Floor, InitialSpeed = 0 };
+
+                    this.changeState(intermediateState);
+                }
             }
 
             else if (this.carState.Action == CarAction.Reversing)
@@ -217,9 +230,9 @@ namespace ElevatorSimulator.PhysicalDomain
                 // Place event on agenda to fire when reversing action has completed
                 CarState newState = new CarState() { Action = CarAction.Loading, Direction = newDirection, Floor = this.carState.Floor, InitialSpeed = 0 };
 
-                CarStateChange newEvent = new CarStateChange(this, Agenda.Agenda.getCurrentTime().AddSeconds(this.directionChangeTime), newState);
+                CarStateChange newEvent = new CarStateChange(this, Simulation.agenda.getCurrentTime().AddSeconds(this.directionChangeTime), newState);
 
-                Agenda.Agenda.addAgendaItem(newEvent);
+                Simulation.agenda.addAgendaItem(newEvent);
 
                 this.p1Calls = this.p2Calls;
                 this.p2Calls = this.p3Calls;
@@ -231,9 +244,9 @@ namespace ElevatorSimulator.PhysicalDomain
                 // Place event on agenda to fire when doors have finished closing
                 CarState newState = new CarState() { Action = CarAction.Leaving, Direction = this.carState.Direction, Floor = this.carState.Floor, InitialSpeed = 0 };
 
-                CarStateChange newEvent = new CarStateChange(this, Agenda.Agenda.getCurrentTime().AddSeconds(this.doorsCloseTime), newState);
+                CarStateChange newEvent = new CarStateChange(this, Simulation.agenda.getCurrentTime().AddSeconds(this.doorsCloseTime), newState);
 
-                Agenda.Agenda.addAgendaItem(newEvent);
+                Simulation.agenda.addAgendaItem(newEvent);
             }
 
             else if (this.carState.Action == CarAction.Leaving)
@@ -288,9 +301,9 @@ namespace ElevatorSimulator.PhysicalDomain
 
                 CarState newState = new CarState() { Action = CarAction.Moving, Direction = this.carState.Direction, Floor = nextFloor, InitialSpeed = nextFloorDecisionPointSpeed };
 
-                CarStateChange newEvent = new CarStateChange(this, Agenda.Agenda.getCurrentTime().AddSeconds(nextFloorDecisionPointTime), newState);
+                CarStateChange newEvent = new CarStateChange(this, Simulation.agenda.getCurrentTime().AddSeconds(nextFloorDecisionPointTime), newState);
 
-                Agenda.Agenda.addAgendaItem(newEvent);
+                Simulation.agenda.addAgendaItem(newEvent);
             }
 
             else if (this.carState.Action == CarAction.Moving)
@@ -306,9 +319,9 @@ namespace ElevatorSimulator.PhysicalDomain
 
                     CarState newState = new CarState() { Action = CarAction.DoorsOpening, Direction = this.carState.Direction, Floor = this.carState.Floor, InitialSpeed = 0 };
 
-                    CarStateChange newEvent = new CarStateChange(this, Agenda.Agenda.getCurrentTime().AddSeconds(stoppingTime), newState);
+                    CarStateChange newEvent = new CarStateChange(this, Simulation.agenda.getCurrentTime().AddSeconds(stoppingTime), newState);
 
-                    Agenda.Agenda.addAgendaItem(newEvent);
+                    Simulation.agenda.addAgendaItem(newEvent);
                 }
                 else
                 {
@@ -363,9 +376,9 @@ namespace ElevatorSimulator.PhysicalDomain
 
                     CarState newState = new CarState() { Action = CarAction.Moving, Direction = this.carState.Direction, Floor = nextFloor, InitialSpeed = nextFloorDecisionPointSpeed };
 
-                    CarStateChange newEvent = new CarStateChange(this, Agenda.Agenda.getCurrentTime().AddSeconds(nextFloorDecisionPointTime), newState);
+                    CarStateChange newEvent = new CarStateChange(this, Simulation.agenda.getCurrentTime().AddSeconds(nextFloorDecisionPointTime), newState);
 
-                    Agenda.Agenda.addAgendaItem(newEvent);
+                    Simulation.agenda.addAgendaItem(newEvent);
                 }
             }
 
@@ -374,9 +387,9 @@ namespace ElevatorSimulator.PhysicalDomain
                 // Place an event on the agenda to fire when the doors have finished opening
                 CarState newState = new CarState() { Action = CarAction.Loading, Direction = this.carState.Direction, Floor = this.carState.Floor, InitialSpeed = 0 };
 
-                CarStateChange newEvent = new CarStateChange(this, Agenda.Agenda.getCurrentTime().AddSeconds(this.doorsOpenTime), newState);
+                CarStateChange newEvent = new CarStateChange(this, Simulation.agenda.getCurrentTime().AddSeconds(this.doorsOpenTime), newState);
 
-                Agenda.Agenda.addAgendaItem(newEvent);
+                Simulation.agenda.addAgendaItem(newEvent);
             }
         }
 

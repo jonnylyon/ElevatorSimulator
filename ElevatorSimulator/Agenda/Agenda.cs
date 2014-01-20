@@ -5,28 +5,28 @@ using System.Text;
 
 namespace ElevatorSimulator.Agenda
 {
-    static class Agenda
+    class Agenda
     {
-        private static List<Event> agendaList = new List<Event>();
+        private List<Event> agendaList = new List<Event>();
 
-        private static DateTime currentTime = new DateTime(0);
+        private DateTime currentTime = new DateTime(0);
 
-        public static void addAgendaItem(Event item)
+        public void addAgendaItem(Event item)
         {
             agendaList.Add(item);
         }
 
-        public static void removeAgendaItem(Event item)
+        public void removeAgendaItem(Event item)
         {
             agendaList.Remove(item);
         }
 
-        public static DateTime getCurrentTime()
+        public DateTime getCurrentTime()
         {
             return currentTime;
         }
 
-        public static Event moveToNextEvent()
+        public Event moveToNextEvent()
         {
             Event nextEvent = null;
 
@@ -44,14 +44,14 @@ namespace ElevatorSimulator.Agenda
 
             if (!object.ReferenceEquals(nextEvent, null))
             {
-                Agenda.removeAgendaItem(nextEvent);
+                this.removeAgendaItem(nextEvent);
                 currentTime = nextEvent.getTime();
             }
 
             return nextEvent;
         }
 
-        internal static bool isEmpty()
+        internal bool isEmpty()
         {
             return agendaList.Count() == 0;
         }
