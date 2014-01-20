@@ -35,8 +35,6 @@ namespace ElevatorSimulator
 
             Console.WriteLine("Call added.  Floor 6, down.");
 
-            // Now an problem will because the logic for reversing is not
-            // correctly defined (yet)
             while (!(Simulation.agenda.isEmpty() && car.carState.Action == CarAction.Idle))
             {
                 Console.ReadKey();
