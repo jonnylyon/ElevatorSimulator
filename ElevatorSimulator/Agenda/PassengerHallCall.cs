@@ -6,9 +6,9 @@ using ElevatorSimulator.PhysicalDomain;
 
 namespace ElevatorSimulator.Agenda
 {
-    class PassengerArrival : Event
+    class PassengerHallCall : Event
     {
-        public PassengerArrival(PassengerGroup owner, DateTime time)
+        public PassengerHallCall(PassengerGroup owner, DateTime time)
             :base(owner, time)
         {
             // do nothing

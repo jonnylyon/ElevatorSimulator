@@ -8,9 +8,11 @@ using ElevatorSimulator.Agenda;
 
 namespace ElevatorSimulator.PhysicalDomain
 {
-    class Car : PassengerLocation, IEventOwner
+    class Car : IEventOwner
     {
         private Shaft shaft;
+
+        private List<PassengerGroup> passengers;
 
         public CarState carState;
 
@@ -32,6 +34,18 @@ namespace ElevatorSimulator.PhysicalDomain
         private double doorsOpenTime = 3; // in seconds
 
         private bool hasWaitedOnFloor = false; // this is a temporary variable that will be deleted eventually, using for test purposes
+
+        public int getNumberOfPassengers()
+        {
+            int count = 0;
+
+            foreach (PassengerGroup p in this.passengers)
+            {
+                count += p.getSize();
+            }
+
+            return count;
+        }
 
         public bool addPassengers(PassengerGroup newPassengers)
         {

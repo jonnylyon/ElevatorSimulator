@@ -3,24 +3,30 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using ElevatorSimulator.AbstractDomain;
+using ElevatorSimulator.PhysicalDomain;
 
 namespace ElevatorSimulator.Calls
 {
     class HallCall : Call
     {
-        private int? destination; // null if no Destination Control
-        private Direction direction;
-
-        public HallCall(int floor, Direction direction, int? destination = null)
+        public HallCall(PassengerGroup passengerGroup)
+            : base(passengerGroup)
         {
-            this.floor = floor;
-            this.direction = direction;
-            this.destination = destination;
+        }
+
+        public override int getFloor()
+        {
+            return this.passengerGroup.getOrigin();
+        }
+
+        public int getDestination()
+        {
+            return this.passengerGroup.getDestination();
         }
 
         public override Direction getDirection()
         {
-            return this.direction;
+            return this.passengerGroup.getDestination() > this.passengerGroup.getOrigin() ? Direction.Up : Direction.Down;
         }
 
         public override bool hasDirection()

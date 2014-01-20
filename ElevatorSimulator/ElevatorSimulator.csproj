@@ -45,19 +45,20 @@
   <ItemGroup>
     <Compile Include="AbstractDomain\CarAction.cs" />
     <Compile Include="AbstractDomain\CarState.cs" />
+    <Compile Include="AbstractDomain\PassengerState.cs" />
     <Compile Include="Agenda\Agenda.cs" />
     <Compile Include="Agenda\CarStateChange.cs" />
     <Compile Include="Agenda\Event.cs" />
     <Compile Include="Agenda\IEventOwner.cs" />
-    <Compile Include="Agenda\PassengerArrival.cs" />
+    <Compile Include="Agenda\PassengerHallCall.cs" />
     <Compile Include="Calls\Call.cs" />
     <Compile Include="Calls\CallsList.cs" />
     <Compile Include="Calls\CallsQueue.cs" />
     <Compile Include="Calls\CarCall.cs" />
     <Compile Include="Calls\HallCall.cs" />
+    <Compile Include="Exceptions\SimulationAssumptionException.cs" />
     <Compile Include="PhysicalDomain\Car.cs" />
     <Compile Include="AbstractDomain\Direction.cs" />
-    <Compile Include="PhysicalDomain\PassengerLocation.cs" />
     <Compile Include="PhysicalDomain\PassengerGroup.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -3,17 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using ElevatorSimulator.AbstractDomain;
+using ElevatorSimulator.PhysicalDomain;
 
 namespace ElevatorSimulator.Calls
 {
     abstract class Call
     {
-        protected int floor;
+        protected PassengerGroup passengerGroup;
 
-        public int getFloor()
+        public Call(PassengerGroup passengerGroup)
         {
-            return this.floor;
+            this.passengerGroup = passengerGroup;
         }
+
+        public abstract int getFloor();
 
         public abstract bool hasDirection();
 

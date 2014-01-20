@@ -17,9 +17,9 @@ namespace ElevatorSimulator
             Car car = new Car();
             shaft.addCar(car);
 
-            car.addHallCall(new HallCall(1, Direction.Up));
-            car.addHallCall(new HallCall(5, Direction.Up));
-            car.addHallCall(new HallCall(3, Direction.Down));
+            car.addHallCall(new HallCall(new PassengerGroup(3,1,5)));
+            car.addHallCall(new HallCall(new PassengerGroup(1,5,6)));
+            car.addHallCall(new HallCall(new PassengerGroup(2,3,2)));
 
             while (!(Simulation.agenda.isEmpty() && car.carState.Action == CarAction.Idle))
             {
@@ -31,7 +31,7 @@ namespace ElevatorSimulator
             Console.WriteLine("");
             Console.WriteLine("Car is now idle.  About to add another call");
 
-            car.addHallCall(new HallCall(6, Direction.Down));
+            car.addHallCall(new HallCall(new PassengerGroup(4,6,1)));
 
             Console.WriteLine("Call added.  Floor 6, down.");
 
