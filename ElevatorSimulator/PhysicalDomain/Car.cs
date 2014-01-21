@@ -87,7 +87,7 @@ namespace ElevatorSimulator.PhysicalDomain
             this.changeState(carState);
         }
 
-        internal void addHallCall(HallCall hallCall)
+        internal void allocateHallCall(HallCall hallCall)
         {
             if (this.carState.Direction == Direction.Up)
             {
@@ -161,33 +161,10 @@ namespace ElevatorSimulator.PhysicalDomain
                 }
                 else
                 {
-                    Direction directionToMoveIn;
+                    // Change state of car to loading
+                    CarState newState = new CarState() { Action = CarAction.Loading, Direction = this.carState.Direction, Floor = this.carState.Floor, InitialSpeed = 0 };
 
-                    // Determine whether to move up or down, based on contents of p1Calls list
-                    if (p1Calls.getHighestCall().getFloor() > this.carState.Floor)
-                    {
-                        directionToMoveIn = Direction.Up;
-                    }
-                    else
-                    {
-                        directionToMoveIn = Direction.Down;
-                    }
-
-                    // If direction of car changes, we need to wait for this to happen
-                    if (directionToMoveIn != this.carState.Direction)
-                    {
-                        // Change state of car to reversing
-                        CarState newState = new CarState() { Action = CarAction.Reversing, Direction = this.carState.Direction, Floor = this.carState.Floor, InitialSpeed = 0 };
-
-                        this.changeState(newState);
-                    }
-                    else
-                    {
-                        // Change state of car to loading
-                        CarState newState = new CarState() { Action = CarAction.Loading, Direction = directionToMoveIn, Floor = this.carState.Floor, InitialSpeed = 0 };
-
-                        this.changeState(newState);
-                    }
+                    this.changeState(newState);
                 }
             }
 
