@@ -16,11 +16,11 @@ namespace ElevatorSimulator.PhysicalDomain
 
         public CarState carState;
 
-        private CallsList p1Calls = new CallsList();
-        private CallsList p2Calls = new CallsList();
-        private CallsList p3Calls = new CallsList();
+        private CallsList p1Calls = new CallsList(); // Pass 1 (current direction)
+        private CallsList p2Calls = new CallsList(); // Pass 2 (opposite direction, reverse once)
+        private CallsList p3Calls = new CallsList(); // Pass 3 (opposite direction, reverse twice)
 
-        private int capacity;
+        private int capacity; 
 
         private double maxSpeed = 5; // in metres per second
         private double acceleration = 2; // in metres per second squared; assumes linear acc'n
@@ -158,6 +158,8 @@ namespace ElevatorSimulator.PhysicalDomain
                 {
                     // do nothing
                     // remain idle
+                    
+                    return;
                 }
                 else
                 {
