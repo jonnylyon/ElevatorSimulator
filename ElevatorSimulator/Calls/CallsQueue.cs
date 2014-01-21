@@ -7,22 +7,23 @@ namespace ElevatorSimulator.Calls
 {
     class CallsQueue
     {
-        // TODO
+        private List<Call> calls = new List<Call>();
+
         public void enQueue(Call call)
         {
-
+            calls.Add(call);
         }
 
-        // TODO
         public Call deQueue()
         {
-            return null;
+            Call call = calls.ElementAt(0);
+            calls.RemoveAt(0);
+            return call;
         }
 
-        // TODO
         public bool isEmpty()
         {
-            return true;
+            return calls.Count() == 0;
         }
     }
 }
