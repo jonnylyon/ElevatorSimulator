@@ -13,7 +13,7 @@ namespace ElevatorSimulator
         internal static Agenda.Agenda agenda = new Agenda.Agenda();
 
         // TODO
-        internal static CallsQueue getQueue(int floor, Direction direction, Car car = null)
+        internal static CallsQueue getQueue(int floor, Direction direction, int? maxGroupSize = null, Car car = null)
         {
             return new CallsQueue();
         }

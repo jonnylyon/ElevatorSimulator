@@ -21,5 +21,10 @@ namespace ElevatorSimulator.Calls
         public abstract bool hasDirection();
 
         public abstract Direction getDirection();
+
+        public PassengerGroup getPassengerGroup()
+        {
+            return this.passengerGroup;
+        }
     }
 }

@@ -12,7 +12,7 @@ namespace ElevatorSimulator.PhysicalDomain
     {
         private Shaft shaft;
 
-        private List<PassengerGroup> passengers;
+        private List<PassengerGroup> passengers = new List<PassengerGroup>();
 
         public CarState carState;
 
@@ -33,8 +33,6 @@ namespace ElevatorSimulator.PhysicalDomain
         private double doorsCloseTime = 3; // in seconds
         private double doorsOpenTime = 3; // in seconds
 
-        private bool hasWaitedOnFloor = false; // this is a temporary variable that will be deleted eventually, using for test purposes
-
         public int getNumberOfPassengers()
         {
             int count = 0;
@@ -45,6 +43,14 @@ namespace ElevatorSimulator.PhysicalDomain
             }
 
             return count;
+        }
+
+        public int FreeSpace
+        {
+            get
+            {
+                return this.capacity - this.passengers.Count();
+            }
         }
 
         public bool addPassengers(PassengerGroup newPassengers)
@@ -59,6 +65,11 @@ namespace ElevatorSimulator.PhysicalDomain
             {
                 return false;
             }
+        }
+
+        public void removePassengers(PassengerGroup passengersToRemove)
+        {
+            this.passengers.Remove(passengersToRemove);
         }
 
         internal void setShaft(Shaft shaft)
@@ -124,6 +135,21 @@ namespace ElevatorSimulator.PhysicalDomain
             this.updateAgenda();
         }
 
+        public CallsList getCarCallsForFloor(int floor)
+        {
+            CallsList result = new CallsList();
+
+            foreach (Call c in this.p1Calls)
+            {
+                if (c is CarCall && c.getFloor() == floor)
+                {
+                    result.addCall(c);
+                }
+            }
+
+            return result;
+        }
+
         private void updateAgenda()
         {
             if (this.carState.Action == CarAction.Idle)
@@ -185,26 +211,59 @@ namespace ElevatorSimulator.PhysicalDomain
                     }
                 }
 
-                CallsQueue queueToBoard = Simulation.getQueue(this.carState.Floor, this.carState.Direction, this);
+                CallsQueue queueToBoard = Simulation.getQueue(this.carState.Floor, this.carState.Direction, this.FreeSpace, this);
                 
                 if (!this.p1Calls.isEmpty() || !queueToBoard.isEmpty()
                     || (!this.p2Calls.isEmpty() && continueForNextCall))
                 {
-                    // TODO: Need to test if there are passengers to load or unload
-                    if (!this.hasWaitedOnFloor) // TODO: If there are passengers to load or unload
+                    CallsList carCallsForFloor = this.getCarCallsForFloor(this.carState.Floor);
+
+                    if (!carCallsForFloor.isEmpty())
                     {
-                        // TODO: Load or Unload passengers
+                        // count passengers to alight
+                        int passengerCount = 0;
+                        foreach (Call c in carCallsForFloor)
+                        {
+                            passengerCount += c.getPassengerGroup().getSize();
+                        }
 
-                        // TODO: Place event on agenda to fire when passengers have finished loading and unloading
+                        // calculate total and mean alighting times for passengers
+                        double totalAlightTimeSeconds = this.passengerAlightTime * passengerCount;
+                        double averageAlightTimeSeconds = 0.5 * this.passengerAlightTime * (passengerCount + 1);
 
-                        // Until this is implemented, we will just wait 10 seconds once on each floor
+                        DateTime timeOfAlight = Simulation.agenda.getCurrentTime().AddSeconds(averageAlightTimeSeconds);
+
+                        // alight passengers
+                        foreach (Call c in carCallsForFloor)
+                        {
+                            PassengerGroup p = c.getPassengerGroup();
+                            this.removePassengers(p);
+                            p.changeState(PassengerState.Arrived, timeOfAlight);
+                        }
+
+                        // Place an event on the agenda to fire when the passengers have finished alighting
                         CarState newState = new CarState() { Action = CarAction.Loading, Direction = this.carState.Direction, Floor = this.carState.Floor, InitialSpeed = 0 };
 
-                        CarStateChange newEvent = new CarStateChange(this, Simulation.agenda.getCurrentTime().AddSeconds(10), newState);
+                        CarStateChange newEvent = new CarStateChange(this, Simulation.agenda.getCurrentTime().AddSeconds(totalAlightTimeSeconds), newState);
 
                         Simulation.agenda.addAgendaItem(newEvent);
+                    }
+                    else if (!queueToBoard.isEmpty())
+                    {
+                        HallCall callToBoard = queueToBoard.deQueue() as HallCall;
+                        PassengerGroup passengersToBoard = callToBoard.getPassengerGroup();
 
-                        this.hasWaitedOnFloor = true;
+                        double boardingTime = this.passengerBoardTime * passengersToBoard.getSize();
+
+                        this.addPassengers(passengersToBoard);
+                        passengersToBoard.changeState(PassengerState.InTransit, Simulation.agenda.getCurrentTime());
+
+                        // Place an event on the agenda to fire when the passengers have finished alighting
+                        CarState newState = new CarState() { Action = CarAction.Loading, Direction = this.carState.Direction, Floor = this.carState.Floor, InitialSpeed = 0 };
+
+                        CarStateChange newEvent = new CarStateChange(this, Simulation.agenda.getCurrentTime().AddSeconds(boardingTime), newState);
+
+                        Simulation.agenda.addAgendaItem(newEvent);
                     }
                     else
                     {
@@ -212,9 +271,6 @@ namespace ElevatorSimulator.PhysicalDomain
                         CarState newState = new CarState() { Action = CarAction.DoorsClosing, Direction = this.carState.Direction, Floor = this.carState.Floor, InitialSpeed = 0 };
 
                         this.changeState(newState);
-
-                        // This line will be deleted eventually
-                        this.hasWaitedOnFloor = false;
                     }
                 }
                 else if (this.p2Calls.isEmpty() && this.p3Calls.isEmpty())
