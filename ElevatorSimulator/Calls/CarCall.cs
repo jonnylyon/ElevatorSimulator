@@ -9,25 +9,22 @@ namespace ElevatorSimulator.Calls
 {
     class CarCall : Call
     {
-
         public CarCall(PassengerGroup passengerGroup)
             :base(passengerGroup)
         {
         }
 
-        public override int getFloor()
+        public override Direction CallDirection
         {
-            return this.passengerGroup.getDestination();
+            get 
+            {
+                return Direction.None;
+            }
         }
 
-        public override bool hasDirection()
+        public override int getElevatorDestination()
         {
-            return false;
-        }
-
-        public override Direction getDirection()
-        {
-            return Direction.None;
+            return Passengers.Destination;
         }
     }
 }

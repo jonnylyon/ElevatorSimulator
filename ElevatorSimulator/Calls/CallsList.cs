@@ -9,7 +9,7 @@ namespace ElevatorSimulator.Calls
 {
     class CallsList : IEnumerable
     {
-        List<Call> calls = new List<Call>();
+        private List<Call> calls = new List<Call>();
 
         public IEnumerator GetEnumerator()
         {
@@ -31,53 +31,38 @@ namespace ElevatorSimulator.Calls
             return calls.Count == 0;
         }
 
-        public Call getNextCall(int currentFloor, Direction direction)
+        public Call getNextCallInCurrentDirection(int currentFloor, Direction direction)
         {
-            Call nextCall = null;
-
-            foreach (Call call in calls)
+            if (calls.Count == 0)
             {
-                if (direction == Direction.Up && call.getFloor() >= currentFloor && (nextCall == null || call.getFloor() < nextCall.getFloor()))
-                {
-                    nextCall = call;
-                }
-                else if (direction == Direction.Down && call.getFloor() <= currentFloor && (nextCall == null || call.getFloor() > nextCall.getFloor()))
-                {
-                    nextCall = call;
-                }
+                //TODO
+                return null;
             }
 
-            return nextCall;
+            if (direction == Direction.Up)
+            {
+                var filtered = calls.Where(a => a.getElevatorDestination() >= currentFloor);
+                return  filtered.Count() == 0 ? null : filtered.OrderBy(a => a.getElevatorDestination()).First();                
+            }
+
+            if (direction == Direction.Down)
+            {
+                var filtered = calls.Where(a => a.getElevatorDestination() <= currentFloor);
+                return filtered.Count() == 0 ? null : filtered.OrderBy(a => a.getElevatorDestination()).Last();
+            }
+
+            // TODO If idle?
+            return null;
         }
 
         public Call getLowestCall()
         {
-            Call nextCall = null;
-
-            foreach (Call call in calls)
-            {
-                if (nextCall == null || call.getFloor() < nextCall.getFloor())
-                {
-                    nextCall = call;
-                }
-            }
-
-            return nextCall;
+            return calls.OrderBy(a => a.getElevatorDestination()).First();
         }
 
         public Call getHighestCall()
         {
-            Call nextCall = null;
-
-            foreach (Call call in calls)
-            {
-                if (nextCall == null || call.getFloor() > nextCall.getFloor())
-                {
-                    nextCall = call;
-                }
-            }
-
-            return nextCall;
+            return calls.OrderBy(a => a.getElevatorDestination()).Last();
         }
 
         internal void removeCall(Call call)

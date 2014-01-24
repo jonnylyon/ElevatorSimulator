@@ -7,24 +7,29 @@ using ElevatorSimulator.PhysicalDomain;
 
 namespace ElevatorSimulator.Calls
 {
+    /// <summary>
+    /// Abstract class representing calls from passengers.
+    /// </summary>
     abstract class Call
     {
-        protected PassengerGroup passengerGroup;
+        public PassengerGroup Passengers { get; private set; }
 
         public Call(PassengerGroup passengerGroup)
         {
-            this.passengerGroup = passengerGroup;
+            this.Passengers = passengerGroup;
         }
+        
+        /// <summary>
+        /// Direction of the Call
+        /// </summary>
+        public abstract Direction CallDirection { get; }
 
-        public abstract int getFloor();
-
-        public abstract bool hasDirection();
-
-        public abstract Direction getDirection();
-
-        public PassengerGroup getPassengerGroup()
-        {
-            return this.passengerGroup;
-        }
+        /// <summary>
+        /// The relative destination for the elevator to visit,
+        /// i.e if hall call, then the origin of the call,
+        /// if car call, the destination of the call.
+        /// </summary>
+        /// <returns>The number of the floor the elevator should visit</returns>
+        public abstract int getElevatorDestination(); // TODO im not convinced this should be in this class? It's more elevator logic than anything to do with the call?
     }
 }

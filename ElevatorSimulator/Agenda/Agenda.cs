@@ -5,48 +5,45 @@ using System.Text;
 
 namespace ElevatorSimulator.Agenda
 {
+    /// <summary>
+    /// Class defining an Agenda data structure which ...
+    /// </summary>
     class Agenda
     {
-        private List<Event> agendaList = new List<Event>();
+        // List of tasks
+        private List<AgendaEvent> agendaList = new List<AgendaEvent>();
 
+        // Current simulation time
         private DateTime currentTime = new DateTime(0);
 
-        public void addAgendaItem(Event item)
+        // Add an event to the agenda
+        public void addAgendaEvent(AgendaEvent agendaEvent)
         {
-            agendaList.Add(item);
+            agendaList.Add(agendaEvent);
         }
 
-        public void removeAgendaItem(Event item)
+        // Remove an event from the agenda
+        public void removeAgendaEvent(AgendaEvent agendaEvent)
         {
-            agendaList.Remove(item);
+            agendaList.Remove(agendaEvent);
         }
 
-        public DateTime getCurrentTime()
+        public DateTime getCurrentSimTime()
         {
             return currentTime;
         }
 
-        public Event moveToNextEvent()
+        /// <summary>
+        /// Retrieves the next event by the earliest time.
+        /// </summary>
+        /// <returns>Next event on the agenda</returns>
+        public AgendaEvent moveToNextEvent()
         {
-            Event nextEvent = null;
+            //TODO: What about duplicate times - what gets priority?
+            AgendaEvent nextEvent = agendaList.OrderBy(a => a.TimeOccurred).First();
 
-            foreach (Event item in agendaList)
-            {
-                if (nextEvent == null)
-                {
-                    nextEvent = item;
-                }
-                else if (item.getTime() < nextEvent.getTime())
-                {
-                    nextEvent = item;
-                }
-            }
-
-            if (!object.ReferenceEquals(nextEvent, null))
-            {
-                this.removeAgendaItem(nextEvent);
-                currentTime = nextEvent.getTime();
-            }
+            this.removeAgendaEvent(nextEvent);
+            currentTime = nextEvent.TimeOccurred;
 
             return nextEvent;
         }

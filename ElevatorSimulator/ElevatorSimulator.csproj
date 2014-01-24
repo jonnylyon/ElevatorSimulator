@@ -47,15 +47,16 @@
     <Compile Include="AbstractDomain\CarState.cs" />
     <Compile Include="AbstractDomain\PassengerState.cs" />
     <Compile Include="Agenda\Agenda.cs" />
-    <Compile Include="Agenda\CarStateChange.cs" />
-    <Compile Include="Agenda\Event.cs" />
+    <Compile Include="Agenda\CarStateChangeEvent.cs" />
+    <Compile Include="Agenda\AgendaEvent.cs" />
     <Compile Include="Agenda\IEventOwner.cs" />
-    <Compile Include="Agenda\PassengerHallCall.cs" />
+    <Compile Include="Agenda\PassengerHallCallEvent.cs" />
     <Compile Include="Calls\Call.cs" />
     <Compile Include="Calls\CallsList.cs" />
     <Compile Include="Calls\CallsQueue.cs" />
     <Compile Include="Calls\CarCall.cs" />
     <Compile Include="Calls\HallCall.cs" />
+    <Compile Include="DataStructures\AgendaEventComparer.cs" />
     <Compile Include="Exceptions\SimulationAssumptionException.cs" />
     <Compile Include="PhysicalDomain\Car.cs" />
     <Compile Include="AbstractDomain\Direction.cs" />
@@ -64,6 +65,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PhysicalDomain\Shaft.cs" />
     <Compile Include="Simulation.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Assumptions.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

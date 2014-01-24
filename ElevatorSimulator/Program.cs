@@ -21,11 +21,18 @@ namespace ElevatorSimulator
             car.allocateHallCall(new HallCall(new PassengerGroup(1,5,6)));
             car.allocateHallCall(new HallCall(new PassengerGroup(2,3,2)));
 
-            while (!(Simulation.agenda.isEmpty() && car.carState.Action == CarAction.Idle))
+            while (!(Simulation.agenda.isEmpty() && car.State.Action == CarAction.Idle))
             {
                 Console.ReadKey();
                 Console.WriteLine("");
-                car.changeState((Simulation.agenda.moveToNextEvent() as CarStateChange).getNewCarState());
+               // car.changeState((Simulation.agenda.moveToNextEvent() as CarStateChange).getNewCarState());
+
+                var nextEvent = Simulation.agenda.moveToNextEvent();
+
+                if (nextEvent is CarStateChangeEvent)
+                {
+                    car.changeState((nextEvent as CarStateChangeEvent).CarState);
+                }
             }
 
             Console.WriteLine("");
@@ -35,11 +42,11 @@ namespace ElevatorSimulator
 
             Console.WriteLine("Call added.  Floor 6, down.");
 
-            while (!(Simulation.agenda.isEmpty() && car.carState.Action == CarAction.Idle))
+            while (!(Simulation.agenda.isEmpty() && car.State.Action == CarAction.Idle))
             {
                 Console.ReadKey();
                 Console.WriteLine("");
-                car.changeState((Simulation.agenda.moveToNextEvent() as CarStateChange).getNewCarState());
+                car.changeState((Simulation.agenda.moveToNextEvent() as CarStateChangeEvent).CarState);
             }
 
             Console.WriteLine("");

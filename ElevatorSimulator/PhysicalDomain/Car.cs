@@ -11,10 +11,7 @@ namespace ElevatorSimulator.PhysicalDomain
     class Car : IEventOwner
     {
         private Shaft shaft;
-
         private List<PassengerGroup> passengers = new List<PassengerGroup>();
-
-        public CarState carState;
 
         private CallsList p1Calls = new CallsList(); // Pass 1 (current direction)
         private CallsList p2Calls = new CallsList(); // Pass 2 (opposite direction, reverse once)
@@ -33,13 +30,15 @@ namespace ElevatorSimulator.PhysicalDomain
         private double doorsCloseTime = 3; // in seconds
         private double doorsOpenTime = 3; // in seconds
 
+        public CarState State { get; private set; }
+
         public int getNumberOfPassengers()
         {
             int count = 0;
 
             foreach (PassengerGroup p in this.passengers)
             {
-                count += p.getSize();
+                count += p.Size;
             }
 
             return count;
@@ -55,7 +54,7 @@ namespace ElevatorSimulator.PhysicalDomain
 
         public bool addPassengers(PassengerGroup newPassengers)
         {
-            if (this.getNumberOfPassengers() <= this.capacity - newPassengers.getSize())
+            if (this.getNumberOfPassengers() <= this.capacity - newPassengers.Size)
             {
                 this.passengers.Add(newPassengers);
 
@@ -76,7 +75,7 @@ namespace ElevatorSimulator.PhysicalDomain
         {
             this.shaft = shaft;
 
-            carState = new CarState()
+            State = new CarState()
             {
                 Action = CarAction.Loading,
                 Floor = shaft.getBottomFloor(),
@@ -84,18 +83,18 @@ namespace ElevatorSimulator.PhysicalDomain
                 InitialSpeed = 0
             };
 
-            this.changeState(carState);
+            this.changeState(State);
         }
 
         internal void allocateHallCall(HallCall hallCall)
         {
-            if (this.carState.Direction == Direction.Up)
+            if (this.State.Direction == Direction.Up)
             {
-                if (hallCall.getDirection() == Direction.Down)
+                if (hallCall.CallDirection == Direction.Down)
                 {
                     this.p2Calls.addCall(hallCall);
                 }
-                else if (hallCall.getFloor() > this.carState.Floor)
+                else if (hallCall.Passengers.Origin > this.State.Floor)
                 {
                     this.p1Calls.addCall(hallCall);
                 }
@@ -106,11 +105,11 @@ namespace ElevatorSimulator.PhysicalDomain
             }
             else
             {
-                if (hallCall.getDirection() == Direction.Up)
+                if (hallCall.CallDirection == Direction.Up)
                 {
                     this.p2Calls.addCall(hallCall);
                 }
-                else if (hallCall.getFloor() < this.carState.Floor)
+                else if (hallCall.Passengers.Origin < this.State.Floor)
                 {
                     this.p1Calls.addCall(hallCall);
                 }
@@ -120,9 +119,9 @@ namespace ElevatorSimulator.PhysicalDomain
                 }
             }
 
-            if (this.carState.Action == CarAction.Idle)
+            if (this.State.Action == CarAction.Idle)
             {
-                CarState newState = new CarState() { Action = CarAction.Loading, Direction = this.carState.Direction, Floor = this.carState.Floor, InitialSpeed = 0 };
+                CarState newState = new CarState() { Action = CarAction.Loading, Direction = this.State.Direction, Floor = this.State.Floor, InitialSpeed = 0 };
 
                 this.changeState(newState);
             }
@@ -130,8 +129,8 @@ namespace ElevatorSimulator.PhysicalDomain
 
         public void changeState(CarState newCarState)
         {
-            this.carState = newCarState;
-            Console.WriteLine("{0}: {1}, {2}, {3}, {4}", Simulation.agenda.getCurrentTime().ToString(), this.carState.Action, this.carState.Direction, this.carState.Floor, this.carState.InitialSpeed);
+            this.State = newCarState;
+            Console.WriteLine("{0}: {1}, {2}, {3}, {4}", Simulation.agenda.getCurrentSimTime().ToString(), this.State.Action, this.State.Direction, this.State.Floor, this.State.InitialSpeed);
             this.updateAgenda();
         }
 
@@ -141,7 +140,7 @@ namespace ElevatorSimulator.PhysicalDomain
 
             foreach (Call c in this.p1Calls)
             {
-                if (c is CarCall && c.getFloor() == floor)
+                if (c is CarCall && c.Passengers.Destination == floor)
                 {
                     result.addCall(c);
                 }
@@ -152,7 +151,7 @@ namespace ElevatorSimulator.PhysicalDomain
 
         private void updateAgenda()
         {
-            switch (this.carState.Action)
+            switch (this.State.Action)
             {
                 case CarAction.Idle:
                     updateAgenderHelper_IdleState();
@@ -187,19 +186,19 @@ namespace ElevatorSimulator.PhysicalDomain
             if (!(p1Calls.isEmpty() && p2Calls.isEmpty() && p3Calls.isEmpty()))
             {
                 // Change state of car to loading
-                CarState newState = new CarState() { Action = CarAction.Loading, Direction = this.carState.Direction, Floor = this.carState.Floor, InitialSpeed = 0 };
+                CarState newState = new CarState() { Action = CarAction.Loading, Direction = this.State.Direction, Floor = this.State.Floor, InitialSpeed = 0 };
                 this.changeState(newState);
             }
         }
 
         private void updateAgenderHelper_LoadingState()
         {
-            CallsQueue queueToBoard = Simulation.getQueue(this.carState.Floor, this.carState.Direction, this.FreeSpace, this);
+            CallsQueue queueToBoard = Simulation.getQueue(this.State.Floor, this.State.Direction, this.FreeSpace, this);
 
             // Can we become idle
             if (this.p1Calls.isEmpty() && this.p2Calls.isEmpty() && this.p3Calls.isEmpty() && queueToBoard.isEmpty())
             {
-                CarState newState = new CarState() { Action = CarAction.Idle, Direction = this.carState.Direction, Floor = this.carState.Floor, InitialSpeed = 0 };
+                CarState newState = new CarState() { Action = CarAction.Idle, Direction = this.State.Direction, Floor = this.State.Floor, InitialSpeed = 0 };
                 this.changeState(newState);
                 return;
             }
@@ -209,11 +208,11 @@ namespace ElevatorSimulator.PhysicalDomain
 
             if (!object.ReferenceEquals(nextCall, null))
             {
-                if (this.carState.Direction == Direction.Up && nextCall.getFloor() > this.carState.Floor)
+                if (this.State.Direction == Direction.Up && nextCall.getElevatorDestination() > this.State.Floor)
                 {
                     nextCallIsInCurrentDirection = true;
                 }
-                else if (this.carState.Direction == Direction.Down && nextCall.getFloor() < this.carState.Floor)
+                else if (this.State.Direction == Direction.Down && nextCall.getElevatorDestination() < this.State.Floor)
                 {
                     nextCallIsInCurrentDirection = true;
                 }
@@ -223,18 +222,18 @@ namespace ElevatorSimulator.PhysicalDomain
             if ((this.p1Calls.isEmpty() && queueToBoard.isEmpty()) && (this.p2Calls.isEmpty() || !nextCallIsInCurrentDirection))
             {
                 // Change state of car to reversing
-                CarState intermediateState = new CarState() { Action = CarAction.Reversing, Direction = this.carState.Direction, Floor = this.carState.Floor, InitialSpeed = 0 };
+                CarState intermediateState = new CarState() { Action = CarAction.Reversing, Direction = this.State.Direction, Floor = this.State.Floor, InitialSpeed = 0 };
                 this.changeState(intermediateState);
                 return;
             }
 
-            CallsList carCallsForFloor = this.getCarCallsForFloor(this.carState.Floor);
+            CallsList carCallsForFloor = this.getCarCallsForFloor(this.State.Floor);
 
             // Can we depart
             if (carCallsForFloor.isEmpty() && queueToBoard.isEmpty())
             {
                 // Change state of car to departing (start closing doors)
-                CarState newState = new CarState() { Action = CarAction.DoorsClosing, Direction = this.carState.Direction, Floor = this.carState.Floor, InitialSpeed = 0 };
+                CarState newState = new CarState() { Action = CarAction.DoorsClosing, Direction = this.State.Direction, Floor = this.State.Floor, InitialSpeed = 0 };
                 this.changeState(newState);
                 return;
             }
@@ -245,59 +244,59 @@ namespace ElevatorSimulator.PhysicalDomain
                 int passengerCount = 0;
                 foreach (Call c in carCallsForFloor)
                 {
-                    passengerCount += c.getPassengerGroup().getSize();
+                    passengerCount += c.Passengers.Size;
                 }
 
                 // calculate total and mean alighting times for passengers
                 double totalAlightTimeSeconds = this.passengerAlightTime * passengerCount;
                 double averageAlightTimeSeconds = 0.5 * this.passengerAlightTime * (passengerCount + 1);
 
-                DateTime timeOfAlight = Simulation.agenda.getCurrentTime().AddSeconds(averageAlightTimeSeconds);
+                DateTime timeOfAlight = Simulation.agenda.getCurrentSimTime().AddSeconds(averageAlightTimeSeconds);
 
                 // alight passengers
                 foreach (Call c in carCallsForFloor)
                 {
-                    PassengerGroup p = c.getPassengerGroup();
+                    PassengerGroup p = c.Passengers;
                     this.removePassengers(p);
                     p.changeState(PassengerState.Arrived, timeOfAlight);
                 }
 
                 // Place an event on the agenda to fire when the passengers have finished alighting
-                CarState newState = new CarState() { Action = CarAction.Loading, Direction = this.carState.Direction, Floor = this.carState.Floor, InitialSpeed = 0 };
-                CarStateChange newEvent = new CarStateChange(this, Simulation.agenda.getCurrentTime().AddSeconds(totalAlightTimeSeconds), newState);
+                CarState newState = new CarState() { Action = CarAction.Loading, Direction = this.State.Direction, Floor = this.State.Floor, InitialSpeed = 0 };
+                CarStateChangeEvent newEvent = new CarStateChangeEvent(this, Simulation.agenda.getCurrentSimTime().AddSeconds(totalAlightTimeSeconds), newState);
 
-                Simulation.agenda.addAgendaItem(newEvent);
+                Simulation.agenda.addAgendaEvent(newEvent);
             }
             else if (!queueToBoard.isEmpty())
             {
                 HallCall callToBoard = queueToBoard.deQueue() as HallCall;
-                PassengerGroup passengersToBoard = callToBoard.getPassengerGroup();
+                PassengerGroup passengersToBoard = callToBoard.Passengers;
 
-                double boardingTime = this.passengerBoardTime * passengersToBoard.getSize();
+                double boardingTime = this.passengerBoardTime * passengersToBoard.Size;
 
                 this.addPassengers(passengersToBoard);
-                passengersToBoard.changeState(PassengerState.InTransit, Simulation.agenda.getCurrentTime());
+                passengersToBoard.changeState(PassengerState.InTransit, Simulation.agenda.getCurrentSimTime());
 
                 // Place an event on the agenda to fire when the passengers have finished alighting
-                CarState newState = new CarState() { Action = CarAction.Loading, Direction = this.carState.Direction, Floor = this.carState.Floor, InitialSpeed = 0 };
+                CarState newState = new CarState() { Action = CarAction.Loading, Direction = this.State.Direction, Floor = this.State.Floor, InitialSpeed = 0 };
 
-                CarStateChange newEvent = new CarStateChange(this, Simulation.agenda.getCurrentTime().AddSeconds(boardingTime), newState);
+                CarStateChangeEvent newEvent = new CarStateChangeEvent(this, Simulation.agenda.getCurrentSimTime().AddSeconds(boardingTime), newState);
 
-                Simulation.agenda.addAgendaItem(newEvent);
+                Simulation.agenda.addAgendaEvent(newEvent);
             }
 
         }
 
         private void updateAgendaHelper_ReversingState()
         {
-            Direction newDirection = this.carState.Direction == Direction.Up ? Direction.Down : Direction.Up;
+            Direction newDirection = this.State.Direction == Direction.Up ? Direction.Down : Direction.Up;
 
             // Place event on agenda to fire when reversing action has completed
-            CarState newState = new CarState() { Action = CarAction.Loading, Direction = newDirection, Floor = this.carState.Floor, InitialSpeed = 0 };
+            CarState newState = new CarState() { Action = CarAction.Loading, Direction = newDirection, Floor = this.State.Floor, InitialSpeed = 0 };
 
-            CarStateChange newEvent = new CarStateChange(this, Simulation.agenda.getCurrentTime().AddSeconds(this.directionChangeTime), newState);
+            CarStateChangeEvent newEvent = new CarStateChangeEvent(this, Simulation.agenda.getCurrentSimTime().AddSeconds(this.directionChangeTime), newState);
 
-            Simulation.agenda.addAgendaItem(newEvent);
+            Simulation.agenda.addAgendaEvent(newEvent);
 
             this.p1Calls = this.p2Calls;
             this.p2Calls = this.p3Calls;
@@ -307,15 +306,15 @@ namespace ElevatorSimulator.PhysicalDomain
         private void updateAgendaHelper_DoorsClosingState()
         {
             // Place event on agenda to fire when doors have finished closing
-            CarState newState = new CarState() { Action = CarAction.Leaving, Direction = this.carState.Direction, Floor = this.carState.Floor, InitialSpeed = 0 };
-            CarStateChange newEvent = new CarStateChange(this, Simulation.agenda.getCurrentTime().AddSeconds(this.doorsCloseTime), newState);
-            Simulation.agenda.addAgendaItem(newEvent);
+            CarState newState = new CarState() { Action = CarAction.Leaving, Direction = this.State.Direction, Floor = this.State.Floor, InitialSpeed = 0 };
+            CarStateChangeEvent newEvent = new CarStateChangeEvent(this, Simulation.agenda.getCurrentSimTime().AddSeconds(this.doorsCloseTime), newState);
+            Simulation.agenda.addAgendaEvent(newEvent);
         }
 
         private void updateAgendaHelper_LeavingState()
         {
-            int nextFloor = this.carState.Direction == Direction.Up ? this.carState.Floor + 1 : this.carState.Floor - 1;
-            double nextFloorDistance = shaft.getInterfloorDistance(this.carState.Floor, this.carState.Direction);
+            int nextFloor = this.State.Direction == Direction.Up ? this.State.Floor + 1 : this.State.Floor - 1;
+            double nextFloorDistance = shaft.getInterfloorDistance(this.State.Floor, this.State.Direction);
             double nextFloorDecisionPointSpeed;
             double nextFloorDecisionPointTime;
 
@@ -362,32 +361,32 @@ namespace ElevatorSimulator.PhysicalDomain
 
             // Place event on agenda to fire when car reaches decision point of next floor
 
-            CarState newState = new CarState() { Action = CarAction.Moving, Direction = this.carState.Direction, Floor = nextFloor, InitialSpeed = nextFloorDecisionPointSpeed };
+            CarState newState = new CarState() { Action = CarAction.Moving, Direction = this.State.Direction, Floor = nextFloor, InitialSpeed = nextFloorDecisionPointSpeed };
 
-            CarStateChange newEvent = new CarStateChange(this, Simulation.agenda.getCurrentTime().AddSeconds(nextFloorDecisionPointTime), newState);
+            CarStateChangeEvent newEvent = new CarStateChangeEvent(this, Simulation.agenda.getCurrentSimTime().AddSeconds(nextFloorDecisionPointTime), newState);
 
-            Simulation.agenda.addAgendaItem(newEvent);
+            Simulation.agenda.addAgendaEvent(newEvent);
         }
 
         private void updateAgendaHelper_MovingState()
         {
-            if (this.carState.Floor == this.getNextCall().getFloor())
+            if (this.State.Floor == this.getNextCall().getElevatorDestination())
             {
                 // Begin stopping car
 
                 // Calculate time taken to stop
-                var stoppingTime = this.carState.InitialSpeed / this.deceleration;
+                var stoppingTime = this.State.InitialSpeed / this.deceleration;
 
                 // Place event on agenda to fire when car has stopped at floor
-                CarState newState = new CarState() { Action = CarAction.DoorsOpening, Direction = this.carState.Direction, Floor = this.carState.Floor, InitialSpeed = 0 };
-                CarStateChange newEvent = new CarStateChange(this, Simulation.agenda.getCurrentTime().AddSeconds(stoppingTime), newState);
-                Simulation.agenda.addAgendaItem(newEvent);
+                CarState newState = new CarState() { Action = CarAction.DoorsOpening, Direction = this.State.Direction, Floor = this.State.Floor, InitialSpeed = 0 };
+                CarStateChangeEvent newEvent = new CarStateChangeEvent(this, Simulation.agenda.getCurrentSimTime().AddSeconds(stoppingTime), newState);
+                Simulation.agenda.addAgendaEvent(newEvent);
 
                 return;
             }
 
-            int nextFloor = this.carState.Direction == Direction.Up ? this.carState.Floor + 1 : this.carState.Floor - 1;
-            double nextFloorDistance = (Math.Pow(this.carState.InitialSpeed, 2) / (2 * this.deceleration)) + shaft.getInterfloorDistance(this.carState.Floor, this.carState.Direction);
+            int nextFloor = this.State.Direction == Direction.Up ? this.State.Floor + 1 : this.State.Floor - 1;
+            double nextFloorDistance = (Math.Pow(this.State.InitialSpeed, 2) / (2 * this.deceleration)) + shaft.getInterfloorDistance(this.State.Floor, this.State.Direction);
             double nextFloorDecisionPointSpeed;
             double nextFloorDecisionPointTime;
 
@@ -399,9 +398,9 @@ namespace ElevatorSimulator.PhysicalDomain
             double Q_V; // The speed that this car will have reached by point Q
             double Q_T; // The time taken to get to point Q
 
-            Q_D = ((2 * this.deceleration * nextFloorDistance) - Math.Pow(this.carState.InitialSpeed, 2)) / (2 * (this.acceleration + this.deceleration));
-            Q_V = Math.Sqrt(Math.Pow(this.carState.InitialSpeed, 2) + (2 * this.acceleration * Q_D));
-            Q_T = (1 / this.acceleration) * (Q_V - this.carState.InitialSpeed);
+            Q_D = ((2 * this.deceleration * nextFloorDistance) - Math.Pow(this.State.InitialSpeed, 2)) / (2 * (this.acceleration + this.deceleration));
+            Q_V = Math.Sqrt(Math.Pow(this.State.InitialSpeed, 2) + (2 * this.acceleration * Q_D));
+            Q_T = (1 / this.acceleration) * (Q_V - this.State.InitialSpeed);
 
             // If Q_V is less than or equal to the maximum speed, then Q is the decision point for whether or
             // not to stop at the next floor.
@@ -414,8 +413,8 @@ namespace ElevatorSimulator.PhysicalDomain
                 double P_D; // The distance to point P from here
                 double P_T; // The time taken to get to point P
 
-                P_T = (this.maxSpeed - this.carState.InitialSpeed) / this.acceleration;
-                P_D = this.carState.InitialSpeed + (0.5 * this.acceleration * Math.Pow(P_T, 2));
+                P_T = (this.maxSpeed - this.State.InitialSpeed) / this.acceleration;
+                P_D = this.State.InitialSpeed + (0.5 * this.acceleration * Math.Pow(P_T, 2));
 
                 // note that R_V = P_V = the max speed of the car
                 double R_D; // The distance to point R from here
@@ -434,20 +433,20 @@ namespace ElevatorSimulator.PhysicalDomain
             }
 
             // Place event on agenda to fire when car reaches decision point of next floor
-            CarState newCarState = new CarState() { Action = CarAction.Moving, Direction = this.carState.Direction, Floor = nextFloor, InitialSpeed = nextFloorDecisionPointSpeed };
-            CarStateChange newStateEvent = new CarStateChange(this, Simulation.agenda.getCurrentTime().AddSeconds(nextFloorDecisionPointTime), newCarState);
-            Simulation.agenda.addAgendaItem(newStateEvent);
+            CarState newCarState = new CarState() { Action = CarAction.Moving, Direction = this.State.Direction, Floor = nextFloor, InitialSpeed = nextFloorDecisionPointSpeed };
+            CarStateChangeEvent newStateEvent = new CarStateChangeEvent(this, Simulation.agenda.getCurrentSimTime().AddSeconds(nextFloorDecisionPointTime), newCarState);
+            Simulation.agenda.addAgendaEvent(newStateEvent);
 
         }
 
         private void updateAgendaHelper_DoorsOpeningState()
         {
             // Place an event on the agenda to fire when the doors have finished opening
-            CarState newState = new CarState() { Action = CarAction.Loading, Direction = this.carState.Direction, Floor = this.carState.Floor, InitialSpeed = 0 };
+            CarState newState = new CarState() { Action = CarAction.Loading, Direction = this.State.Direction, Floor = this.State.Floor, InitialSpeed = 0 };
 
-            CarStateChange newEvent = new CarStateChange(this, Simulation.agenda.getCurrentTime().AddSeconds(this.doorsOpenTime), newState);
+            CarStateChangeEvent newEvent = new CarStateChangeEvent(this, Simulation.agenda.getCurrentSimTime().AddSeconds(this.doorsOpenTime), newState);
 
-            Simulation.agenda.addAgendaItem(newEvent);
+            Simulation.agenda.addAgendaEvent(newEvent);
         }
 
 
@@ -457,7 +456,7 @@ namespace ElevatorSimulator.PhysicalDomain
 
             foreach (Call call in this.p1Calls)
             {
-                if (call.getFloor() == floor && (!call.hasDirection() || call.getDirection() == direction))
+                if (call.getElevatorDestination() == floor && (call.CallDirection == direction))
                 {
                     callsToRemove.addCall(call);
                 }
@@ -473,11 +472,11 @@ namespace ElevatorSimulator.PhysicalDomain
         {
             if (this.p1Calls.count() > 0)
             {
-                return this.p1Calls.getNextCall(this.carState.Floor, this.carState.Direction);
+                return this.p1Calls.getNextCallInCurrentDirection(this.State.Floor, this.State.Direction);
             }
             else if (this.p2Calls.count() > 0)
             {
-                if (this.carState.Direction == Direction.Up)
+                if (this.State.Direction == Direction.Up)
                 {
                     return this.p2Calls.getHighestCall();
                 }
@@ -488,7 +487,7 @@ namespace ElevatorSimulator.PhysicalDomain
             }
             else if (this.p3Calls.count() > 0)
             {
-                if (this.carState.Direction == Direction.Up)
+                if (this.State.Direction == Direction.Up)
                 {
                     return this.p3Calls.getLowestCall();
                 }

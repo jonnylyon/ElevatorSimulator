@@ -5,9 +5,10 @@ using System.Text;
 
 namespace ElevatorSimulator.AbstractDomain
 {
-    /**
-     * The current (direction-independent) behaviour the car
-     */
+    
+    /// <summary>
+    /// The current (direction-independent) behaviour the car
+    /// </summary>
     enum CarAction
     {
         Moving, // From when the car begins moving to the moment at which it stops

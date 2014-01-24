@@ -14,24 +14,17 @@ namespace ElevatorSimulator.Calls
         {
         }
 
-        public override int getFloor()
+        public override Direction CallDirection
         {
-            return this.passengerGroup.getOrigin();
+            get 
+            {
+                return this.Passengers.Destination > this.Passengers.Origin ? Direction.Up : Direction.Down; 
+            }
         }
 
-        public int getDestination()
+        public override int getElevatorDestination()
         {
-            return this.passengerGroup.getDestination();
-        }
-
-        public override Direction getDirection()
-        {
-            return this.passengerGroup.getDestination() > this.passengerGroup.getOrigin() ? Direction.Up : Direction.Down;
-        }
-
-        public override bool hasDirection()
-        {
-            return true;
+            return Passengers.Origin;
         }
     }
 }

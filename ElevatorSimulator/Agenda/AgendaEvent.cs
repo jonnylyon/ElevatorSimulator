@@ -5,20 +5,16 @@ using System.Text;
 
 namespace ElevatorSimulator.Agenda
 {
-    abstract class Event
+    abstract class AgendaEvent
     {
-        private IEventOwner owner;
-        private DateTime time;
+        public DateTime TimeOccurred { get; private set; }
 
-        protected Event(IEventOwner owner, DateTime time)
+        private IEventOwner owner;
+
+        protected AgendaEvent(IEventOwner owner, DateTime time)
         {
             this.owner = owner;
-            this.time = time;
-        }
-
-        public DateTime getTime()
-        {
-            return time;
+            this.TimeOccurred = time;
         }
     }
 }

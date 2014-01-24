@@ -5,9 +5,9 @@ using System.Text;
 
 namespace ElevatorSimulator.AbstractDomain
 {
-    /**
-     * The direction states that a car might have
-     */
+    /// <summary>
+    /// The direction states that a car might have  
+    /// </summary>
     enum Direction
     {
         Up,

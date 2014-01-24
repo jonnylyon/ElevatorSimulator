@@ -5,6 +5,9 @@ using System.Text;
 
 namespace ElevatorSimulator.AbstractDomain
 {
+    /// <summary>
+    /// Possible passenger states
+    /// </summary>
     enum PassengerState
     {
         Unborn,

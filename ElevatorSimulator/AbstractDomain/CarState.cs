@@ -5,6 +5,10 @@ using System.Text;
 
 namespace ElevatorSimulator.AbstractDomain
 {
+    /// <summary>
+    /// Class storing a state of an elevator car, consisting of:
+    /// Direction, current floor, current action, current speed.
+    /// </summary>
     class CarState
     {
         // These instance variables store the data for the

@@ -24,15 +24,14 @@ namespace ElevatorSimulator.PhysicalDomain
         {
             return this.bottomFloor;
         }
-
-        /**
-         * Get the distance in metres between the specified floor and the
-         * floor immediately above or below it
-         * 
-         * @param int floor The specified floor
-         * @param Direction direction The specified direction
-         * @return double the Interfloor Distance in metres
-         */
+        
+        /// <summary>
+        /// Get the distance in metres between the specified floor and the
+        /// floor immediately above or below it
+        /// </summary>
+        /// <param name="floor">The specified floor</param>
+        /// <param name="direction">The specified direction</param>
+        /// <returns>Interfloor Distance in metres</returns>
         internal double getInterfloorDistance(int floor, Direction direction)
         {
             // Current implementation assumes that all interfloor distances are the same

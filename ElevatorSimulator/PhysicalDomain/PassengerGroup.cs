@@ -7,11 +7,15 @@ using ElevatorSimulator.AbstractDomain;
 
 namespace ElevatorSimulator.PhysicalDomain
 {
+    /// <summary>
+    /// Represents 1 or more passengers with the same origin, 
+    /// destination and arrival times. 
+    /// </summary>
     class PassengerGroup : Agenda.IEventOwner
     {
-        private int size;
-        private int origin;
-        private int destination;
+        public int Size { get; private set; }
+        public int Origin { get; private set; }
+        public int Destination { get; private set; }
 
         private PassengerState passengerState;
 
@@ -25,9 +29,9 @@ namespace ElevatorSimulator.PhysicalDomain
             {
                 throw new SimulationAssumptionException("Origin and Destination floors will not be equal");
             }
-            this.size = size;
-            this.origin = origin;
-            this.destination = destination;
+            this.Size = size;
+            this.Origin = origin;
+            this.Destination = destination;
 
             this.passengerState = PassengerState.Unborn;
         }
@@ -36,33 +40,18 @@ namespace ElevatorSimulator.PhysicalDomain
         {
             this.passengerState = newState;
 
-            if (newState == PassengerState.Waiting)
+            switch (newState)
             {
-                hallCallTime = currentTime;
+                case PassengerState.Waiting: hallCallTime = currentTime;
+                    break;
+                case PassengerState.InTransit: carBoardTime = currentTime;
+                    break;
+                case PassengerState.Arrived: carAlightTime = currentTime;
+                    break;
+                default:
+                    //Todo ...
+                    break;
             }
-            else if (newState == PassengerState.InTransit)
-            {
-                carBoardTime = currentTime;
-            }
-            else if (newState == PassengerState.Arrived)
-            {
-                carAlightTime = currentTime;
-            }
-        }
-
-        public int getSize()
-        {
-            return this.size;
-        }
-
-        public int getOrigin()
-        {
-            return this.origin;
-        }
-
-        public int getDestination()
-        {
-            return this.destination;
         }
     }
 }
