@@ -10,14 +10,14 @@ namespace ElevatorSimulator.PhysicalDomain
 {
     class Car : IEventOwner
     {
-        private Shaft shaft;
+        private readonly ShaftData shaftData;
         private List<PassengerGroup> passengers = new List<PassengerGroup>();
 
         private CallsList p1Calls = new CallsList(); // Pass 1 (current direction)
         private CallsList p2Calls = new CallsList(); // Pass 2 (opposite direction, reverse once)
         private CallsList p3Calls = new CallsList(); // Pass 3 (opposite direction, reverse twice)
 
-        private int capacity;
+        private int capacity = 18;
 
         private double maxSpeed = 5; // in metres per second
         private double acceleration = 2; // in metres per second squared; assumes linear acc'n
@@ -30,60 +30,52 @@ namespace ElevatorSimulator.PhysicalDomain
         private double doorsCloseTime = 3; // in seconds
         private double doorsOpenTime = 3; // in seconds
 
+        private int numberOfPassengers;
+
         public CarState State { get; private set; }
 
-        public int getNumberOfPassengers()
+        public Car(ShaftData data)
         {
-            int count = 0;
-
-            foreach (PassengerGroup p in this.passengers)
-            {
-                count += p.Size;
-            }
-
-            return count;
-        }
-
-        public int FreeSpace
-        {
-            get
-            {
-                return this.capacity - this.passengers.Count();
-            }
-        }
-
-        public bool addPassengers(PassengerGroup newPassengers)
-        {
-            if (this.getNumberOfPassengers() <= this.capacity - newPassengers.Size)
-            {
-                this.passengers.Add(newPassengers);
-
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        public void removePassengers(PassengerGroup passengersToRemove)
-        {
-            this.passengers.Remove(passengersToRemove);
-        }
-
-        internal void setShaft(Shaft shaft)
-        {
-            this.shaft = shaft;
+            this.shaftData = data;
 
             State = new CarState()
             {
                 Action = CarAction.Loading,
-                Floor = shaft.getBottomFloor(),
+                Floor = shaftData.BottomFloor,
                 Direction = Direction.Up,
                 InitialSpeed = 0
             };
 
             this.changeState(State);
+        }
+        
+        /// <summary>
+        /// Add a passenger group to the list of passengers in the car.
+        /// Increment the total number of passengers in the car by the group size.
+        /// </summary>
+        /// <param name="newPassengers">Group to add</param>
+        /// <returns>True if successfully added. False otherwise.</returns>
+        public bool addPassengers(PassengerGroup newPassengers)
+        {
+            if ((capacity - numberOfPassengers) < newPassengers.Size)
+            {
+                return false;
+            }
+
+            this.passengers.Add(newPassengers);
+            numberOfPassengers += newPassengers.Size;
+            return true; 
+        }
+
+        /// <summary>
+        /// Remove passenger group from the car.
+        /// Decrement total number of passengers by group size.
+        /// </summary>
+        /// <param name="passengersToRemove">Group to remove.</param>
+        public void removePassengers(PassengerGroup passengersToRemove)
+        {
+            this.passengers.Remove(passengersToRemove);
+            numberOfPassengers -= passengersToRemove.Size;
         }
 
         internal void allocateHallCall(HallCall hallCall)
@@ -193,7 +185,7 @@ namespace ElevatorSimulator.PhysicalDomain
 
         private void updateAgenderHelper_LoadingState()
         {
-            CallsQueue queueToBoard = Simulation.getQueue(this.State.Floor, this.State.Direction, this.FreeSpace, this);
+            CallsQueue queueToBoard = Simulation.getQueue(this.State.Floor, this.State.Direction, (capacity - numberOfPassengers), this);
 
             // Can we become idle
             if (this.p1Calls.isEmpty() && this.p2Calls.isEmpty() && this.p3Calls.isEmpty() && queueToBoard.isEmpty())
@@ -229,7 +221,7 @@ namespace ElevatorSimulator.PhysicalDomain
 
             CallsList carCallsForFloor = this.getCarCallsForFloor(this.State.Floor);
 
-            // Can we depart
+            // Can we depart (no-one getting on or off at this floor)
             if (carCallsForFloor.isEmpty() && queueToBoard.isEmpty())
             {
                 // Change state of car to departing (start closing doors)
@@ -238,6 +230,7 @@ namespace ElevatorSimulator.PhysicalDomain
                 return;
             }
 
+            // TODO i think this doesnt account for when both hall call and car call are relevant?
             if (!carCallsForFloor.isEmpty())
             {
                 // count passengers to alight
@@ -314,7 +307,7 @@ namespace ElevatorSimulator.PhysicalDomain
         private void updateAgendaHelper_LeavingState()
         {
             int nextFloor = this.State.Direction == Direction.Up ? this.State.Floor + 1 : this.State.Floor - 1;
-            double nextFloorDistance = shaft.getInterfloorDistance(this.State.Floor, this.State.Direction);
+            double nextFloorDistance = getInterfloorDistance(this.State.Floor, this.State.Direction);
             double nextFloorDecisionPointSpeed;
             double nextFloorDecisionPointTime;
 
@@ -368,6 +361,19 @@ namespace ElevatorSimulator.PhysicalDomain
             Simulation.agenda.addAgendaEvent(newEvent);
         }
 
+        /// <summary>
+        /// Get the distance in metres between the specified floor and the
+        /// floor immediately above or below it
+        /// </summary>
+        /// <param name="floor">The specified floor</param>
+        /// <param name="direction">The specified direction</param>
+        /// <returns>Interfloor Distance in metres</returns>
+        private double getInterfloorDistance(int floor, Direction direction)
+        {
+            // Current implementation assumes that all interfloor distances are the same
+            return this.shaftData.InterfloorDistance;
+        }
+
         private void updateAgendaHelper_MovingState()
         {
             if (this.State.Floor == this.getNextCall().getElevatorDestination())
@@ -386,7 +392,7 @@ namespace ElevatorSimulator.PhysicalDomain
             }
 
             int nextFloor = this.State.Direction == Direction.Up ? this.State.Floor + 1 : this.State.Floor - 1;
-            double nextFloorDistance = (Math.Pow(this.State.InitialSpeed, 2) / (2 * this.deceleration)) + shaft.getInterfloorDistance(this.State.Floor, this.State.Direction);
+            double nextFloorDistance = (Math.Pow(this.State.InitialSpeed, 2) / (2 * this.deceleration)) + getInterfloorDistance(this.State.Floor, this.State.Direction);
             double nextFloorDecisionPointSpeed;
             double nextFloorDecisionPointTime;
 
