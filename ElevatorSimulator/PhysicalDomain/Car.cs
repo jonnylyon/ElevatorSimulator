@@ -5,6 +5,7 @@ using System.Text;
 using ElevatorSimulator.Calls;
 using ElevatorSimulator.AbstractDomain;
 using ElevatorSimulator.Agenda;
+using ElevatorSimulator.DataStructures;
 
 namespace ElevatorSimulator.PhysicalDomain
 {
@@ -12,10 +13,7 @@ namespace ElevatorSimulator.PhysicalDomain
     {
         private readonly ShaftData shaftData;
         private List<PassengerGroup> passengers = new List<PassengerGroup>();
-
-        private CallsList p1Calls = new CallsList(); // Pass 1 (current direction)
-        private CallsList p2Calls = new CallsList(); // Pass 2 (opposite direction, reverse once)
-        private CallsList p3Calls = new CallsList(); // Pass 3 (opposite direction, reverse twice)
+        private CallAllocationList allocatedCalls = new CallAllocationList();
 
         private int capacity = 18;
 
@@ -80,41 +78,12 @@ namespace ElevatorSimulator.PhysicalDomain
 
         internal void allocateHallCall(HallCall hallCall)
         {
-            if (this.State.Direction == Direction.Up)
-            {
-                if (hallCall.CallDirection == Direction.Down)
-                {
-                    this.p2Calls.addCall(hallCall);
-                }
-                else if (hallCall.Passengers.Origin > this.State.Floor)
-                {
-                    this.p1Calls.addCall(hallCall);
-                }
-                else
-                {
-                    this.p3Calls.addCall(hallCall);
-                }
-            }
-            else
-            {
-                if (hallCall.CallDirection == Direction.Up)
-                {
-                    this.p2Calls.addCall(hallCall);
-                }
-                else if (hallCall.Passengers.Origin < this.State.Floor)
-                {
-                    this.p1Calls.addCall(hallCall);
-                }
-                else
-                {
-                    this.p3Calls.addCall(hallCall);
-                }
-            }
-
+            //TODO
+            allocatedCalls.addHallCall(hallCall, this.State);
+          
             if (this.State.Action == CarAction.Idle)
             {
                 CarState newState = new CarState() { Action = CarAction.Loading, Direction = this.State.Direction, Floor = this.State.Floor, InitialSpeed = 0 };
-
                 this.changeState(newState);
             }
         }
@@ -124,21 +93,6 @@ namespace ElevatorSimulator.PhysicalDomain
             this.State = newCarState;
             Console.WriteLine("{0}: {1}, {2}, {3}, {4}", Simulation.agenda.getCurrentSimTime().ToString(), this.State.Action, this.State.Direction, this.State.Floor, this.State.InitialSpeed);
             this.updateAgenda();
-        }
-
-        public CallsList getCarCallsForFloor(int floor)
-        {
-            CallsList result = new CallsList();
-
-            foreach (Call c in this.p1Calls)
-            {
-                if (c is CarCall && c.Passengers.Destination == floor)
-                {
-                    result.addCall(c);
-                }
-            }
-
-            return result;
         }
 
         private void updateAgenda()
@@ -175,7 +129,7 @@ namespace ElevatorSimulator.PhysicalDomain
 
         private void updateAgenderHelper_IdleState()
         {
-            if (!(p1Calls.isEmpty() && p2Calls.isEmpty() && p3Calls.isEmpty()))
+            if (!allocatedCalls.isEmpty())
             {
                 // Change state of car to loading
                 CarState newState = new CarState() { Action = CarAction.Loading, Direction = this.State.Direction, Floor = this.State.Floor, InitialSpeed = 0 };
@@ -188,7 +142,7 @@ namespace ElevatorSimulator.PhysicalDomain
             CallsQueue queueToBoard = Simulation.getQueue(this.State.Floor, this.State.Direction, (capacity - numberOfPassengers), this);
 
             // Can we become idle
-            if (this.p1Calls.isEmpty() && this.p2Calls.isEmpty() && this.p3Calls.isEmpty() && queueToBoard.isEmpty())
+            if (allocatedCalls.isEmpty() && queueToBoard.isEmpty())
             {
                 CarState newState = new CarState() { Action = CarAction.Idle, Direction = this.State.Direction, Floor = this.State.Floor, InitialSpeed = 0 };
                 this.changeState(newState);
@@ -196,7 +150,7 @@ namespace ElevatorSimulator.PhysicalDomain
             }
 
             bool nextCallIsInCurrentDirection = false;
-            Call nextCall = this.getNextCall();
+            Call nextCall = this.allocatedCalls.getNextCall(this.State);
 
             if (!object.ReferenceEquals(nextCall, null))
             {
@@ -211,7 +165,7 @@ namespace ElevatorSimulator.PhysicalDomain
             }
 
             // Should we reverse
-            if ((this.p1Calls.isEmpty() && queueToBoard.isEmpty()) && (this.p2Calls.isEmpty() || !nextCallIsInCurrentDirection))
+            if (!nextCallIsInCurrentDirection)
             {
                 // Change state of car to reversing
                 CarState intermediateState = new CarState() { Action = CarAction.Reversing, Direction = this.State.Direction, Floor = this.State.Floor, InitialSpeed = 0 };
@@ -219,10 +173,10 @@ namespace ElevatorSimulator.PhysicalDomain
                 return;
             }
 
-            CallsList carCallsForFloor = this.getCarCallsForFloor(this.State.Floor);
+            var carCallsForFloor = allocatedCalls.getCarCallsForFloor(this.State.Floor);
 
             // Can we depart (no-one getting on or off at this floor)
-            if (carCallsForFloor.isEmpty() && queueToBoard.isEmpty())
+            if (!carCallsForFloor.Any() && queueToBoard.isEmpty())
             {
                 // Change state of car to departing (start closing doors)
                 CarState newState = new CarState() { Action = CarAction.DoorsClosing, Direction = this.State.Direction, Floor = this.State.Floor, InitialSpeed = 0 };
@@ -231,7 +185,7 @@ namespace ElevatorSimulator.PhysicalDomain
             }
 
             // TODO i think this doesnt account for when both hall call and car call are relevant?
-            if (!carCallsForFloor.isEmpty())
+            if (carCallsForFloor.Any())
             {
                 // count passengers to alight
                 int passengerCount = 0;
@@ -290,10 +244,7 @@ namespace ElevatorSimulator.PhysicalDomain
             CarStateChangeEvent newEvent = new CarStateChangeEvent(this, Simulation.agenda.getCurrentSimTime().AddSeconds(this.directionChangeTime), newState);
 
             Simulation.agenda.addAgendaEvent(newEvent);
-
-            this.p1Calls = this.p2Calls;
-            this.p2Calls = this.p3Calls;
-            this.p3Calls = new CallsList();
+            allocatedCalls.reverseListsDirection();
         }
 
         private void updateAgendaHelper_DoorsClosingState()
@@ -376,7 +327,7 @@ namespace ElevatorSimulator.PhysicalDomain
 
         private void updateAgendaHelper_MovingState()
         {
-            if (this.State.Floor == this.getNextCall().getElevatorDestination())
+            if (this.State.Floor == this.allocatedCalls.getNextCall(this.State).getElevatorDestination())
             {
                 // Begin stopping car
 
@@ -449,63 +400,8 @@ namespace ElevatorSimulator.PhysicalDomain
         {
             // Place an event on the agenda to fire when the doors have finished opening
             CarState newState = new CarState() { Action = CarAction.Loading, Direction = this.State.Direction, Floor = this.State.Floor, InitialSpeed = 0 };
-
             CarStateChangeEvent newEvent = new CarStateChangeEvent(this, Simulation.agenda.getCurrentSimTime().AddSeconds(this.doorsOpenTime), newState);
-
             Simulation.agenda.addAgendaEvent(newEvent);
-        }
-
-
-        private void removeP1Calls(int floor, Direction direction)
-        {
-            CallsList callsToRemove = new CallsList();
-
-            foreach (Call call in this.p1Calls)
-            {
-                if (call.getElevatorDestination() == floor && (call.CallDirection == direction))
-                {
-                    callsToRemove.addCall(call);
-                }
-            }
-
-            foreach (Call call in callsToRemove)
-            {
-                this.p1Calls.removeCall(call);
-            }
-        }
-
-        private Call getNextCall()
-        {
-            if (this.p1Calls.count() > 0)
-            {
-                return this.p1Calls.getNextCallInCurrentDirection(this.State.Floor, this.State.Direction);
-            }
-            else if (this.p2Calls.count() > 0)
-            {
-                if (this.State.Direction == Direction.Up)
-                {
-                    return this.p2Calls.getHighestCall();
-                }
-                else
-                {
-                    return this.p2Calls.getLowestCall();
-                }
-            }
-            else if (this.p3Calls.count() > 0)
-            {
-                if (this.State.Direction == Direction.Up)
-                {
-                    return this.p3Calls.getLowestCall();
-                }
-                else
-                {
-                    return this.p3Calls.getHighestCall();
-                }
-            }
-            else
-            {
-                return null;
-            }
-        }
+        }       
     }
 }

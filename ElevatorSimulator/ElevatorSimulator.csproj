@@ -57,6 +57,7 @@
     <Compile Include="Calls\CarCall.cs" />
     <Compile Include="Calls\HallCall.cs" />
     <Compile Include="DataStructures\AgendaEventComparer.cs" />
+    <Compile Include="DataStructures\CallAllocationList.cs" />
     <Compile Include="Exceptions\SimulationAssumptionException.cs" />
     <Compile Include="PhysicalDomain\Car.cs" />
     <Compile Include="AbstractDomain\Direction.cs" />

@@ -7,33 +7,21 @@ using System.Collections;
 
 namespace ElevatorSimulator.Calls
 {
-    class CallsList : IEnumerable
+    class CallsList : List<Call>
     {
-        private List<Call> calls = new List<Call>();
-
-        public IEnumerator GetEnumerator()
-        {
-            return calls.GetEnumerator();
-        }
-
         public void addCall(Call call)
         {
-            calls.Add(call);
+            this.Add(call);
         }
-
-        public int count()
-        {
-            return calls.Count;
-        }
-
+        
         public bool isEmpty()
         {
-            return calls.Count == 0;
+            return this.Count == 0;
         }
 
         public Call getNextCallInCurrentDirection(int currentFloor, Direction direction)
         {
-            if (calls.Count == 0)
+            if (isEmpty())
             {
                 //TODO
                 return null;
@@ -41,13 +29,13 @@ namespace ElevatorSimulator.Calls
 
             if (direction == Direction.Up)
             {
-                var filtered = calls.Where(a => a.getElevatorDestination() >= currentFloor);
+                var filtered = this.Where(a => a.getElevatorDestination() >= currentFloor);
                 return  filtered.Count() == 0 ? null : filtered.OrderBy(a => a.getElevatorDestination()).First();                
             }
 
             if (direction == Direction.Down)
             {
-                var filtered = calls.Where(a => a.getElevatorDestination() <= currentFloor);
+                var filtered = this.Where(a => a.getElevatorDestination() <= currentFloor);
                 return filtered.Count() == 0 ? null : filtered.OrderBy(a => a.getElevatorDestination()).Last();
             }
 
@@ -57,17 +45,17 @@ namespace ElevatorSimulator.Calls
 
         public Call getLowestCall()
         {
-            return calls.OrderBy(a => a.getElevatorDestination()).First();
+            return this.OrderBy(a => a.getElevatorDestination()).First();
         }
 
         public Call getHighestCall()
         {
-            return calls.OrderBy(a => a.getElevatorDestination()).Last();
+            return this.OrderBy(a => a.getElevatorDestination()).Last();
         }
 
         internal void removeCall(Call call)
         {
-            calls.Remove(call);
+            this.Remove(call);
         }
     }
 }
