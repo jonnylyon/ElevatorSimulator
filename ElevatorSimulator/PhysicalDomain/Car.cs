@@ -156,10 +156,17 @@ namespace ElevatorSimulator.PhysicalDomain
             {
                 if (this.State.Direction == Direction.Up && nextCall.getElevatorDestination() > this.State.Floor)
                 {
+                    // if call is in P1 or P2 and is in our direction (upwards)
                     nextCallIsInCurrentDirection = true;
                 }
                 else if (this.State.Direction == Direction.Down && nextCall.getElevatorDestination() < this.State.Floor)
                 {
+                    // if call is in P1 or P2 and is in our direction (downwards)
+                    nextCallIsInCurrentDirection = true;
+                }
+                else if (nextCall.getElevatorDestination() == this.State.Floor && nextCall.CallDirection == this.State.Direction)
+                {
+                    // if call is in P1 and at the same floor as us
                     nextCallIsInCurrentDirection = true;
                 }
             }
