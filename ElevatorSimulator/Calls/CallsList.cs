@@ -19,6 +19,8 @@ namespace ElevatorSimulator.Calls
             return this.Count == 0;
         }
 
+        // If there are two calls for the same floor, this is going to return an arbitrary one
+        // (probably the one that was added first?).  Be aware of this when using the method.
         public Call getNextCallInCurrentDirection(int currentFloor, Direction direction)
         {
             if (isEmpty())

@@ -147,6 +147,9 @@ namespace ElevatorSimulator.PhysicalDomain
                 return;
             }
 
+            // So there's a problem here; we need a method that gets the next call not
+            // including car calls for the current floor, if you see what I mean.
+            // Easier to explain in person
             bool nextCallIsInCurrentDirection = false;
             Call nextCall = this.allocatedCalls.getNextCall(this.State);
 
