@@ -48,9 +48,40 @@ namespace ElevatorSimulator.DataStructures
 
         }
 
+        public void addCarCall(CarCall carCall, CarState state)
+        {
+            if (state.Direction == Direction.Up && carCall.getElevatorDestination() >= state.Floor)
+            {
+                // if call is in current direction (upwards)
+                this.p1Calls.addCall(carCall);
+            }
+            else if (state.Direction == Direction.Down && carCall.getElevatorDestination() <= state.Floor)
+            {
+                // if call is in current direction (downwards)
+                this.p1Calls.addCall(carCall);
+            }
+            else
+            {
+                // if call is not in current direction
+                this.p2Calls.addCall(carCall);
+            }
+        }
+
+        public void removeCall(Call c)
+        {
+            this.p1Calls.removeCall(c);
+            this.p2Calls.removeCall(c);
+            this.p3Calls.removeCall(c);
+        }
+
         public List<Call> getCarCallsForFloor(int floor)
         {
             return p1Calls.Where(c => c is CarCall && c.Passengers.Destination == floor).ToList();
+        }
+
+        public List<Call> getHallCallsForFloor(int floor, Direction direction)
+        {
+            return p1Calls.Where(c => c is HallCall && c.Passengers.Origin == floor && c.CallDirection == direction).ToList();
         }
 
         public bool isEmpty()
@@ -105,6 +136,5 @@ namespace ElevatorSimulator.DataStructures
             this.p2Calls = this.p3Calls;
             this.p3Calls = new CallsList();
         }
-
     }
 }

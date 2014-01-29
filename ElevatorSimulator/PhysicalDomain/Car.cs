@@ -139,10 +139,8 @@ namespace ElevatorSimulator.PhysicalDomain
 
         private void updateAgenderHelper_LoadingState()
         {
-            CallsQueue queueToBoard = Simulation.getQueue(this.State.Floor, this.State.Direction, (capacity - numberOfPassengers), this);
-
             // Can we become idle
-            if (allocatedCalls.isEmpty() && queueToBoard.isEmpty())
+            if (allocatedCalls.isEmpty())
             {
                 CarState newState = new CarState() { Action = CarAction.Idle, Direction = this.State.Direction, Floor = this.State.Floor, InitialSpeed = 0 };
                 this.changeState(newState);
@@ -181,9 +179,10 @@ namespace ElevatorSimulator.PhysicalDomain
             }
 
             var carCallsForFloor = allocatedCalls.getCarCallsForFloor(this.State.Floor);
+            var hallCallsForFloor = allocatedCalls.getHallCallsForFloor(this.State.Floor, this.State.Direction);
 
             // Can we depart (no-one getting on or off at this floor)
-            if (!carCallsForFloor.Any() && queueToBoard.isEmpty())
+            if (!carCallsForFloor.Any() && !hallCallsForFloor.Any())
             {
                 // Change state of car to departing (start closing doors)
                 CarState newState = new CarState() { Action = CarAction.DoorsClosing, Direction = this.State.Direction, Floor = this.State.Floor, InitialSpeed = 0 };
@@ -212,6 +211,7 @@ namespace ElevatorSimulator.PhysicalDomain
                 {
                     PassengerGroup p = c.Passengers;
                     this.removePassengers(p);
+                    this.allocatedCalls.removeCall(c); // The call has been served
                     p.changeState(PassengerState.Arrived, timeOfAlight);
                 }
 
@@ -221,14 +221,16 @@ namespace ElevatorSimulator.PhysicalDomain
 
                 Simulation.agenda.addAgendaEvent(newEvent);
             }
-            else if (!queueToBoard.isEmpty())
+            else if (hallCallsForFloor.Any())
             {
-                HallCall callToBoard = queueToBoard.deQueue() as HallCall;
+                HallCall callToBoard = hallCallsForFloor.OrderBy(c => c.Passengers.HallCallTime).First() as HallCall;
                 PassengerGroup passengersToBoard = callToBoard.Passengers;
 
                 double boardingTime = this.passengerBoardTime * passengersToBoard.Size;
 
                 this.addPassengers(passengersToBoard);
+                this.allocatedCalls.removeCall(callToBoard);
+                this.allocatedCalls.addCarCall(new CarCall(passengersToBoard), this.State);
                 passengersToBoard.changeState(PassengerState.InTransit, Simulation.agenda.getCurrentSimTime());
 
                 // Place an event on the agenda to fire when the passengers have finished alighting
