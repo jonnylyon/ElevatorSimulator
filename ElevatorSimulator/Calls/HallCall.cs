@@ -18,7 +18,7 @@ namespace ElevatorSimulator.Calls
         {
             get 
             {
-                return this.Passengers.Destination > this.Passengers.Origin ? Direction.Up : Direction.Down; 
+                return this.Passengers.Direction;
             }
         }
 

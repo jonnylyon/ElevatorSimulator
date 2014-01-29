@@ -17,7 +17,7 @@ namespace ElevatorSimulator
             Shaft shaft = new Shaft(shaftData);
             shaft.addCar();
 
-            shaft.Cars[0].allocateHallCall(new HallCall(new PassengerGroup(3,1,5)));
+            shaft.Cars[0].allocateHallCall(new HallCall(new PassengerGroup(3, 1, 5)));
             shaft.Cars[0].allocateHallCall(new HallCall(new PassengerGroup(1, 5, 6)));
             shaft.Cars[0].allocateHallCall(new HallCall(new PassengerGroup(2, 3, 2)));
 

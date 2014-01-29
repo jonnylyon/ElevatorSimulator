@@ -17,11 +17,29 @@ namespace ElevatorSimulator.PhysicalDomain
         public int Origin { get; private set; }
         public int Destination { get; private set; }
 
-        private PassengerState passengerState;
+        public PassengerState PassengerState { get; private set; }
 
-        private DateTime hallCallTime;
-        private DateTime carBoardTime;
-        private DateTime carAlightTime;
+        public DateTime HallCallTime { get; private set; }
+        public DateTime CarBoardTime { get; private set; }
+        public DateTime CarAlightTime { get; private set; }
+
+        public Direction Direction
+        {
+            get
+            {
+                if (this.Destination < this.Origin)
+                {
+                    return Direction.Down;
+                }
+
+                if (this.Destination > this.Origin)
+                {
+                    return Direction.Up;
+                }
+
+                return Direction.None;
+            }
+        }
 
         public PassengerGroup(int size, int origin, int destination)
         {
@@ -33,20 +51,20 @@ namespace ElevatorSimulator.PhysicalDomain
             this.Origin = origin;
             this.Destination = destination;
 
-            this.passengerState = PassengerState.Unborn;
+            this.PassengerState = PassengerState.Unborn;
         }
 
         public void changeState(PassengerState newState, DateTime currentTime)
         {
-            this.passengerState = newState;
+            this.PassengerState = newState;
 
             switch (newState)
             {
-                case PassengerState.Waiting: hallCallTime = currentTime;
+                case PassengerState.Waiting: HallCallTime = currentTime;
                     break;
-                case PassengerState.InTransit: carBoardTime = currentTime;
+                case PassengerState.InTransit: CarBoardTime = currentTime;
                     break;
-                case PassengerState.Arrived: carAlightTime = currentTime;
+                case PassengerState.Arrived: CarAlightTime = currentTime;
                     break;
                 default:
                     //Todo ...
