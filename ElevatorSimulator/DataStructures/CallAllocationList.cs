@@ -50,12 +50,12 @@ namespace ElevatorSimulator.DataStructures
 
         public void addCarCall(CarCall carCall, CarState state)
         {
-            if (state.Direction == Direction.Up && carCall.getElevatorDestination() >= state.Floor)
+            if (state.Direction == Direction.Up && carCall.CallLocation >= state.Floor)
             {
                 // if call is in current direction (upwards)
                 this.p1Calls.addCall(carCall);
             }
-            else if (state.Direction == Direction.Down && carCall.getElevatorDestination() <= state.Floor)
+            else if (state.Direction == Direction.Down && carCall.CallLocation <= state.Floor)
             {
                 // if call is in current direction (downwards)
                 this.p1Calls.addCall(carCall);

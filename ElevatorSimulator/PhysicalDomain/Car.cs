@@ -155,17 +155,17 @@ namespace ElevatorSimulator.PhysicalDomain
 
             if (!object.ReferenceEquals(nextCall, null))
             {
-                if (this.State.Direction == Direction.Up && nextCall.getElevatorDestination() > this.State.Floor)
+                if (this.State.Direction == Direction.Up && nextCall.CallLocation > this.State.Floor)
                 {
                     // if call is in P1 or P2 and is in our direction (upwards)
                     nextCallIsInCurrentDirection = true;
                 }
-                else if (this.State.Direction == Direction.Down && nextCall.getElevatorDestination() < this.State.Floor)
+                else if (this.State.Direction == Direction.Down && nextCall.CallLocation < this.State.Floor)
                 {
                     // if call is in P1 or P2 and is in our direction (downwards)
                     nextCallIsInCurrentDirection = true;
                 }
-                else if (nextCall.getElevatorDestination() == this.State.Floor && nextCall.CallDirection == this.State.Direction)
+                else if (nextCall.CallLocation == this.State.Floor && nextCall.CallDirection == this.State.Direction)
                 {
                     // if call is in P1 and at the same floor as us
                     nextCallIsInCurrentDirection = true;
@@ -339,7 +339,7 @@ namespace ElevatorSimulator.PhysicalDomain
 
         private void updateAgendaHelper_MovingState()
         {
-            if (this.State.Floor == this.allocatedCalls.getNextCall(this.State).getElevatorDestination())
+            if (this.State.Floor == this.allocatedCalls.getNextCall(this.State).CallLocation)
             {
                 // Begin stopping car
 

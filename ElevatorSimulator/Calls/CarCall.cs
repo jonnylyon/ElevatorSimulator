@@ -22,9 +22,12 @@ namespace ElevatorSimulator.Calls
             }
         }
 
-        public override int getElevatorDestination()
+        public override int CallLocation
         {
-            return Passengers.Destination;
+            get
+            {
+                return Passengers.Destination;
+            }
         }
     }
 }

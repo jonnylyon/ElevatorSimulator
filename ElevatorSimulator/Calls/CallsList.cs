@@ -31,14 +31,14 @@ namespace ElevatorSimulator.Calls
 
             if (direction == Direction.Up)
             {
-                var filtered = this.Where(a => a.getElevatorDestination() >= currentFloor);
-                return  filtered.Count() == 0 ? null : filtered.OrderBy(a => a.getElevatorDestination()).First();                
+                var filtered = this.Where(a => a.CallLocation >= currentFloor);
+                return  filtered.Count() == 0 ? null : filtered.OrderBy(a => a.CallLocation).First();                
             }
 
             if (direction == Direction.Down)
             {
-                var filtered = this.Where(a => a.getElevatorDestination() <= currentFloor);
-                return filtered.Count() == 0 ? null : filtered.OrderBy(a => a.getElevatorDestination()).Last();
+                var filtered = this.Where(a => a.CallLocation <= currentFloor);
+                return filtered.Count() == 0 ? null : filtered.OrderBy(a => a.CallLocation).Last();
             }
 
             // TODO If idle?
@@ -47,12 +47,12 @@ namespace ElevatorSimulator.Calls
 
         public Call getLowestCall()
         {
-            return this.OrderBy(a => a.getElevatorDestination()).First();
+            return this.OrderBy(a => a.CallLocation).First();
         }
 
         public Call getHighestCall()
         {
-            return this.OrderBy(a => a.getElevatorDestination()).Last();
+            return this.OrderBy(a => a.CallLocation).Last();
         }
 
         internal void removeCall(Call call)

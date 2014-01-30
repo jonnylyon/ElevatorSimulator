@@ -30,6 +30,6 @@ namespace ElevatorSimulator.Calls
         /// if car call, the destination of the call.
         /// </summary>
         /// <returns>The number of the floor the elevator should visit</returns>
-        public abstract int getElevatorDestination(); // TODO im not convinced this should be in this class? It's more elevator logic than anything to do with the call?
+        public abstract int CallLocation { get; } // TODO im not convinced this should be in this class? It's more elevator logic than anything to do with the call?
     }
 }
