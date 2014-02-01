@@ -11,7 +11,8 @@
     <RootNamespace>ElevatorSimulator</RootNamespace>
     <AssemblyName>ElevatorSimulator</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
@@ -36,11 +37,11 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
+    <Reference Include="System.XML" />
+    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AbstractDomain\CarAction.cs" />
@@ -59,6 +60,8 @@
     <Compile Include="DataStructures\AgendaEventComparer.cs" />
     <Compile Include="DataStructures\CallAllocationList.cs" />
     <Compile Include="Exceptions\SimulationAssumptionException.cs" />
+    <Compile Include="PassengerArrivals\PassengerDistribution.cs" />
+    <Compile Include="PassengerArrivals\PassengerGroupArrivalData.cs" />
     <Compile Include="PhysicalDomain\Car.cs" />
     <Compile Include="AbstractDomain\Direction.cs" />
     <Compile Include="PhysicalDomain\PassengerGroup.cs" />
@@ -70,6 +73,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assumptions.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
