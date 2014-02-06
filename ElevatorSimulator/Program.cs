@@ -8,6 +8,7 @@ using ElevatorSimulator.Agenda;
 using ElevatorSimulator.Calls;
 using ElevatorSimulator.PassengerArrivals;
 using System.IO;
+using ElevatorSimulator.Scheduler;
 
 namespace ElevatorSimulator
 {
@@ -15,41 +16,27 @@ namespace ElevatorSimulator
     {
         static void Main(string[] args)
         {
-            string filename = @"test.xml";
-            PassengerDistribution dist = new PassengerDistribution();
+            // Runtime specific parameters.  Should get these from command line, but it's
+            // annoying to run from Visual Studio then.
+            SchedulerTypes scheduler = SchedulerTypes.Manual;
+            PassengerDistributionSource pdSource = PassengerDistributionSource.New;
+            string pdSpecification = @"distribution spec.xml";
+            string pdFile = @"test.xml";
+            string logFile = @"log.xml";
 
-            PassengerGroupArrivalData pg1 = new PassengerGroupArrivalData()
-            {
-                ArrivalTime = DateTime.Now,
-                Size = 4,
-                Origin = 2,
-                Destination = 1
-            };
-
-            PassengerGroupArrivalData pg2 = new PassengerGroupArrivalData()
-            {
-                ArrivalTime = DateTime.Now.AddSeconds(5),
-                Size = 1,
-                Origin = 4,
-                Destination = 9
-            };
-
-            dist.addPassengerGroup(pg1);
-            dist.addPassengerGroup(pg2);
-            dist.save(filename);
+            PassengerDistribution dist = new PassengerDistributionCreator(pdSpecification)
+                                                .createPassengerDistribution(new DateTime(2014, 02, 06, 13, 0, 0), new DateTime(2014, 02, 06, 17, 0, 0), 200);
+            dist.save(pdFile);
 
             PassengerDistribution dist2 = new PassengerDistribution();
 
-            dist2.load(filename);
+            dist2.load(pdFile);
 
             foreach (PassengerGroupArrivalData pgad in dist2.ArrivalData)
             {
-                Console.WriteLine("{0} {1} {2} {3}",
-                    pgad.ArrivalTime,
-                    pgad.Size,
-                    pgad.Origin,
-                    pgad.Destination
-                    );
+                PassengerGroup pg = new PassengerGroup(pgad.Size, pgad.Origin, pgad.Destination);
+                PassengerHallCallEvent phce = new PassengerHallCallEvent(pg, pgad.ArrivalTime);
+                Simulation.agenda.addAgendaEvent(phce);
             }
 
             Console.ReadKey();

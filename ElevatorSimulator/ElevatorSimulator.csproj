@@ -75,7 +75,11 @@
     <Compile Include="DataStructures\AgendaEventComparer.cs" />
     <Compile Include="DataStructures\CallAllocationList.cs" />
     <Compile Include="Exceptions\SimulationAssumptionException.cs" />
+    <Compile Include="PassengerArrivals\DistributionSpecification\ArrivalFloor.cs" />
+    <Compile Include="PassengerArrivals\DistributionSpecification\DestinationFloor.cs" />
     <Compile Include="PassengerArrivals\PassengerDistribution.cs" />
+    <Compile Include="PassengerArrivals\PassengerDistributionCreator.cs" />
+    <Compile Include="PassengerArrivals\PassengerDistributionSource.cs" />
     <Compile Include="PassengerArrivals\PassengerGroupArrivalData.cs" />
     <Compile Include="PhysicalDomain\Car.cs" />
     <Compile Include="AbstractDomain\Direction.cs" />
@@ -84,6 +88,10 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PhysicalDomain\Shaft.cs" />
+    <Compile Include="Scheduler\IScheduler.cs" />
+    <Compile Include="Scheduler\ManualScheduler\ManualScheduler.cs" />
+    <Compile Include="Scheduler\SchedulerMapper.cs" />
+    <Compile Include="Scheduler\SchedulerTypes.cs" />
     <Compile Include="Simulation.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -114,6 +122,7 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
