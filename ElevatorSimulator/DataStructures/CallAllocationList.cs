@@ -25,6 +25,11 @@ namespace ElevatorSimulator.DataStructures
                 {
                     this.p1Calls.addCall(hallCall);
                 }
+                else if (hallCall.Passengers.Origin == state.Floor && !(state.Action == CarAction.Moving || state.Action == CarAction.Leaving || state.Action == CarAction.DoorsClosing))
+                {
+                    // call is for the floor that we're currently stopped at
+                    this.p1Calls.addCall(hallCall);
+                }
                 else
                 {
                     this.p3Calls.addCall(hallCall);
@@ -38,6 +43,11 @@ namespace ElevatorSimulator.DataStructures
                 }
                 else if (hallCall.Passengers.Origin < state.Floor)
                 {
+                    this.p1Calls.addCall(hallCall);
+                }
+                else if (hallCall.Passengers.Origin == state.Floor && !(state.Action == CarAction.Moving || state.Action == CarAction.Leaving || state.Action == CarAction.DoorsClosing))
+                {
+                    // call is for the floor that we're currently stopped at
                     this.p1Calls.addCall(hallCall);
                 }
                 else
