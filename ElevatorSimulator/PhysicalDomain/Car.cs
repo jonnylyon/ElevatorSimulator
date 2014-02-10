@@ -91,7 +91,7 @@ namespace ElevatorSimulator.PhysicalDomain
         public void changeState(CarState newCarState)
         {
             this.State = newCarState;
-            Console.WriteLine("{0}: {1}, {2}, {3}, {4}", Simulation.agenda.getCurrentSimTime().ToString(), this.State.Action, this.State.Direction, this.State.Floor, this.State.InitialSpeed);
+            Simulation.logger.logLine(String.Format("{0}: {1}, {2}, {3}, {4}", Simulation.agenda.getCurrentSimTime().ToString(), this.State.Action, this.State.Direction, this.State.Floor, this.State.InitialSpeed));
             this.updateAgenda();
         }
 

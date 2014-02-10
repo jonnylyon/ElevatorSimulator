@@ -9,11 +9,11 @@ namespace ElevatorSimulator.Agenda
     {
         public DateTime TimeOccurred { get; private set; }
 
-        private IEventOwner owner;
+        public IEventOwner Owner { get; private set; }
 
         protected AgendaEvent(IEventOwner owner, DateTime time)
         {
-            this.owner = owner;
+            this.Owner = owner;
             this.TimeOccurred = time;
         }
     }

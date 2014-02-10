@@ -9,13 +9,13 @@ namespace ElevatorSimulator.PhysicalDomain
     {
         private readonly int _topFloor;
         private readonly int _bottomFloor;
-        private readonly int _interfloorDistance;
+        private readonly double _interfloorDistance;
 
         public int TopFloor { get { return _topFloor; } }
         public int BottomFloor { get { return _bottomFloor; } }
-        public int InterfloorDistance { get { return _interfloorDistance; } }
+        public double InterfloorDistance { get { return _interfloorDistance; } }
 
-        public ShaftData(int topFloor, int bottomFloor, int interfloor)
+        public ShaftData(int topFloor, int bottomFloor, double interfloor)
         {
             _topFloor = topFloor;
             _bottomFloor = bottomFloor;

@@ -18,32 +18,45 @@ namespace ElevatorSimulator
         {
             // Runtime specific parameters.  Should get these from command line, but it's
             // annoying to run from Visual Studio then.
-            SchedulerTypes scheduler = SchedulerTypes.Manual;
-            PassengerDistributionSource pdSource = PassengerDistributionSource.New;
+            SchedulerTypes scheduler = SchedulerTypes.Random;
+            PassengerDistributionSource pdSource = PassengerDistributionSource.Load;
             string pdSpecification = @"distribution spec.xml";
             string pdFile = @"test.xml";
             string logFile = @"log.xml";
 
-            PassengerDistribution dist = new PassengerDistributionCreator(pdSpecification)
-                                                .createPassengerDistribution(new DateTime(2014, 02, 06, 13, 0, 0), new DateTime(2014, 02, 06, 17, 0, 0), 200);
-            dist.save(pdFile);
+            PassengerDistribution dist = new PassengerDistribution();
 
-            PassengerDistribution dist2 = new PassengerDistribution();
-
-            dist2.load(pdFile);
-
-            foreach (PassengerGroupArrivalData pgad in dist2.ArrivalData)
+            switch (pdSource)
             {
-                PassengerGroup pg = new PassengerGroup(pgad.Size, pgad.Origin, pgad.Destination);
-                PassengerHallCallEvent phce = new PassengerHallCallEvent(pg, pgad.ArrivalTime);
-                Simulation.agenda.addAgendaEvent(phce);
+                case PassengerDistributionSource.Load:
+                    dist.load(pdFile);
+                    break;
+                case PassengerDistributionSource.New:
+                    var pdCreator = new PassengerDistributionCreator(pdSpecification);
+                    var pdStart = new DateTime(2014, 02, 06, 13, 0, 0);
+                    var pdEnd = new DateTime(2014, 02, 06, 17, 0, 0);
+                    var pdResolution = 200;
+
+                    dist = pdCreator.createPassengerDistribution(pdStart, pdEnd, pdResolution);
+
+                    dist.save(pdFile);
+                    break;
             }
 
-            Console.ReadKey();
+            Logger.Logger logger = new Logger.Logger(logFile, true);
 
-            //var shaftData = new ShaftData(24, 0, 10);
-            //Shaft shaft = new Shaft(shaftData);
-            //shaft.addCar();
+            Simulation.logger = logger;
+
+            Building building = new Building();
+
+            building.addShaft(24, 0, 10);
+            building.Shafts[0].addCar();
+
+            IScheduler sched = SchedulerMapper.getScheduler(scheduler);
+
+            Simulation.controller = new Controller(building, dist, sched);
+
+            Simulation.controller.Start();
 
             //shaft.Cars[0].allocateHallCall(new HallCall(new PassengerGroup(3, 1, 5)));
             //shaft.Cars[0].allocateHallCall(new HallCall(new PassengerGroup(1, 5, 6)));

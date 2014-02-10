@@ -11,5 +11,7 @@ namespace ElevatorSimulator
     static class Simulation
     {
         internal static Agenda.Agenda agenda = new Agenda.Agenda();
+        internal static Controller controller;
+        internal static Logger.Logger logger;
     }
 }

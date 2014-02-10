@@ -13,7 +13,8 @@ namespace ElevatorSimulator.Scheduler
             {
                 case SchedulerTypes.Manual:
                     return new ManualScheduler.ManualScheduler();
-                    break;
+                case SchedulerTypes.Random:
+                    return new RandomScheduler.RandomScheduler();
             }
 
             return null;

@@ -72,15 +72,18 @@
     <Compile Include="Calls\CallsQueue.cs" />
     <Compile Include="Calls\CarCall.cs" />
     <Compile Include="Calls\HallCall.cs" />
+    <Compile Include="Controller.cs" />
     <Compile Include="DataStructures\AgendaEventComparer.cs" />
     <Compile Include="DataStructures\CallAllocationList.cs" />
     <Compile Include="Exceptions\SimulationAssumptionException.cs" />
+    <Compile Include="Logger\Logger.cs" />
     <Compile Include="PassengerArrivals\DistributionSpecification\ArrivalFloor.cs" />
     <Compile Include="PassengerArrivals\DistributionSpecification\DestinationFloor.cs" />
     <Compile Include="PassengerArrivals\PassengerDistribution.cs" />
     <Compile Include="PassengerArrivals\PassengerDistributionCreator.cs" />
     <Compile Include="PassengerArrivals\PassengerDistributionSource.cs" />
     <Compile Include="PassengerArrivals\PassengerGroupArrivalData.cs" />
+    <Compile Include="PhysicalDomain\Building.cs" />
     <Compile Include="PhysicalDomain\Car.cs" />
     <Compile Include="AbstractDomain\Direction.cs" />
     <Compile Include="PhysicalDomain\PassengerGroup.cs" />
@@ -90,6 +93,7 @@
     <Compile Include="PhysicalDomain\Shaft.cs" />
     <Compile Include="Scheduler\IScheduler.cs" />
     <Compile Include="Scheduler\ManualScheduler\ManualScheduler.cs" />
+    <Compile Include="Scheduler\RandomScheduler\RandomScheduler.cs" />
     <Compile Include="Scheduler\SchedulerMapper.cs" />
     <Compile Include="Scheduler\SchedulerTypes.cs" />
     <Compile Include="Simulation.cs" />
