@@ -14,6 +14,6 @@ namespace ElevatorSimulator
         internal static Controller controller;
         internal static Logger.Logger logger;
 
-        internal static List<PassengerGroup> allPassengers;
+        internal static List<PassengerGroup> allPassengers = new List<PassengerGroup>();
     }
 }
