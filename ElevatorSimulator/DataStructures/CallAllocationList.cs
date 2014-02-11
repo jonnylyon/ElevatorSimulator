@@ -19,40 +19,40 @@ namespace ElevatorSimulator.DataStructures
             {
                 if (hallCall.CallDirection == Direction.Down)
                 {
-                    this.p2Calls.addCall(hallCall);
+                    this.p2Calls.Add(hallCall);
                 }
                 else if (hallCall.Passengers.Origin > state.Floor)
                 {
-                    this.p1Calls.addCall(hallCall);
+                    this.p1Calls.Add(hallCall);
                 }
                 else if (hallCall.Passengers.Origin == state.Floor && !(state.Action == CarAction.Moving || state.Action == CarAction.Leaving || state.Action == CarAction.DoorsClosing))
                 {
                     // call is for the floor that we're currently stopped at
-                    this.p1Calls.addCall(hallCall);
+                    this.p1Calls.Add(hallCall);
                 }
                 else
                 {
-                    this.p3Calls.addCall(hallCall);
+                    this.p3Calls.Add(hallCall);
                 }
             }
             else
             {
                 if (hallCall.CallDirection == Direction.Up)
                 {
-                    this.p2Calls.addCall(hallCall);
+                    this.p2Calls.Add(hallCall);
                 }
                 else if (hallCall.Passengers.Origin < state.Floor)
                 {
-                    this.p1Calls.addCall(hallCall);
+                    this.p1Calls.Add(hallCall);
                 }
                 else if (hallCall.Passengers.Origin == state.Floor && !(state.Action == CarAction.Moving || state.Action == CarAction.Leaving || state.Action == CarAction.DoorsClosing))
                 {
                     // call is for the floor that we're currently stopped at
-                    this.p1Calls.addCall(hallCall);
+                    this.p1Calls.Add(hallCall);
                 }
                 else
                 {
-                    this.p3Calls.addCall(hallCall);
+                    this.p3Calls.Add(hallCall);
                 }
             }
 
@@ -63,25 +63,25 @@ namespace ElevatorSimulator.DataStructures
             if (state.Direction == Direction.Up && carCall.CallLocation >= state.Floor)
             {
                 // if call is in current direction (upwards)
-                this.p1Calls.addCall(carCall);
+                this.p1Calls.Add(carCall);
             }
             else if (state.Direction == Direction.Down && carCall.CallLocation <= state.Floor)
             {
                 // if call is in current direction (downwards)
-                this.p1Calls.addCall(carCall);
+                this.p1Calls.Add(carCall);
             }
             else
             {
                 // if call is not in current direction
-                this.p2Calls.addCall(carCall);
+                this.p2Calls.Add(carCall);
             }
         }
 
         public void removeCall(Call c)
         {
-            this.p1Calls.removeCall(c);
-            this.p2Calls.removeCall(c);
-            this.p3Calls.removeCall(c);
+            this.p1Calls.Remove(c);
+            this.p2Calls.Remove(c);
+            this.p3Calls.Remove(c);
         }
 
         public List<Call> getCarCallsForFloor(int floor)
@@ -145,6 +145,15 @@ namespace ElevatorSimulator.DataStructures
             this.p1Calls = this.p2Calls;
             this.p2Calls = this.p3Calls;
             this.p3Calls = new CallsList();
+        }
+
+        public void postponeHallCall(HallCall c)
+        {
+            if (p1Calls.Contains(c))
+            {
+                p1Calls.Remove(c);
+                p3Calls.Add(c);
+            }
         }
     }
 }

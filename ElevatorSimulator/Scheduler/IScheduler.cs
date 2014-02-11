@@ -9,5 +9,7 @@ namespace ElevatorSimulator.Scheduler
     interface IScheduler
     {
         void allocateCall(PassengerGroup group, Building building);
+
+        void reallocateCall(PassengerGroup group, Building building, Car rejectedFrom);
     }
 }

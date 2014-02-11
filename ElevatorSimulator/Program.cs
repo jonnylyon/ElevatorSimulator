@@ -1,13 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using ElevatorSimulator.PhysicalDomain;
-using ElevatorSimulator.AbstractDomain;
-using ElevatorSimulator.Agenda;
-using ElevatorSimulator.Calls;
 using ElevatorSimulator.PassengerArrivals;
-using System.IO;
+using ElevatorSimulator.PhysicalDomain;
 using ElevatorSimulator.Scheduler;
 
 namespace ElevatorSimulator

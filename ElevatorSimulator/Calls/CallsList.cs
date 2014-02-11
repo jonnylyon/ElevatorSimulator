@@ -8,12 +8,7 @@ using System.Collections;
 namespace ElevatorSimulator.Calls
 {
     class CallsList : List<Call>
-    {
-        public void addCall(Call call)
-        {
-            this.Add(call);
-        }
-        
+    {        
         public bool isEmpty()
         {
             return this.Count == 0;
@@ -53,11 +48,6 @@ namespace ElevatorSimulator.Calls
         public Call getHighestCall()
         {
             return this.OrderBy(a => a.CallLocation).Last();
-        }
-
-        internal void removeCall(Call call)
-        {
-            this.Remove(call);
         }
     }
 }

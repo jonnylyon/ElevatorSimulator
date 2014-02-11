@@ -17,17 +17,20 @@ namespace ElevatorSimulator
         public Controller(Building building, PassengerDistribution passengerDistribution, IScheduler scheduler)
         {
             this.building = building;
-            this.addPassengerDistributionToAgenda(passengerDistribution);
             this.scheduler = scheduler;
+
+            this.processPassengerDistribution(passengerDistribution);
         }
 
-        private void addPassengerDistributionToAgenda(PassengerDistribution passengerDistribution)
+        private void processPassengerDistribution(PassengerDistribution passengerDistribution)
         {
             foreach (PassengerGroupArrivalData arrival in passengerDistribution.ArrivalData)
             {
                 PassengerGroup group = new PassengerGroup(arrival.Size, arrival.Origin, arrival.Destination);
                 PassengerHallCallEvent hallCallEvent = new PassengerHallCallEvent(group, arrival.ArrivalTime);
                 Simulation.agenda.addAgendaEvent(hallCallEvent);
+
+                Simulation.allPassengers.Add(group);
             }
         }
 
@@ -46,6 +49,11 @@ namespace ElevatorSimulator
                     this.scheduler.allocateCall(nextEvent.Owner as PassengerGroup, this.building);
                 }
             }
+        }
+
+        public void reallocateHallCall(PassengerGroup group, Car rejectedFrom)
+        {
+
         }
     }
 }

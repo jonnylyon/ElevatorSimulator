@@ -25,5 +25,24 @@ namespace ElevatorSimulator.Scheduler.RandomScheduler
 
             group.changeState(PassengerState.Waiting, Simulation.agenda.getCurrentSimTime());
         }
+
+        public void reallocateCall(PassengerGroup group, Building building, Car rejectedFrom)
+        {
+            Car car = rejectedFrom;
+
+            while (car == rejectedFrom && building.Shafts.Sum(s => s.Cars.Count) > 1)
+            {
+                // choose shaft at random
+                var shaft = building.Shafts[random.Next(building.Shafts.Count)];
+
+                // choose car with shaft at random
+                car = shaft.Cars[random.Next(shaft.Cars.Count)];
+            }
+
+            // allocate call
+            car.allocateHallCall(new HallCall(group));
+
+            group.changeState(PassengerState.Waiting, Simulation.agenda.getCurrentSimTime());
+        }
     }
 }
