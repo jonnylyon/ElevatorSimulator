@@ -6,6 +6,7 @@ using ElevatorSimulator.Calls;
 using ElevatorSimulator.AbstractDomain;
 using ElevatorSimulator.Agenda;
 using ElevatorSimulator.DataStructures;
+using ElevatorSimulator.Tools;
 
 namespace ElevatorSimulator.PhysicalDomain
 {
@@ -15,18 +16,7 @@ namespace ElevatorSimulator.PhysicalDomain
         private List<PassengerGroup> passengers = new List<PassengerGroup>();
         private CallAllocationList allocatedCalls = new CallAllocationList();
 
-        private int capacity = 18;
-
-        private double maxSpeed = 5; // in metres per second
-        private double acceleration = 2; // in metres per second squared; assumes linear acc'n
-        private double deceleration = 4; // in positive metres per second squared; assumes linear dec'n
-
-        private double directionChangeTime = 1; // in seconds
-        private double passengerBoardTime = 10; // in seconds
-        private double passengerAlightTime = 10; // in seconds
-
-        private double doorsCloseTime = 3; // in seconds
-        private double doorsOpenTime = 3; // in seconds
+        private CarAttributes carAttributes;
 
         private int numberOfPassengers;
 
@@ -34,11 +24,13 @@ namespace ElevatorSimulator.PhysicalDomain
 
         public Car(ShaftData data)
         {
+            carAttributes = new CarAttributes();
+
             this.shaftData = data;
 
             State = new CarState()
             {
-                Action = CarAction.Loading,
+                Action = CarAction.Stopped,
                 Floor = shaftData.BottomFloor,
                 Direction = Direction.Up,
                 InitialSpeed = 0,
@@ -56,7 +48,7 @@ namespace ElevatorSimulator.PhysicalDomain
         /// <returns>True if successfully added. False otherwise.</returns>
         public bool addPassengers(PassengerGroup newPassengers)
         {
-            if ((capacity - numberOfPassengers) < newPassengers.Size)
+            if ((carAttributes.Capacity - numberOfPassengers) < newPassengers.Size)
             {
                 return false;
             }
@@ -223,8 +215,8 @@ namespace ElevatorSimulator.PhysicalDomain
             }
 
             // calculate total and mean alighting times for passengers
-            double totalAlightTimeSeconds = this.passengerAlightTime * passengerCount;
-            double averageAlightTimeSeconds = 0.5 * this.passengerAlightTime * (passengerCount + 1);
+            double totalAlightTimeSeconds = this.carAttributes.PassengerAlightTime * passengerCount;
+            double averageAlightTimeSeconds = 0.5 * this.carAttributes.PassengerAlightTime * (passengerCount + 1);
 
             DateTime timeOfAlight = Simulation.agenda.getCurrentSimTime().AddSeconds(averageAlightTimeSeconds);
 
@@ -251,7 +243,7 @@ namespace ElevatorSimulator.PhysicalDomain
             HallCall callToBoard = hallCallsForFloor.OrderBy(c => c.Passengers.HallCallTime).First() as HallCall;
             PassengerGroup passengersToBoard = callToBoard.Passengers;
 
-            double boardingTime = this.passengerBoardTime * passengersToBoard.Size;
+            double boardingTime = this.carAttributes.PassengerBoardTime * passengersToBoard.Size;
 
             this.addPassengers(passengersToBoard);
             this.allocatedCalls.removeCall(callToBoard);
@@ -270,10 +262,9 @@ namespace ElevatorSimulator.PhysicalDomain
 
             // Place event on agenda to fire when reversing action has completed
             CarState newState = new CarState() { Action = CarAction.Stopped, Direction = newDirection, Floor = this.State.Floor, InitialSpeed = 0 };
-
-            CarStateChangeEvent newEvent = new CarStateChangeEvent(this, Simulation.agenda.getCurrentSimTime().AddSeconds(this.directionChangeTime), newState);
-
+            CarStateChangeEvent newEvent = new CarStateChangeEvent(this, Simulation.agenda.getCurrentSimTime().AddSeconds(this.carAttributes.DirectionChangeTime), newState);
             Simulation.agenda.addAgendaEvent(newEvent);
+
             allocatedCalls.reverseListsDirection();
         }
 
@@ -281,7 +272,7 @@ namespace ElevatorSimulator.PhysicalDomain
         {
             // Place event on agenda to fire when doors have finished closing
             CarState newState = new CarState() { Action = CarAction.Stopped, Direction = this.State.Direction, Floor = this.State.Floor, InitialSpeed = 0, DoorsOpen = false };
-            CarStateChangeEvent newEvent = new CarStateChangeEvent(this, Simulation.agenda.getCurrentSimTime().AddSeconds(this.doorsCloseTime), newState);
+            CarStateChangeEvent newEvent = new CarStateChangeEvent(this, Simulation.agenda.getCurrentSimTime().AddSeconds(this.carAttributes.DoorsCloseTime), newState);
             Simulation.agenda.addAgendaEvent(newEvent);
         }
 
@@ -292,53 +283,11 @@ namespace ElevatorSimulator.PhysicalDomain
             double nextFloorDecisionPointSpeed;
             double nextFloorDecisionPointTime;
 
-            // First, using linear acc'n and dec'n and assuming no maximum speed, work out the parameters
-            // of the point Q at which we must finally decide whether or not to stop at the next floor
-            // (the decision point of the next floor)
-
-            double Q_D; // The distance to point Q from here
-            double Q_V; // The speed that this car will have reached by point Q
-            double Q_T; // The time taken to get to point Q
-
-            Q_D = (this.deceleration * nextFloorDistance) / (this.acceleration + this.deceleration);
-            Q_V = Math.Sqrt(2 * this.acceleration * Q_D);
-            Q_T = (1 / this.acceleration) * Q_V;
-
-            // If Q_V is less than or equal to the maximum speed, then Q is the decision point for whether or
-            // not to stop at the next floor.
-            // Otherwise, we must calculate the decision point R by working out the point P at which we reach
-            // our maximum speed when accelerating from our current position.
-
-            if (Q_V > this.maxSpeed)
-            {
-                // note that P_V would be equal to the max speed of the car
-                double P_D; // The distance to point P from here
-                double P_T; // The time taken to get to point P
-
-                P_T = this.maxSpeed / this.acceleration;
-                P_D = 0.5 * this.acceleration * Math.Pow(P_T, 2);
-                // note that R_V = P_V = the max speed of the car
-                double R_D; // The distance to point R from here
-                double R_T; // The time taken to get to point R from here
-
-                R_D = nextFloorDistance - (Math.Pow(this.maxSpeed, 2) / (2 * this.deceleration));
-                R_T = P_T + ((R_D - P_D) / this.maxSpeed);
-
-                nextFloorDecisionPointSpeed = this.maxSpeed;
-                nextFloorDecisionPointTime = R_T;
-            }
-            else
-            {
-                nextFloorDecisionPointSpeed = Q_V;
-                nextFloorDecisionPointTime = Q_T;
-            }
+            CarMotionMaths.CalculateDecisionPointSpeedAndTime(this.carAttributes, nextFloorDistance, out nextFloorDecisionPointSpeed, out nextFloorDecisionPointTime);
 
             // Place event on agenda to fire when car reaches decision point of next floor
-
             CarState newState = new CarState() { Action = CarAction.Moving, Direction = this.State.Direction, Floor = nextFloor, InitialSpeed = nextFloorDecisionPointSpeed };
-
             CarStateChangeEvent newEvent = new CarStateChangeEvent(this, Simulation.agenda.getCurrentSimTime().AddSeconds(nextFloorDecisionPointTime), newState);
-
             Simulation.agenda.addAgendaEvent(newEvent);
         }
 
@@ -362,7 +311,7 @@ namespace ElevatorSimulator.PhysicalDomain
                 // Begin stopping car
 
                 // Calculate time taken to stop
-                var stoppingTime = this.State.InitialSpeed / this.deceleration;
+                var stoppingTime = CarMotionMaths.StoppingTime(this.State.InitialSpeed, this.carAttributes.Deceleration);
 
                 // Place event on agenda to fire when car has stopped at floor
                 CarState newState = new CarState() { Action = CarAction.Stopped, Direction = this.State.Direction, Floor = this.State.Floor, InitialSpeed = 0 };
@@ -373,51 +322,11 @@ namespace ElevatorSimulator.PhysicalDomain
             }
 
             int nextFloor = this.State.Direction == Direction.Up ? this.State.Floor + 1 : this.State.Floor - 1;
-            double nextFloorDistance = (Math.Pow(this.State.InitialSpeed, 2) / (2 * this.deceleration)) + getInterfloorDistance(this.State.Floor, this.State.Direction);
+            double nextFloorDistance = (Math.Pow(this.State.InitialSpeed, 2) / (2 * this.carAttributes.Deceleration)) + getInterfloorDistance(this.State.Floor, this.State.Direction);
             double nextFloorDecisionPointSpeed;
             double nextFloorDecisionPointTime;
 
-            // First, using linear acc'n and dec'n and assuming no maximum speed, work out the parameters
-            // of the point Q at which we must finally decide whether or not to stop at the next floor
-            // (the decision point of the next floor)
-
-            double Q_D; // The distance to point Q from here
-            double Q_V; // The speed that this car will have reached by point Q
-            double Q_T; // The time taken to get to point Q
-
-            Q_D = ((2 * this.deceleration * nextFloorDistance) - Math.Pow(this.State.InitialSpeed, 2)) / (2 * (this.acceleration + this.deceleration));
-            Q_V = Math.Sqrt(Math.Pow(this.State.InitialSpeed, 2) + (2 * this.acceleration * Q_D));
-            Q_T = (1 / this.acceleration) * (Q_V - this.State.InitialSpeed);
-
-            // If Q_V is less than or equal to the maximum speed, then Q is the decision point for whether or
-            // not to stop at the next floor.
-            // Otherwise, we must calculate the decision point R by working out the point P at which we reach
-            // our maximum speed when accelerating from our current position.
-
-            if (Q_V > this.maxSpeed)
-            {
-                // note that P_V would be equal to the max speed of the car
-                double P_D; // The distance to point P from here
-                double P_T; // The time taken to get to point P
-
-                P_T = (this.maxSpeed - this.State.InitialSpeed) / this.acceleration;
-                P_D = this.State.InitialSpeed + (0.5 * this.acceleration * Math.Pow(P_T, 2));
-
-                // note that R_V = P_V = the max speed of the car
-                double R_D; // The distance to point R from here
-                double R_T; // The time taken to get to point R from here
-
-                R_D = nextFloorDistance - (Math.Pow(this.maxSpeed, 2) / (2 * this.deceleration));
-                R_T = P_T + ((R_D - P_D) / this.maxSpeed);
-
-                nextFloorDecisionPointSpeed = this.maxSpeed;
-                nextFloorDecisionPointTime = R_T;
-            }
-            else
-            {
-                nextFloorDecisionPointSpeed = Q_V;
-                nextFloorDecisionPointTime = Q_T;
-            }
+            CarMotionMaths.CalculateDecisionPointSpeedAndTimev2(this.carAttributes, this.State, nextFloorDistance, out nextFloorDecisionPointSpeed, out nextFloorDecisionPointTime);
 
             // Place event on agenda to fire when car reaches decision point of next floor
             CarState newCarState = new CarState() { Action = CarAction.Moving, Direction = this.State.Direction, Floor = nextFloor, InitialSpeed = nextFloorDecisionPointSpeed };
@@ -430,7 +339,7 @@ namespace ElevatorSimulator.PhysicalDomain
         {
             // Place an event on the agenda to fire when the doors have finished opening
             CarState newState = new CarState() { Action = CarAction.Stopped, Direction = this.State.Direction, Floor = this.State.Floor, InitialSpeed = 0, DoorsOpen = true};
-            CarStateChangeEvent newEvent = new CarStateChangeEvent(this, Simulation.agenda.getCurrentSimTime().AddSeconds(this.doorsOpenTime), newState);
+            CarStateChangeEvent newEvent = new CarStateChangeEvent(this, Simulation.agenda.getCurrentSimTime().AddSeconds(this.carAttributes.DoorsOpenTime), newState);
             Simulation.agenda.addAgendaEvent(newEvent);
         }
     }

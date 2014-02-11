@@ -60,6 +60,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AbstractDomain\CarAction.cs" />
+    <Compile Include="AbstractDomain\CarAttributes.cs" />
     <Compile Include="AbstractDomain\CarState.cs" />
     <Compile Include="AbstractDomain\PassengerState.cs" />
     <Compile Include="Agenda\Agenda.cs" />
@@ -97,6 +98,7 @@
     <Compile Include="Scheduler\SchedulerMapper.cs" />
     <Compile Include="Scheduler\SchedulerTypes.cs" />
     <Compile Include="Simulation.cs" />
+    <Compile Include="Tools\CarMotionMaths.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assumptions.txt" />
