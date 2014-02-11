@@ -13,8 +13,8 @@ namespace ElevatorSimulator
             // annoying to run from Visual Studio then.
             SchedulerTypes scheduler = SchedulerTypes.Random;
             PassengerDistributionSource pdSource = PassengerDistributionSource.Load;
-            string pdSpecification = @"distribution spec.xml";
-            string pdFile = @"test.xml";
+            string pdSpecification = @"3 floor down peak spec.xml";
+            string pdFile = @"3 floor down peak.xml";
             string logFile = @"log.txt";
 
             PassengerDistribution dist = new PassengerDistribution();

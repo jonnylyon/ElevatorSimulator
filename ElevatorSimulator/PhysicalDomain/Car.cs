@@ -259,7 +259,7 @@ namespace ElevatorSimulator.PhysicalDomain
 
         private void updateAgendaHelper_LoadingState()
         {
-            var hallCallsForFloor = allocatedCalls.getHallCallsForFloor(this.State.Floor).FindAll(a => a.CallDirection == this.State.Direction).OrderBy(c => c.Passengers.HallCallTime);
+            var hallCallsForFloor = allocatedCalls.getHallCallsForFloor(this.State.Floor, this.State.Direction).FindAll(a => a.CallDirection == this.State.Direction).OrderBy(c => c.Passengers.HallCallTime);
 
             double boardingTimeSoFar = 0;
 

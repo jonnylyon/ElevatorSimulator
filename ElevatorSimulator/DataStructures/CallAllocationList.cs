@@ -89,9 +89,9 @@ namespace ElevatorSimulator.DataStructures
             return p1Calls.Where(c => c is CarCall && c.Passengers.Destination == floor).ToList();
         }
 
-        public List<Call> getHallCallsForFloor(int floor)
+        public List<Call> getHallCallsForFloor(int floor, Direction direction)
         {
-            return p1Calls.Where(c => c is HallCall && c.Passengers.Origin == floor).ToList();
+            return p1Calls.Where(c => c is HallCall && c.Passengers.Origin == floor && c.Passengers.Direction == direction).ToList();
         }
 
         public bool isEmpty()
