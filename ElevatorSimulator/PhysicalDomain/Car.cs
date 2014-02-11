@@ -260,31 +260,29 @@ namespace ElevatorSimulator.PhysicalDomain
         private void updateAgendaHelper_LoadingState()
         {
             var hallCallsForFloor = allocatedCalls.getHallCallsForFloor(this.State.Floor).FindAll(a => a.CallDirection == this.State.Direction).OrderBy(c => c.Passengers.HallCallTime);
-            
-            HallCall callToBoard = hallCallsForFloor.OrderBy(c => c.Passengers.HallCallTime).First() as HallCall;
-            CarState newState;
 
-            if (callToBoard.Passengers.Size > this.CapacityRemaining)
+            double boardingTimeSoFar = 0;
+
+            foreach (HallCall callToBoard in hallCallsForFloor)
             {
-                this.allocatedCalls.postponeHallCall(callToBoard);
+                PassengerGroup passengersToBoard = callToBoard.Passengers;
 
-                newState = new CarState() { Action = CarAction.Stopped, Direction = this.State.Direction, Floor = this.State.Floor, InitialSpeed = 0, DoorsOpen = this.State.DoorsOpen };
-                this.changeState(newState);
-                return;
+                if (passengersToBoard.Size <= this.CapacityRemaining)
+                {
+                    this.addPassengers(passengersToBoard);
+                    this.allocatedCalls.removeCall(callToBoard);
+                    this.allocatedCalls.addCarCall(new CarCall(passengersToBoard), this.State);
+                    passengersToBoard.changeState(PassengerState.InTransit, Simulation.agenda.getCurrentSimTime().AddSeconds(boardingTimeSoFar));
+                    boardingTimeSoFar += this.carAttributes.PassengerBoardTime * passengersToBoard.Size;
+                }
+                else
+                {
+                    this.allocatedCalls.postponeHallCall(callToBoard);
+                }
             }
 
-            PassengerGroup passengersToBoard = callToBoard.Passengers;
-
-            double boardingTime = this.carAttributes.PassengerBoardTime * passengersToBoard.Size;
-
-            this.addPassengers(passengersToBoard);
-            this.allocatedCalls.removeCall(callToBoard);
-            this.allocatedCalls.addCarCall(new CarCall(passengersToBoard), this.State);
-            passengersToBoard.changeState(PassengerState.InTransit, Simulation.agenda.getCurrentSimTime());
-
-            // Place an event on the agenda to fire when the passengers have finished alighting
-            newState = new CarState() { Action = CarAction.Stopped, Direction = this.State.Direction, Floor = this.State.Floor, InitialSpeed = 0, DoorsOpen = this.State.DoorsOpen };
-            CarStateChangeEvent newEvent = new CarStateChangeEvent(this, Simulation.agenda.getCurrentSimTime().AddSeconds(boardingTime), newState);
+            CarState newState = new CarState() { Action = CarAction.Stopped, Direction = this.State.Direction, Floor = this.State.Floor, InitialSpeed = 0, DoorsOpen = this.State.DoorsOpen };
+            CarStateChangeEvent newEvent = new CarStateChangeEvent(this, Simulation.agenda.getCurrentSimTime().AddSeconds(boardingTimeSoFar), newState);
             Simulation.agenda.addAgendaEvent(newEvent);
         }
 
