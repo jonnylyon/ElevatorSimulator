@@ -84,7 +84,7 @@ namespace ElevatorSimulator.PhysicalDomain
 
             if (this.State.Action == CarAction.Idle)
             {
-                CarState newState = new CarState() { Action = CarAction.Loading, Direction = this.State.Direction, Floor = this.State.Floor, InitialSpeed = 0 };
+                CarState newState = new CarState() { Action = CarAction.Stopped, Direction = this.State.Direction, Floor = this.State.Floor, InitialSpeed = 0 };
                 this.changeState(newState);
             }
         }
