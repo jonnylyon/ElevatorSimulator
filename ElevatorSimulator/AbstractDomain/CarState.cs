@@ -11,47 +11,26 @@ namespace ElevatorSimulator.AbstractDomain
     /// </summary>
     class CarState
     {
-        // These instance variables store the data for the
-        // properties defined below
-        private Direction direction;
-        private int floor;
-        private double initialSpeed;
-        private CarAction action;
-
         /**
          * The direction in which the car is moving
          **/
-        public Direction Direction
-        {
-            get { return this.direction; }
-            set { this.direction = value; }
-        }
+        public Direction Direction { get; set; }
 
         /**
          * The current floor of the car
          */
-        public int Floor
-        {
-            get { return this.floor; }
-            set { this.floor = value; }
-        }
+        public int Floor { get; set; }
 
         /**
          * The current action of the car
          */
-        public CarAction Action
-        {
-            get { return this.action; }
-            set { this.action = value; }
-        }
+        public CarAction Action { get; set; } 
 
         /**
          * The speed of the car when it entered this state
          */
-        public double InitialSpeed
-        {
-            get { return this.initialSpeed; }
-            set { this.initialSpeed = value; }
-        }
+        public double InitialSpeed { get; set; }
+
+        public bool DoorsOpen { get; set; }
     }
 }
