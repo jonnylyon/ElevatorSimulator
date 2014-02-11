@@ -13,5 +13,7 @@ namespace ElevatorSimulator
         internal static Agenda.Agenda agenda = new Agenda.Agenda();
         internal static Controller controller;
         internal static Logger.Logger logger;
+
+        internal static List<PassengerGroup> allPassengers;
     }
 }
