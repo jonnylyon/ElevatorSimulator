@@ -15,6 +15,11 @@ namespace ElevatorSimulator.Logger
         {
             this.file = file;
             this.consolePrint = consolePrint;
+
+            using (FileStream fs = File.Create(file))
+            {
+                // do nothing; clears file
+            }
         }
 
         public void logLine(string line)

@@ -15,7 +15,7 @@ namespace ElevatorSimulator
             PassengerDistributionSource pdSource = PassengerDistributionSource.Load;
             string pdSpecification = @"distribution spec.xml";
             string pdFile = @"test.xml";
-            string logFile = @"log.xml";
+            string logFile = @"log.txt";
 
             PassengerDistribution dist = new PassengerDistribution();
 

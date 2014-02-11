@@ -11,7 +11,7 @@ namespace ElevatorSimulator.DataStructures
     {
         private CallsList p1Calls = new CallsList(); // Pass 1 (current direction)
         private CallsList p2Calls = new CallsList(); // Pass 2 (opposite direction, reverse once)
-        private CallsList p3Calls = new CallsList(); // Pass 3 (opposite direction, reverse twice)
+        private CallsList p3Calls = new CallsList(); // Pass 3 (current direction, reverse twice)
 
         public void addHallCall(HallCall hallCall, CarState state)
         {
@@ -25,7 +25,7 @@ namespace ElevatorSimulator.DataStructures
                 {
                     this.p1Calls.Add(hallCall);
                 }
-                else if (hallCall.Passengers.Origin == state.Floor && !(state.Action == CarAction.Moving || state.Action == CarAction.Leaving || state.Action == CarAction.DoorsClosing))
+                else if (hallCall.Passengers.Origin == state.Floor && state.Action != CarAction.Leaving)
                 {
                     // call is for the floor that we're currently stopped at
                     this.p1Calls.Add(hallCall);
@@ -45,7 +45,7 @@ namespace ElevatorSimulator.DataStructures
                 {
                     this.p1Calls.Add(hallCall);
                 }
-                else if (hallCall.Passengers.Origin == state.Floor && !(state.Action == CarAction.Moving || state.Action == CarAction.Leaving || state.Action == CarAction.DoorsClosing))
+                else if (hallCall.Passengers.Origin == state.Floor && state.Action != CarAction.Leaving)
                 {
                     // call is for the floor that we're currently stopped at
                     this.p1Calls.Add(hallCall);
