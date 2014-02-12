@@ -15,6 +15,8 @@ namespace ElevatorSimulator.Scheduler
                     return new ManualScheduler.ManualScheduler();
                 case SchedulerTypes.Random:
                     return new RandomScheduler.RandomScheduler();
+                case SchedulerTypes.ClosestCar:
+                    return new ClosestCarScheduler.ClosestCarScheduler();
             }
 
             return null;

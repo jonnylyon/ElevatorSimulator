@@ -8,6 +8,7 @@ namespace ElevatorSimulator.Scheduler
     enum SchedulerTypes
     {
         Manual,
-        Random
+        Random,
+        ClosestCar
     }
 }
