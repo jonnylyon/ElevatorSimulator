@@ -179,7 +179,8 @@ namespace ElevatorSimulator.PhysicalDomain
                 if (nextCall.CallLocation < this.State.Floor
                     || nextCall.CallLocation == this.State.Floor && nextCall.CallDirection == Direction.Down)
                 {
-                    newState = new CarState() { Action = CarAction.Reversing, Direction = this.State.Direction, Floor = this.State.Floor, InitialSpeed = 0, DoorsOpen = this.State.DoorsOpen };
+                    var newDirection = this.State.Direction == Direction.Down ? Direction.Up : Direction.Down;
+                    newState = new CarState() { Action = CarAction.Reversing, Direction = newDirection, Floor = this.State.Floor, InitialSpeed = 0, DoorsOpen = this.State.DoorsOpen };
                     this.changeState(newState);
                     return;
                 }
@@ -190,7 +191,8 @@ namespace ElevatorSimulator.PhysicalDomain
                 if (nextCall.CallLocation > this.State.Floor
                     || nextCall.CallLocation == this.State.Floor && nextCall.CallDirection == Direction.Up)
                 {
-                    newState = new CarState() { Action = CarAction.Reversing, Direction = this.State.Direction, Floor = this.State.Floor, InitialSpeed = 0, DoorsOpen = this.State.DoorsOpen };
+                    var newDirection = this.State.Direction == Direction.Down ? Direction.Up : Direction.Down;
+                    newState = new CarState() { Action = CarAction.Reversing, Direction = newDirection, Floor = this.State.Floor, InitialSpeed = 0, DoorsOpen = this.State.DoorsOpen };
                     this.changeState(newState);
                     return;
                 }
@@ -288,10 +290,9 @@ namespace ElevatorSimulator.PhysicalDomain
 
         private void updateAgendaHelper_ReversingState()
         {
-            Direction newDirection = this.State.Direction == Direction.Up ? Direction.Down : Direction.Up;
-
+            // The car's direction will already be changed before entering the reversing state
             // Place event on agenda to fire when reversing action has completed
-            CarState newState = new CarState() { Action = CarAction.Stopped, Direction = newDirection, Floor = this.State.Floor, InitialSpeed = 0, DoorsOpen = this.State.DoorsOpen };
+            CarState newState = new CarState() { Action = CarAction.Stopped, Direction = this.State.Direction, Floor = this.State.Floor, InitialSpeed = 0, DoorsOpen = this.State.DoorsOpen };
             CarStateChangeEvent newEvent = new CarStateChangeEvent(this, Simulation.agenda.getCurrentSimTime().AddSeconds(this.carAttributes.DirectionChangeTime), newState);
             Simulation.agenda.addAgendaEvent(newEvent);
 
