@@ -125,6 +125,9 @@ namespace ElevatorSimulator.PhysicalDomain
                 case CarAction.DoorsClosing:
                     updateAgendaHelper_DoorsClosingState();
                     break;
+                case CarAction.Stopping:
+                    updateAgendaHelper_StoppingState();
+                    break;
                 default:
                     //exception~?
                     break;
@@ -339,16 +342,9 @@ namespace ElevatorSimulator.PhysicalDomain
         {
             if (this.State.Floor == this.allocatedCalls.getNextCall(this.State).CallLocation)
             {
-                // Begin stopping car
-
-                // Calculate time taken to stop
-                var stoppingTime = CarMotionMaths.StoppingTime(this.State.InitialSpeed, this.carAttributes.Deceleration);
-
-                // Place event on agenda to fire when car has stopped at floor
-                CarState newState = new CarState() { Action = CarAction.Stopped, Direction = this.State.Direction, Floor = this.State.Floor, InitialSpeed = 0, DoorsOpen = this.State.DoorsOpen };
-                CarStateChangeEvent newEvent = new CarStateChangeEvent(this, Simulation.agenda.getCurrentSimTime().AddSeconds(stoppingTime), newState);
-                Simulation.agenda.addAgendaEvent(newEvent);
-
+                // Put car in stopping state
+                CarState newState = new CarState() { Action = CarAction.Stopping, Direction = this.State.Direction, Floor = this.State.Floor, InitialSpeed = this.State.InitialSpeed, DoorsOpen = this.State.DoorsOpen };
+                this.changeState(newState);
                 return;
             }
 
@@ -364,6 +360,19 @@ namespace ElevatorSimulator.PhysicalDomain
             CarStateChangeEvent newStateEvent = new CarStateChangeEvent(this, Simulation.agenda.getCurrentSimTime().AddSeconds(nextFloorDecisionPointTime), newCarState);
             Simulation.agenda.addAgendaEvent(newStateEvent);
 
+        }
+
+        private void updateAgendaHelper_StoppingState()
+        {
+            // Begin stopping car
+
+            // Calculate time taken to stop
+            var stoppingTime = CarMotionMaths.StoppingTime(this.State.InitialSpeed, this.carAttributes.Deceleration);
+
+            // Place event on agenda to fire when car has stopped at floor
+            CarState newState = new CarState() { Action = CarAction.Stopped, Direction = this.State.Direction, Floor = this.State.Floor, InitialSpeed = 0, DoorsOpen = this.State.DoorsOpen };
+            CarStateChangeEvent newEvent = new CarStateChangeEvent(this, Simulation.agenda.getCurrentSimTime().AddSeconds(stoppingTime), newState);
+            Simulation.agenda.addAgendaEvent(newEvent);
         }
 
         private void updateAgendaHelper_DoorsOpeningState()

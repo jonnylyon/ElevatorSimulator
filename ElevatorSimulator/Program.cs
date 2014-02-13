@@ -43,10 +43,18 @@ namespace ElevatorSimulator
             Building building = new Building();
 
             building.addShaft(10, 0, 10);
-            building.Shafts[0].addCar();
-
             building.addShaft(10, 0, 10);
+            building.addShaft(10, 0, 10);
+            building.addShaft(10, 0, 10);
+            building.addShaft(10, 0, 10);
+            building.addShaft(10, 0, 10);
+
+            building.Shafts[0].addCar();
             building.Shafts[1].addCar();
+            building.Shafts[2].addCar();
+            building.Shafts[3].addCar();
+            building.Shafts[4].addCar();
+            building.Shafts[5].addCar();
 
             IScheduler sched = SchedulerMapper.getScheduler(scheduler);
 
@@ -55,6 +63,18 @@ namespace ElevatorSimulator
             Simulation.controller.Start();
 
             Console.WriteLine("End");
+            Console.WriteLine();
+
+            if (Simulation.getAllPassengersStillNotAtDestination().Count > 0)
+            {
+                Console.WriteLine("ATTENTION: Not all passengers have arrived at their destinations");
+                Console.WriteLine();
+            }
+
+            Console.WriteLine("Average waiting time:                {0}", Simulation.getAverageWaitingTime());
+            Console.WriteLine("Average squared waiting time:        {0}", Simulation.getAverageSquaredWaitingTime());
+            Console.WriteLine("Average time to destination:         {0}", Simulation.getAverageTimeToDestination());
+            Console.WriteLine("Average squared time to destination: {0}", Simulation.getAverageSquaredTimeToDestination());
             Console.ReadKey();
 
             //shaft.Cars[0].allocateHallCall(new HallCall(new PassengerGroup(3, 1, 5)));

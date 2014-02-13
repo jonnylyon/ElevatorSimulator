@@ -12,6 +12,7 @@ namespace ElevatorSimulator.AbstractDomain
     enum CarAction
     {
         Moving, // From when the car begins moving to the moment at which it stops
+        Stopping, // Decelerating to 'Stopped' state
         Stopped, // The lift is not moving and sits at a floor with its doors closed
         DoorsOpening, // From when the car stops to when the doors are open
         Unloading, // State for unloading passengers
