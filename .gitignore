@@ -165,9 +165,6 @@ UpgradeLog*.htm
 App_Data/*.mdf
 App_Data/*.ldf
 
-# Allow my specific XML files
-!bin/Debug/*.xml
-
 #############
 ## Windows detritus
 #############
