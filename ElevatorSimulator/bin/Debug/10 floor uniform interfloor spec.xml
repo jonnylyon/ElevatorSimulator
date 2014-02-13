@@ -1,0 +1,112 @@
+<ArrivalFloors>
+	<ArrivalFloor Floor="0">
+		<DestinationFloor Floor="1" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="2" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="3" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="4" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="5" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="6" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="7" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="8" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="9" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+	</ArrivalFloor>
+	<ArrivalFloor Floor="1">
+		<DestinationFloor Floor="0" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="2" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="3" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="4" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="5" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="6" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="7" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="8" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="9" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+	</ArrivalFloor>
+	<ArrivalFloor Floor="2">
+		<DestinationFloor Floor="1" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="0" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="3" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="4" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="5" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="6" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="7" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="8" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="9" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+	</ArrivalFloor>
+	<ArrivalFloor Floor="3">
+		<DestinationFloor Floor="1" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="2" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="0" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="4" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="5" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="6" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="7" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="8" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="9" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+	</ArrivalFloor>
+	<ArrivalFloor Floor="4">
+		<DestinationFloor Floor="1" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="2" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="3" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="0" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="5" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="6" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="7" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="8" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="9" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+	</ArrivalFloor>
+	<ArrivalFloor Floor="5">
+		<DestinationFloor Floor="1" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="2" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="3" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="4" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="0" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="6" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="7" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="8" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="9" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+	</ArrivalFloor>
+	<ArrivalFloor Floor="6">
+		<DestinationFloor Floor="1" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="2" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="3" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="4" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="5" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="0" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="7" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="8" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="9" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+	</ArrivalFloor>
+	<ArrivalFloor Floor="7">
+		<DestinationFloor Floor="1" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="2" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="3" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="4" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="5" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="6" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="0" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="8" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="9" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+	</ArrivalFloor>
+	<ArrivalFloor Floor="8">
+		<DestinationFloor Floor="1" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="2" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="3" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="4" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="5" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="6" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="7" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="0" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="9" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+	</ArrivalFloor>
+	<ArrivalFloor Floor="9">
+		<DestinationFloor Floor="1" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="2" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="3" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="4" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="5" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="6" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="7" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="8" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+		<DestinationFloor Floor="0" ArrivalsPerMinuteMean="0.1" GroupSizeMean="1" />
+	</ArrivalFloor>
+</ArrivalFloors>

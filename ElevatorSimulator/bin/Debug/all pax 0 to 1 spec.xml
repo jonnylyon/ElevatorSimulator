@@ -1,0 +1,5 @@
+<ArrivalFloors>
+	<ArrivalFloor Floor="0">
+		<DestinationFloor Floor="1" ArrivalsPerMinuteMean="5" GroupSizeMean="2" />
+	</ArrivalFloor>
+</ArrivalFloors>
