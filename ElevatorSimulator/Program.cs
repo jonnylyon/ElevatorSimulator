@@ -11,7 +11,7 @@ namespace ElevatorSimulator
         {
             // Runtime specific parameters.  Should get these from command line, but it's
             // annoying to run from Visual Studio then.
-            SchedulerTypes scheduler = SchedulerTypes.ClosestCar;
+            SchedulerTypes scheduler = SchedulerTypes.Random;
             PassengerDistributionSource pdSource = PassengerDistributionSource.Load;
             string pdSpecification = @"10 floor uniform interfloor spec.xml";
             string pdFile = @"10 floor uniform interfloor.xml";
@@ -48,6 +48,9 @@ namespace ElevatorSimulator
             building.addShaft(10, 0, 10);
             building.addShaft(10, 0, 10);
             building.addShaft(10, 0, 10);
+            building.addShaft(10, 0, 10);
+            building.addShaft(10, 0, 10);
+            building.addShaft(10, 0, 10);
 
             building.Shafts[0].addCar();
             building.Shafts[1].addCar();
@@ -55,6 +58,9 @@ namespace ElevatorSimulator
             building.Shafts[3].addCar();
             building.Shafts[4].addCar();
             building.Shafts[5].addCar();
+            building.Shafts[6].addCar();
+            building.Shafts[7].addCar();
+            building.Shafts[8].addCar();
 
             IScheduler sched = SchedulerMapper.getScheduler(scheduler);
 

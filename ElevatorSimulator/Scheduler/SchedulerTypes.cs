@@ -9,6 +9,7 @@ namespace ElevatorSimulator.Scheduler
     {
         Manual,
         Random,
-        ClosestCar
+        ClosestCar,
+        ClosestCarDirectional
     }
 }

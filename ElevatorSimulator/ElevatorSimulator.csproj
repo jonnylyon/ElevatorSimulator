@@ -92,6 +92,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PhysicalDomain\Shaft.cs" />
+    <Compile Include="Scheduler\ClosestCarDirectionalScheduler\ClosestCarDirectionalScheduler.cs" />
     <Compile Include="Scheduler\ClosestCarScheduler\ClosestCarScheduler.cs" />
     <Compile Include="Scheduler\IScheduler.cs" />
     <Compile Include="Scheduler\ManualScheduler\ManualScheduler.cs" />
