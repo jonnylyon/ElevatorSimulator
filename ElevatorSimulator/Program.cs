@@ -102,19 +102,20 @@ namespace ElevatorSimulator
 
             Simulation.controller.Start();
 
-            Console.WriteLine("End");
-            Console.WriteLine();
+            Simulation.logger.logLine("End");
+
+            Simulation.logger.logLine("");
 
             if (Simulation.getAllPassengersStillNotAtDestination().Count > 0)
             {
-                Console.WriteLine("ATTENTION: Not all passengers have arrived at their destinations");
-                Console.WriteLine();
+                Simulation.logger.logLine("ATTENTION: Not all passengers have arrived at their destinations");
+                Simulation.logger.logLine("");
             }
 
-            Console.WriteLine("Average waiting time:                {0}", Simulation.getAverageWaitingTime());
-            Console.WriteLine("Average squared waiting time:        {0}", Simulation.getAverageSquaredWaitingTime());
-            Console.WriteLine("Average time to destination:         {0}", Simulation.getAverageTimeToDestination());
-            Console.WriteLine("Average squared time to destination: {0}", Simulation.getAverageSquaredTimeToDestination());
+            Simulation.logger.logLine("Average waiting time:                " + Simulation.getAverageWaitingTime());
+            Simulation.logger.logLine("Average squared waiting time:        " + Simulation.getAverageSquaredWaitingTime());
+            Simulation.logger.logLine("Average time to destination:         " + Simulation.getAverageTimeToDestination());
+            Simulation.logger.logLine("Average squared time to destination: " + Simulation.getAverageSquaredTimeToDestination());
             Console.ReadKey();
 
             //shaft.Cars[0].allocateHallCall(new HallCall(new PassengerGroup(3, 1, 5)));
