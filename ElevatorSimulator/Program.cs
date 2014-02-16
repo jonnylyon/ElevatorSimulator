@@ -2,39 +2,73 @@
 using ElevatorSimulator.PassengerArrivals;
 using ElevatorSimulator.PhysicalDomain;
 using ElevatorSimulator.Scheduler;
+using ElevatorSimulator.View;
 
 namespace ElevatorSimulator
 {
     class Program
     {
+        [STAThread]
         static void Main(string[] args)
         {
-            // Runtime specific parameters.  Should get these from command line, but it's
-            // annoying to run from Visual Studio then.
+            var menu = new MainMenu();
+            menu.ShowDialog();
+
             SchedulerTypes scheduler = SchedulerTypes.Random;
-            PassengerDistributionSource pdSource = PassengerDistributionSource.Load;
-            string pdSpecification = @"10 floor uniform interfloor spec.xml";
-            string pdFile = @"10 floor uniform interfloor.xml";
+            PassengerDistribution dist = new PassengerDistribution();
             string logFile = @"log.txt";
 
-            PassengerDistribution dist = new PassengerDistribution();
-
-            switch (pdSource)
+            switch (menu.SourceAction)
             {
-                case PassengerDistributionSource.Load:
-                    dist.load(pdFile);
-                    break;
+                case PassengerDistributionSource.Error:
+                    return;
                 case PassengerDistributionSource.New:
-                    var pdCreator = new PassengerDistributionCreator(pdSpecification);
+                    var pdCreator = new PassengerDistributionCreator(menu.LoadXMLSpecFilePath);
                     var pdStart = new DateTime(2014, 02, 06, 13, 0, 0);
                     var pdEnd = new DateTime(2014, 02, 06, 17, 0, 0);
                     var pdResolution = 200;
 
                     dist = pdCreator.createPassengerDistribution(pdStart, pdEnd, pdResolution);
 
-                    dist.save(pdFile);
+                    dist.save(menu.NewDistributionSavePath);
+                    break;
+                case PassengerDistributionSource.Load:
+                    dist.load(menu.LoadDistributionFilePath);
                     break;
             }
+
+            if (!string.IsNullOrEmpty(menu.LogFilePath))
+            {
+                logFile = menu.LogFilePath;
+            }
+
+            
+            //// Runtime specific parameters.  Should get these from command line, but it's
+            //// annoying to run from Visual Studio then.
+            //SchedulerTypes scheduler = SchedulerTypes.Random;
+            //PassengerDistributionSource pdSource = PassengerDistributionSource.Load;
+            //string pdSpecification = @"10 floor uniform interfloor spec.xml";
+            //string pdFile = @"10 floor uniform interfloor.xml";
+            
+
+            //PassengerDistribution dist = new PassengerDistribution();
+
+            //switch (pdSource)
+            //{
+            //    case PassengerDistributionSource.Load:
+            //        dist.load(pdFile);
+            //        break;
+            //    case PassengerDistributionSource.New:
+            //        var pdCreator = new PassengerDistributionCreator(pdSpecification);
+            //        var pdStart = new DateTime(2014, 02, 06, 13, 0, 0);
+            //        var pdEnd = new DateTime(2014, 02, 06, 17, 0, 0);
+            //        var pdResolution = 200;
+
+            //        dist = pdCreator.createPassengerDistribution(pdStart, pdEnd, pdResolution);
+
+            //        dist.save(pdFile);
+            //        break;
+            //}
 
             Logger.Logger logger = new Logger.Logger(logFile, true);
 

@@ -5,9 +5,10 @@ using System.Text;
 
 namespace ElevatorSimulator.PassengerArrivals
 {
-    enum PassengerDistributionSource
+    public enum PassengerDistributionSource
     {
         New,
-        Load
+        Load,
+        Error
     }
 }
