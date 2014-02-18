@@ -5,7 +5,7 @@ using System.Text;
 
 namespace ElevatorSimulator.Scheduler
 {
-    enum SchedulerTypes
+    enum SchedulerType
     {
         Manual,
         Random,

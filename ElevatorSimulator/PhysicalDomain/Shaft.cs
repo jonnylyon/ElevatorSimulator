@@ -18,9 +18,9 @@ namespace ElevatorSimulator.PhysicalDomain
             shaftData = data;
         }
 
-        internal void addCar()
+        internal void addCar(CarAttributes attributes, int startFloor)
         {
-            this.Cars.Add(new Car(shaftData));
+            this.Cars.Add(new Car(shaftData, attributes, startFloor));
         }
 
     }

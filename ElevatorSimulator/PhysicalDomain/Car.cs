@@ -16,7 +16,7 @@ namespace ElevatorSimulator.PhysicalDomain
         private List<PassengerGroup> passengers = new List<PassengerGroup>();
         private CallAllocationList allocatedCalls = new CallAllocationList();
 
-        private CarAttributes carAttributes;
+        public CarAttributes CarAttributes { get; private set; }
 
         public CarState State { get; private set; }
 
@@ -32,20 +32,20 @@ namespace ElevatorSimulator.PhysicalDomain
         {
             get
             {
-                return this.carAttributes.Capacity - this.NumberOfPassengers;
+                return this.CarAttributes.Capacity - this.NumberOfPassengers;
             }
         }
 
-        public Car(ShaftData data)
+        public Car(ShaftData data, CarAttributes attributes, int startFloor)
         {
-            carAttributes = new CarAttributes();
+            CarAttributes = attributes;
 
             this.shaftData = data;
 
             State = new CarState()
             {
                 Action = CarAction.Stopped,
-                Floor = shaftData.BottomFloor,
+                Floor = startFloor,
                 Direction = Direction.Up,
                 InitialSpeed = 0,
                 DoorsOpen = false
@@ -56,10 +56,8 @@ namespace ElevatorSimulator.PhysicalDomain
 
         /// <summary>
         /// Add a passenger group to the list of passengers in the car.
-        /// Increment the total number of passengers in the car by the group size.
         /// </summary>
         /// <param name="newPassengers">Group to add</param>
-        /// <returns>True if successfully added. False otherwise.</returns>
         public void addPassengers(PassengerGroup newPassengers)
         {
             this.passengers.Add(newPassengers);
@@ -67,7 +65,6 @@ namespace ElevatorSimulator.PhysicalDomain
 
         /// <summary>
         /// Remove passenger group from the car.
-        /// Decrement total number of passengers by group size.
         /// </summary>
         /// <param name="passengersToRemove">Group to remove.</param>
         public void removePassengers(PassengerGroup passengersToRemove)
@@ -79,6 +76,8 @@ namespace ElevatorSimulator.PhysicalDomain
         {
             //TODO
             allocatedCalls.addHallCall(hallCall, this.State);
+
+            Simulation.logger.logLine(String.Format("{0}: Shaft {1} Hall call allocated; {2}, {3}, {4}", Simulation.agenda.getCurrentSimTime().ToString(), this.shaftData.ShaftId, hallCall.Passengers.Size, hallCall.Passengers.Origin, hallCall.Passengers.Destination));
 
             if (this.State.Action == CarAction.Idle)
             {
@@ -241,8 +240,8 @@ namespace ElevatorSimulator.PhysicalDomain
             }
 
             // calculate total and mean alighting times for passengers
-            double totalAlightTimeSeconds = this.carAttributes.PassengerAlightTime * passengerCount;
-            double averageAlightTimeSeconds = 0.5 * this.carAttributes.PassengerAlightTime * (passengerCount + 1);
+            double totalAlightTimeSeconds = this.CarAttributes.PassengerAlightTime * passengerCount;
+            double averageAlightTimeSeconds = 0.5 * this.CarAttributes.PassengerAlightTime * (passengerCount + 1);
 
             DateTime timeOfAlight = Simulation.agenda.getCurrentSimTime().AddSeconds(averageAlightTimeSeconds);
 
@@ -253,6 +252,8 @@ namespace ElevatorSimulator.PhysicalDomain
                 this.removePassengers(p);
                 this.allocatedCalls.removeCall(c); // The call has been served
                 p.changeState(PassengerState.Arrived, timeOfAlight);
+
+                Simulation.logger.logLine(string.Format("    Unload group {0}, {1}, {2}", p.Size, p.Origin, p.Destination));
             }
 
             // Place an event on the agenda to fire when the passengers have finished alighting
@@ -278,7 +279,9 @@ namespace ElevatorSimulator.PhysicalDomain
                     this.allocatedCalls.removeCall(callToBoard);
                     this.allocatedCalls.addCarCall(new CarCall(passengersToBoard), this.State);
                     passengersToBoard.changeState(PassengerState.InTransit, Simulation.agenda.getCurrentSimTime().AddSeconds(boardingTimeSoFar));
-                    boardingTimeSoFar += this.carAttributes.PassengerBoardTime * passengersToBoard.Size;
+                    boardingTimeSoFar += this.CarAttributes.PassengerBoardTime * passengersToBoard.Size;
+
+                    Simulation.logger.logLine(string.Format("    Load group {0}, {1}, {2}", passengersToBoard.Size, passengersToBoard.Origin, passengersToBoard.Destination));
                 }
                 else
                 {
@@ -296,7 +299,7 @@ namespace ElevatorSimulator.PhysicalDomain
             // The car's direction will already be changed before entering the reversing state
             // Place event on agenda to fire when reversing action has completed
             CarState newState = new CarState() { Action = CarAction.Stopped, Direction = this.State.Direction, Floor = this.State.Floor, InitialSpeed = 0, DoorsOpen = this.State.DoorsOpen };
-            CarStateChangeEvent newEvent = new CarStateChangeEvent(this, Simulation.agenda.getCurrentSimTime().AddSeconds(this.carAttributes.DirectionChangeTime), newState);
+            CarStateChangeEvent newEvent = new CarStateChangeEvent(this, Simulation.agenda.getCurrentSimTime().AddSeconds(this.CarAttributes.DirectionChangeTime), newState);
             Simulation.agenda.addAgendaEvent(newEvent);
 
             allocatedCalls.reverseListsDirection();
@@ -306,7 +309,7 @@ namespace ElevatorSimulator.PhysicalDomain
         {
             // Place event on agenda to fire when doors have finished closing
             CarState newState = new CarState() { Action = CarAction.Stopped, Direction = this.State.Direction, Floor = this.State.Floor, InitialSpeed = 0, DoorsOpen = false };
-            CarStateChangeEvent newEvent = new CarStateChangeEvent(this, Simulation.agenda.getCurrentSimTime().AddSeconds(this.carAttributes.DoorsCloseTime), newState);
+            CarStateChangeEvent newEvent = new CarStateChangeEvent(this, Simulation.agenda.getCurrentSimTime().AddSeconds(this.CarAttributes.DoorsCloseTime), newState);
             Simulation.agenda.addAgendaEvent(newEvent);
         }
 
@@ -317,7 +320,7 @@ namespace ElevatorSimulator.PhysicalDomain
             double nextFloorDecisionPointSpeed;
             double nextFloorDecisionPointTime;
 
-            CarMotionMaths.CalculateDecisionPointSpeedAndTime(this.carAttributes, nextFloorDistance, out nextFloorDecisionPointSpeed, out nextFloorDecisionPointTime);
+            CarMotionMaths.CalculateDecisionPointSpeedAndTime(this.CarAttributes, nextFloorDistance, out nextFloorDecisionPointSpeed, out nextFloorDecisionPointTime);
 
             // Place event on agenda to fire when car reaches decision point of next floor
             CarState newState = new CarState() { Action = CarAction.Moving, Direction = this.State.Direction, Floor = nextFloor, InitialSpeed = nextFloorDecisionPointSpeed, DoorsOpen = this.State.DoorsOpen };
@@ -349,11 +352,11 @@ namespace ElevatorSimulator.PhysicalDomain
             }
 
             int nextFloor = this.State.Direction == Direction.Up ? this.State.Floor + 1 : this.State.Floor - 1;
-            double nextFloorDistance = (Math.Pow(this.State.InitialSpeed, 2) / (2 * this.carAttributes.Deceleration)) + getInterfloorDistance(this.State.Floor, this.State.Direction);
+            double nextFloorDistance = (Math.Pow(this.State.InitialSpeed, 2) / (2 * this.CarAttributes.Deceleration)) + getInterfloorDistance(this.State.Floor, this.State.Direction);
             double nextFloorDecisionPointSpeed;
             double nextFloorDecisionPointTime;
 
-            CarMotionMaths.CalculateDecisionPointSpeedAndTimev2(this.carAttributes, this.State, nextFloorDistance, out nextFloorDecisionPointSpeed, out nextFloorDecisionPointTime);
+            CarMotionMaths.CalculateDecisionPointSpeedAndTimev2(this.CarAttributes, this.State, nextFloorDistance, out nextFloorDecisionPointSpeed, out nextFloorDecisionPointTime);
 
             // Place event on agenda to fire when car reaches decision point of next floor
             CarState newCarState = new CarState() { Action = CarAction.Moving, Direction = this.State.Direction, Floor = nextFloor, InitialSpeed = nextFloorDecisionPointSpeed, DoorsOpen = this.State.DoorsOpen };
@@ -367,7 +370,7 @@ namespace ElevatorSimulator.PhysicalDomain
             // Begin stopping car
 
             // Calculate time taken to stop
-            var stoppingTime = CarMotionMaths.StoppingTime(this.State.InitialSpeed, this.carAttributes.Deceleration);
+            var stoppingTime = CarMotionMaths.StoppingTime(this.State.InitialSpeed, this.CarAttributes.Deceleration);
 
             // Place event on agenda to fire when car has stopped at floor
             CarState newState = new CarState() { Action = CarAction.Stopped, Direction = this.State.Direction, Floor = this.State.Floor, InitialSpeed = 0, DoorsOpen = this.State.DoorsOpen };
@@ -379,8 +382,13 @@ namespace ElevatorSimulator.PhysicalDomain
         {
             // Place an event on the agenda to fire when the doors have finished opening
             CarState newState = new CarState() { Action = CarAction.Stopped, Direction = this.State.Direction, Floor = this.State.Floor, InitialSpeed = 0, DoorsOpen = true};
-            CarStateChangeEvent newEvent = new CarStateChangeEvent(this, Simulation.agenda.getCurrentSimTime().AddSeconds(this.carAttributes.DoorsOpenTime), newState);
+            CarStateChangeEvent newEvent = new CarStateChangeEvent(this, Simulation.agenda.getCurrentSimTime().AddSeconds(this.CarAttributes.DoorsOpenTime), newState);
             Simulation.agenda.addAgendaEvent(newEvent);
+        }
+
+        public List<Call> getOrderedCalls()
+        {
+            return this.allocatedCalls.getOrderedCalls(this.State);
         }
     }
 }

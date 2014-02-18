@@ -98,12 +98,14 @@
     <Compile Include="PhysicalDomain\Shaft.cs" />
     <Compile Include="Scheduler\ClosestCarDirectionalScheduler\ClosestCarDirectionalScheduler.cs" />
     <Compile Include="Scheduler\ClosestCarScheduler\ClosestCarScheduler.cs" />
+    <Compile Include="Scheduler\ETAScheduler\ETAScheduler.cs" />
     <Compile Include="Scheduler\IScheduler.cs" />
     <Compile Include="Scheduler\ManualScheduler\ManualScheduler.cs" />
     <Compile Include="Scheduler\RandomScheduler\RandomScheduler.cs" />
     <Compile Include="Scheduler\SchedulerMapper.cs" />
     <Compile Include="Scheduler\SchedulerTypes.cs" />
     <Compile Include="Simulation.cs" />
+    <Compile Include="ConfigLoader\SimulationConfigLoader.cs" />
     <Compile Include="Tools\CarMotionMaths.cs" />
     <Compile Include="View\MainMenu.xaml.cs">
       <DependentUpon>MainMenu.xaml</DependentUpon>

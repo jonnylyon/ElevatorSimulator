@@ -3,6 +3,7 @@ using ElevatorSimulator.PassengerArrivals;
 using ElevatorSimulator.PhysicalDomain;
 using ElevatorSimulator.Scheduler;
 using ElevatorSimulator.View;
+using ElevatorSimulator.ConfigLoader;
 
 namespace ElevatorSimulator
 {
@@ -11,37 +12,37 @@ namespace ElevatorSimulator
         [STAThread]
         static void Main(string[] args)
         {
-            var menu = new MainMenu();
-            menu.ShowDialog();
+            //var menu = new MainMenu();
+            //menu.ShowDialog();
 
-            SchedulerTypes scheduler = SchedulerTypes.Random;
+            string configFile = @"simconfig\examplesimcfg.xml";
+            var simcfg = new SimulationConfigLoader(configFile);
+
+            SchedulerType scheduler = simcfg.SchedulerType;
             PassengerDistribution dist = new PassengerDistribution();
-            string logFile = @"log.txt";
 
-            switch (menu.SourceAction)
+            //switch (menu.SourceAction)
+            switch (simcfg.PDSource)
             {
                 case PassengerDistributionSource.Error:
                     return;
                 case PassengerDistributionSource.New:
-                    var pdCreator = new PassengerDistributionCreator(menu.LoadXMLSpecFilePath);
-                    var pdStart = new DateTime(2014, 02, 06, 13, 0, 0);
-                    var pdEnd = new DateTime(2014, 02, 06, 17, 0, 0);
-                    var pdResolution = 200;
+                    //var pdCreator = new PassengerDistributionCreator(menu.LoadXMLSpecFilePath, 20);
+                    var pdCreator = new PassengerDistributionCreator(simcfg.PDSpecFilePath, simcfg.PDMaxGroupSize);
+                    var pdStart = simcfg.PDStartTime;
+                    var pdEnd = simcfg.PDEndTime;
+                    var pdResolution = simcfg.PDResolution;
 
                     dist = pdCreator.createPassengerDistribution(pdStart, pdEnd, pdResolution);
 
-                    dist.save(menu.NewDistributionSavePath);
+                    dist.save(simcfg.PDDistFilePath);
                     break;
                 case PassengerDistributionSource.Load:
-                    dist.load(menu.LoadDistributionFilePath);
+                    dist.load(simcfg.PDDistFilePath);
                     break;
             }
 
-            if (!string.IsNullOrEmpty(menu.LogFilePath))
-            {
-                logFile = menu.LogFilePath;
-            }
-
+            string logFile = simcfg.LogFile;
             
             //// Runtime specific parameters.  Should get these from command line, but it's
             //// annoying to run from Visual Studio then.
@@ -74,27 +75,7 @@ namespace ElevatorSimulator
 
             Simulation.logger = logger;
 
-            Building building = new Building();
-
-            building.addShaft(10, 0, 10);
-            building.addShaft(10, 0, 10);
-            building.addShaft(10, 0, 10);
-            building.addShaft(10, 0, 10);
-            building.addShaft(10, 0, 10);
-            building.addShaft(10, 0, 10);
-            building.addShaft(10, 0, 10);
-            building.addShaft(10, 0, 10);
-            building.addShaft(10, 0, 10);
-
-            building.Shafts[0].addCar();
-            building.Shafts[1].addCar();
-            building.Shafts[2].addCar();
-            building.Shafts[3].addCar();
-            building.Shafts[4].addCar();
-            building.Shafts[5].addCar();
-            building.Shafts[6].addCar();
-            building.Shafts[7].addCar();
-            building.Shafts[8].addCar();
+            var building = simcfg.Building;
 
             IScheduler sched = SchedulerMapper.getScheduler(scheduler);
 

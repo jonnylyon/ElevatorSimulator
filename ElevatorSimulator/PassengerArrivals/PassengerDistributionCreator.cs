@@ -13,14 +13,18 @@ namespace ElevatorSimulator.PassengerArrivals
 
         private List<ArrivalFloor> arrivalFloorSpecifications;
 
+        private int maxPassengerGroupSize;
+
         /// <summary>
         /// Constructor for PassengerDistributionCreator
         /// Parses the XML specification file into ArrivalFloor
         /// and DestinationFloor data classes.
         /// </summary>
         /// <param name="specificationFile"></param>
-        public PassengerDistributionCreator(string specificationFile)
+        public PassengerDistributionCreator(string specificationFile, int maxPassengerGroupSize)
         {
+            this.maxPassengerGroupSize = maxPassengerGroupSize;
+
             arrivalFloorSpecifications = new List<ArrivalFloor>();
             
             XDocument xmlDoc = XDocument.Load(specificationFile);
@@ -52,7 +56,7 @@ namespace ElevatorSimulator.PassengerArrivals
         /// <param name="end">The time at which the distribution should end</param>
         /// <param name="resolution">The time interval of the poisson distribution in milliseconds</param>
         /// <returns>The passenger arrival distribution</returns>
-        public PassengerDistribution createPassengerDistribution(DateTime start, DateTime end, int resolution, int stepMin = 0, int stepMax = 20)
+        public PassengerDistribution createPassengerDistribution(DateTime start, DateTime end, int resolution)
         {
             PassengerDistribution dist = new PassengerDistribution();
             DateTime currentTime = start;
@@ -67,7 +71,7 @@ namespace ElevatorSimulator.PassengerArrivals
                         {
                             dist.addPassengerGroup(new PassengerGroupArrivalData()
                             {
-                                Size = this.poissonRandomNumberExcludingZero(d.GroupSizeMean),
+                                Size = this.poissonRandomNumberInRange(d.GroupSizeMean, 1, this.maxPassengerGroupSize),
                                 Origin = a.Floor,
                                 Destination = d.Floor,
                                 ArrivalTime = currentTime
@@ -85,14 +89,16 @@ namespace ElevatorSimulator.PassengerArrivals
         /// <summary>
         /// Generates a random integer based on a poisson distribution
         /// with the specified mean, with the additional restriction
-        /// that the integer may not be zero
+        /// that the integer must be in the specified range
         /// </summary>
         /// <param name="mean">The mean of the poisson distribution</param>
-        /// <returns>A non-zero random number generated based on a poisson distribution</returns>
-        public int poissonRandomNumberExcludingZero(double mean)
+        /// <param name="bottom">The lowest value allowed by the range</param>
+        /// <param name="top">The highest value allowed by the range</param>
+        /// <returns>A random number in the specified range based on a poisson distribution</returns>
+        private int poissonRandomNumberInRange(double mean, int bottom, int top)
         {
-            int result = 0;
-            while (result == 0)
+            int result = bottom - 1;
+            while (result < bottom || result > top)
             {
                 result = this.poissonRandomNumber(mean);
             }
@@ -105,7 +111,7 @@ namespace ElevatorSimulator.PassengerArrivals
         /// </summary>
         /// <param name="mean">The mean of the poisson distribution</param>
         /// <returns>A random number generated based on a poisson distribution</returns>
-        public int poissonRandomNumber(double mean)
+        private int poissonRandomNumber(double mean)
         {
             double L = Math.Pow(Math.E, mean * -1);
             double p = 1;

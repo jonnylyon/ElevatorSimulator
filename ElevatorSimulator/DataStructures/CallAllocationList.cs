@@ -155,5 +155,25 @@ namespace ElevatorSimulator.DataStructures
                 p3Calls.Add(c);
             }
         }
+
+        public List<Call> getOrderedCalls(CarState state)
+        {
+            List<Call> calls;
+
+            if (state.Direction == Direction.Down)
+            {
+                calls = p1Calls.OrderBy(c => c.CallLocation).ToList();
+                calls.AddRange(p2Calls.OrderByDescending(c => c.CallLocation).ToList());
+                calls.AddRange(p3Calls.OrderBy(c => c.CallLocation).ToList());
+            }
+            else
+            {
+                calls = p1Calls.OrderByDescending(c => c.CallLocation).ToList();
+                calls.AddRange(p2Calls.OrderBy(c => c.CallLocation).ToList());
+                calls.AddRange(p3Calls.OrderByDescending(c => c.CallLocation).ToList());
+            }
+
+            return calls;            
+        }
     }
 }

@@ -18,11 +18,14 @@ namespace ElevatorSimulator.PhysicalDomain
             shaftIdCounter = 1;
         }
 
-        public void addShaft(int topFloor, int bottomFloor, double interfloor)
+        public Shaft addShaft(int topFloor, int bottomFloor, double interfloor)
         {
             var shaftData = new ShaftData(topFloor, bottomFloor, interfloor, shaftIdCounter);
-            this.Shafts.Add(new Shaft(shaftData));
+            var shaft = new Shaft(shaftData);
+            this.Shafts.Add(shaft);
             shaftIdCounter++;
+
+            return shaft;
         }
 
         public bool allIdle()

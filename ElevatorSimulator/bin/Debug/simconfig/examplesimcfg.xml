@@ -1,0 +1,50 @@
+<SimulationConfig>
+	<Scheduler>ClosestCarDirectional</Scheduler>
+	
+	<PassengerDistribution source="load">
+		<SpecificationFile>spec/3 floor short interfloor spec.xml</SpecificationFile>
+		<MaxGroupSize>20</MaxGroupSize>
+		<DistributionFile>dist/3 floor short interfloor 2.xml</DistributionFile>
+		<StartTime>13:00</StartTime>
+		<EndTime>14:00</EndTime>
+		<Resolution>200</Resolution>
+	</PassengerDistribution>
+	
+	<CarAttributes name="Standard">
+		<Capacity>20</Capacity>
+		<MaxSpeed>5</MaxSpeed>
+		<Acceleration>2</Acceleration>
+		<Deceleration>4</Deceleration>
+		<DoorsOpenTime>3</DoorsOpenTime>
+		<DoorsCloseTime>3</DoorsCloseTime>
+		<DirectionChangeTime>1</DirectionChangeTime>
+		<PassengerBoardTime>10</PassengerBoardTime>
+		<PassengerAlightTime>10</PassengerAlightTime>
+	</CarAttributes>
+	
+	<CarAttributes name="Craig">
+		<Capacity>20</Capacity>
+		<MaxSpeed>5</MaxSpeed>
+		<Acceleration>2</Acceleration>
+		<Deceleration>4</Deceleration>
+		<DoorsOpenTime>3</DoorsOpenTime>
+		<DoorsCloseTime>3</DoorsCloseTime>
+		<DirectionChangeTime>1</DirectionChangeTime>
+		<PassengerBoardTime>10</PassengerBoardTime>
+		<PassengerAlightTime>10</PassengerAlightTime>
+	</CarAttributes>
+	
+	<Building minFloor="10" maxFloor="10" interfloorDistance="5">
+		<Shaft>
+			<Car type="Single" attributes="Standard" startFloor="0" />
+		</Shaft>
+		<Shaft>
+			<Car type="Single" attributes="Standard" startFloor="10" />
+		</Shaft>
+		<Shaft>
+			<Car type="Single" attributes="Standard" startFloor="-10" />
+		</Shaft>
+	</Building>
+	
+	<LogFile>auto</LogFile>
+</SimulationConfig>

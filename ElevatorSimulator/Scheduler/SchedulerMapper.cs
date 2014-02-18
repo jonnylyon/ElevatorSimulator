@@ -7,17 +7,17 @@ namespace ElevatorSimulator.Scheduler
 {
     static class SchedulerMapper
     {
-        public static IScheduler getScheduler(SchedulerTypes scheduler)
+        public static IScheduler getScheduler(SchedulerType scheduler)
         {
             switch (scheduler)
             {
-                case SchedulerTypes.Manual:
+                case SchedulerType.Manual:
                     return new ManualScheduler.ManualScheduler();
-                case SchedulerTypes.Random:
+                case SchedulerType.Random:
                     return new RandomScheduler.RandomScheduler();
-                case SchedulerTypes.ClosestCar:
+                case SchedulerType.ClosestCar:
                     return new ClosestCarScheduler.ClosestCarScheduler();
-                case SchedulerTypes.ClosestCarDirectional:
+                case SchedulerType.ClosestCarDirectional:
                     return new ClosestCarDirectionalScheduler.ClosestCarDirectionalScheduler();
             }
 

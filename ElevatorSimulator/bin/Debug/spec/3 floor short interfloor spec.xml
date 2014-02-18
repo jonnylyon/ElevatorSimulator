@@ -1,0 +1,14 @@
+<ArrivalFloors>
+	<ArrivalFloor Floor="0">
+		<DestinationFloor Floor="1" ArrivalsPerMinuteMean="1" GroupSizeMean="1" />
+		<DestinationFloor Floor="2" ArrivalsPerMinuteMean="1" GroupSizeMean="1" />
+	</ArrivalFloor>
+	<ArrivalFloor Floor="1">
+		<DestinationFloor Floor="0" ArrivalsPerMinuteMean="1" GroupSizeMean="2" />
+		<DestinationFloor Floor="2" ArrivalsPerMinuteMean="1" GroupSizeMean="1" />
+	</ArrivalFloor>
+	<ArrivalFloor Floor="2">
+		<DestinationFloor Floor="0" ArrivalsPerMinuteMean="1" GroupSizeMean="2" />
+		<DestinationFloor Floor="1" ArrivalsPerMinuteMean="1" GroupSizeMean="1" />
+	</ArrivalFloor>
+</ArrivalFloors>

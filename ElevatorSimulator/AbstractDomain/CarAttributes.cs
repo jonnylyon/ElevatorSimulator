@@ -7,18 +7,18 @@ namespace ElevatorSimulator.AbstractDomain
 {
     class CarAttributes
     {
-        public readonly int Capacity = 18;
+        public int Capacity { get; set; }
 
-        public readonly double MaxSpeed = 5; // in metres per second
-        public readonly double Acceleration = 2; // in metres per second squared; assumes linear acc'n
-        public readonly double Deceleration = 4; // in positive metres per second squared; assumes linear dec'n
+        public double MaxSpeed { get; set; } // in metres per second
+        public double Acceleration { get; set; } // in metres per second squared; assumes linear acc'n
+        public double Deceleration { get; set; } // in positive metres per second squared; assumes linear dec'n
 
-        public readonly double DirectionChangeTime = 1; // in seconds
-        public readonly double PassengerBoardTime = 10; // in seconds
-        public readonly double PassengerAlightTime = 10; // in seconds
+        public double DirectionChangeTime { get; set; } // in seconds
+        public double PassengerBoardTime { get; set; } // in seconds
+        public double PassengerAlightTime { get; set; } // in seconds
 
-        public readonly double DoorsCloseTime = 3; // in seconds
-        public readonly double DoorsOpenTime = 3; // in seconds
+        public double DoorsCloseTime { get; set; } // in seconds
+        public double DoorsOpenTime { get; set; } // in seconds
 
         public CarAttributes()
         {
