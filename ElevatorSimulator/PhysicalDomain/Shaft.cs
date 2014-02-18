@@ -10,19 +10,25 @@ namespace ElevatorSimulator.PhysicalDomain
     {
         private readonly ShaftData shaftData;
 
-        public List<Car> Cars { get; private set; }
+        public List<ICar> Cars { get; private set; }
 
         public Shaft(ShaftData data)
         {
-            Cars = new List<Car>();
+            Cars = new List<ICar>();
             shaftData = data;
         }
 
-        internal void addCar(CarAttributes attributes, int startFloor)
+        internal void addCar(CarAttributes attributes, int startFloor, CarType type)
         {
-            this.Cars.Add(new Car(shaftData, attributes, startFloor));
+            switch (type)
+            {
+                case CarType.Single:
+                    this.Cars.Add(new Car(shaftData, attributes, startFloor));
+                    break;
+                case CarType.Double:
+                    //TODO
+                    break;
+            }
         }
-
     }
-
 }

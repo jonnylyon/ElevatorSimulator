@@ -10,6 +10,6 @@ namespace ElevatorSimulator.Scheduler
     {
         void allocateCall(PassengerGroup group, Building building);
 
-        void reallocateCall(PassengerGroup group, Building building, Car rejectedFrom);
+        void reallocateCall(PassengerGroup group, Building building, ICar rejectedFrom);
     }
 }

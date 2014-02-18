@@ -171,7 +171,7 @@ namespace ElevatorSimulator.ConfigLoader
 
                 foreach (XElement xcar in xshaft.Elements("Car"))
                 {
-                    newShaft.addCar(carAttribs[xcar.Attribute("attributes").Value], int.Parse(xcar.Attribute("startFloor").Value));
+                    newShaft.addCar(carAttribs[xcar.Attribute("attributes").Value], int.Parse(xcar.Attribute("startFloor").Value), (CarType)Enum.Parse(typeof(CarType), xcar.Attribute("type").Value));
                 }
             }
 

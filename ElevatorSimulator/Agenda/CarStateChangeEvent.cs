@@ -15,7 +15,7 @@ namespace ElevatorSimulator.Agenda
     {
         public CarState CarState { get; private set; }
 
-        public CarStateChangeEvent(Car owner, DateTime time, CarState newState)
+        public CarStateChangeEvent(ICar owner, DateTime time, CarState newState)
             :base(owner, time)
         {
             this.CarState = newState;

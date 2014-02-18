@@ -14,13 +14,13 @@ namespace ElevatorSimulator.Scheduler.ClosestCarDirectionalScheduler
         public void allocateCall(PassengerGroup group, Building building)
         {
             // compile list of all cars (can we do this in one linq expression?)
-            List<Car> cars = new List<Car>();
+            List<ICar> cars = new List<ICar>();
             building.Shafts.ForEach(s => s.Cars.ForEach(c => cars.Add(c)));
 
             // find best car
-            Car bestCar = null;
+            ICar bestCar = null;
 
-            foreach (Car c in cars)
+            foreach (ICar c in cars)
             {
                 if (object.ReferenceEquals(bestCar, null) || carAMoreSuitableThanB(c, bestCar, group))
                 {
@@ -34,7 +34,7 @@ namespace ElevatorSimulator.Scheduler.ClosestCarDirectionalScheduler
             group.changeState(PassengerState.Waiting, Simulation.agenda.getCurrentSimTime());
         }
 
-        public bool carAMoreSuitableThanB(Car a, Car b, PassengerGroup group)
+        public bool carAMoreSuitableThanB(ICar a, ICar b, PassengerGroup group)
         {
             int pass_a = getPassOfHallCallGroup(a, group);
             int pass_b = getPassOfHallCallGroup(b, group);
@@ -63,7 +63,7 @@ namespace ElevatorSimulator.Scheduler.ClosestCarDirectionalScheduler
             }
         }
 
-        public int getPassOfHallCallGroup(Car c, PassengerGroup group)
+        public int getPassOfHallCallGroup(ICar c, PassengerGroup group)
         {
             if (c.State.Direction != group.Direction)
             {
@@ -80,7 +80,7 @@ namespace ElevatorSimulator.Scheduler.ClosestCarDirectionalScheduler
             return 3;
         }
 
-        public void reallocateCall(PassengerGroup group, Building building, Car rejectedFrom)
+        public void reallocateCall(PassengerGroup group, Building building, ICar rejectedFrom)
         {
             throw new NotImplementedException();
         }

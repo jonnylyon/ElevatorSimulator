@@ -10,17 +10,17 @@ using ElevatorSimulator.Tools;
 
 namespace ElevatorSimulator.PhysicalDomain
 {
-    class Car : IEventOwner
+    class Car : ICar
     {
         private readonly ShaftData shaftData;
         private List<PassengerGroup> passengers = new List<PassengerGroup>();
         private CallAllocationList allocatedCalls = new CallAllocationList();
 
-        public CarAttributes CarAttributes { get; private set; }
+        private CarAttributes CarAttributes { get; set; }
 
         public CarState State { get; private set; }
 
-        public int NumberOfPassengers
+        private int NumberOfPassengers
         {
             get
             {
@@ -28,7 +28,7 @@ namespace ElevatorSimulator.PhysicalDomain
             }
         }
 
-        public int CapacityRemaining
+        private int CapacityRemaining
         {
             get
             {
@@ -58,7 +58,7 @@ namespace ElevatorSimulator.PhysicalDomain
         /// Add a passenger group to the list of passengers in the car.
         /// </summary>
         /// <param name="newPassengers">Group to add</param>
-        public void addPassengers(PassengerGroup newPassengers)
+        private void addPassengers(PassengerGroup newPassengers)
         {
             this.passengers.Add(newPassengers);
         }
@@ -67,12 +67,12 @@ namespace ElevatorSimulator.PhysicalDomain
         /// Remove passenger group from the car.
         /// </summary>
         /// <param name="passengersToRemove">Group to remove.</param>
-        public void removePassengers(PassengerGroup passengersToRemove)
+        private void removePassengers(PassengerGroup passengersToRemove)
         {
             this.passengers.Remove(passengersToRemove);
         }
 
-        internal void allocateHallCall(HallCall hallCall)
+        public void allocateHallCall(HallCall hallCall, int? deck = null)
         {
             //TODO
             allocatedCalls.addHallCall(hallCall, this.State);

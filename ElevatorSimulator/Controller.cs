@@ -42,7 +42,7 @@ namespace ElevatorSimulator
 
                 if (nextEvent is CarStateChangeEvent)
                 {
-                    (nextEvent.Owner as Car).changeState((nextEvent as CarStateChangeEvent).CarState);
+                    (nextEvent.Owner as ICar).changeState((nextEvent as CarStateChangeEvent).CarState);
                 }
                 else if (nextEvent is PassengerHallCallEvent)
                 {
@@ -51,7 +51,7 @@ namespace ElevatorSimulator
             }
         }
 
-        public void reallocateHallCall(PassengerGroup group, Car rejectedFrom)
+        public void reallocateHallCall(PassengerGroup group, ICar rejectedFrom)
         {
 
         }

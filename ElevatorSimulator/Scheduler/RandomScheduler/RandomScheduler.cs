@@ -26,9 +26,9 @@ namespace ElevatorSimulator.Scheduler.RandomScheduler
             group.changeState(PassengerState.Waiting, Simulation.agenda.getCurrentSimTime());
         }
 
-        public void reallocateCall(PassengerGroup group, Building building, Car rejectedFrom)
+        public void reallocateCall(PassengerGroup group, Building building, ICar rejectedFrom)
         {
-            Car car = rejectedFrom;
+            ICar car = rejectedFrom;
 
             while (car == rejectedFrom && building.Shafts.Sum(s => s.Cars.Count) > 1)
             {

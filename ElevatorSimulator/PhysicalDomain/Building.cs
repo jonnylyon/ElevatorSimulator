@@ -34,7 +34,7 @@ namespace ElevatorSimulator.PhysicalDomain
 
             foreach (Shaft shaft in this.Shafts)
             {
-                foreach (Car car in shaft.Cars)
+                foreach (ICar car in shaft.Cars)
                 {
                     result &= car.State.Action == CarAction.Idle;
                 }

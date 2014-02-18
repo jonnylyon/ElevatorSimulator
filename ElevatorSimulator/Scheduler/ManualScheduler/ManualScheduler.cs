@@ -26,7 +26,7 @@ namespace ElevatorSimulator.Scheduler.ManualScheduler
             group.changeState(PassengerState.Waiting, Simulation.agenda.getCurrentSimTime());
         }
 
-        public void reallocateCall(PassengerGroup group, Building building, Car rejectedFrom)
+        public void reallocateCall(PassengerGroup group, Building building, ICar rejectedFrom)
         {
             Console.WriteLine("Car has rejected a hall call.  Please reallocate.");
             this.allocateCall(group, building);

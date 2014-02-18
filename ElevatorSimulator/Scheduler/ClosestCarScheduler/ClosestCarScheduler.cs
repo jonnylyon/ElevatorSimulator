@@ -10,10 +10,10 @@ namespace ElevatorSimulator.Scheduler.ClosestCarScheduler
 {
     class ClosestCarScheduler : IScheduler
     {
-        public void allocateCall(PhysicalDomain.PassengerGroup group, PhysicalDomain.Building building)
+        public void allocateCall(PassengerGroup group, Building building)
         {
             // compile list of all cars (can we do this in one linq expression?)
-            List<Car> cars = new List<Car>();
+            List<ICar> cars = new List<ICar>();
             building.Shafts.ForEach(s => s.Cars.ForEach(c => cars.Add(c)));
 
             // get closest car
@@ -25,7 +25,7 @@ namespace ElevatorSimulator.Scheduler.ClosestCarScheduler
             group.changeState(PassengerState.Waiting, Simulation.agenda.getCurrentSimTime());
         }
 
-        public void reallocateCall(PhysicalDomain.PassengerGroup group, PhysicalDomain.Building building, PhysicalDomain.Car rejectedFrom)
+        public void reallocateCall(PassengerGroup group, Building building, ICar rejectedFrom)
         {
             throw new NotImplementedException();
         }
