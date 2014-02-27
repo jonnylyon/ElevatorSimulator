@@ -12,9 +12,12 @@ namespace ElevatorSimulator.PhysicalDomain
 
         public List<ICar> Cars { get; private set; }
 
+        public List<SingleDeckCollisionDetector> CollisionDetectors { get; private set; }
+
         public Shaft(ShaftData data)
         {
             Cars = new List<ICar>();
+            CollisionDetectors = new List<SingleDeckCollisionDetector>();
             shaftData = data;
         }
 
@@ -23,7 +26,21 @@ namespace ElevatorSimulator.PhysicalDomain
             switch (type)
             {
                 case CarType.Single:
-                    this.Cars.Add(new Car(shaftData, attributes, startFloor));
+                    var newCar = new Car(shaftData, attributes, startFloor);
+                    this.Cars.Add(newCar);
+
+                    foreach (Car c in this.Cars.Where(c => !object.ReferenceEquals(c, newCar)))
+                    {
+                        if (c.State.Floor > newCar.State.Floor)
+                        {
+                            this.CollisionDetectors.Add(new SingleDeckCollisionDetector(c, newCar));
+                        }
+                        else
+                        {
+                            this.CollisionDetectors.Add(new SingleDeckCollisionDetector(newCar, c));
+                        }
+                    }
+
                     break;
                 case CarType.Double:
                     //TODO
