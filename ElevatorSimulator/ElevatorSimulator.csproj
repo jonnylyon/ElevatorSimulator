@@ -92,6 +92,7 @@
     <Compile Include="PhysicalDomain\Car.cs" />
     <Compile Include="AbstractDomain\Direction.cs" />
     <Compile Include="PhysicalDomain\CarType.cs" />
+    <Compile Include="PhysicalDomain\CollisionDetector.cs" />
     <Compile Include="PhysicalDomain\ICar.cs" />
     <Compile Include="PhysicalDomain\PassengerGroup.cs" />
     <Compile Include="PhysicalDomain\ShaftData.cs" />
