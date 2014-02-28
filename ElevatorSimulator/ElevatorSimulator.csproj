@@ -101,7 +101,6 @@
     <Compile Include="PhysicalDomain\Shaft.cs" />
     <Compile Include="Scheduler\ClosestCarDirectionalScheduler\ClosestCarDirectionalScheduler.cs" />
     <Compile Include="Scheduler\ClosestCarScheduler\ClosestCarScheduler.cs" />
-    <Compile Include="Scheduler\ETAScheduler\ETAScheduler.cs" />
     <Compile Include="Scheduler\IScheduler.cs" />
     <Compile Include="Scheduler\ManualScheduler\ManualScheduler.cs" />
     <Compile Include="Scheduler\RandomScheduler\RandomScheduler.cs" />
@@ -110,9 +109,6 @@
     <Compile Include="Simulation.cs" />
     <Compile Include="ConfigLoader\SimulationConfigLoader.cs" />
     <Compile Include="Tools\CarMotionMaths.cs" />
-    <Compile Include="View\MainMenu.xaml.cs">
-      <DependentUpon>MainMenu.xaml</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assumptions.txt" />
@@ -143,12 +139,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup />
-  <ItemGroup>
-    <Page Include="View\MainMenu.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

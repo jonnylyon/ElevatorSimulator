@@ -40,5 +40,15 @@ namespace ElevatorSimulator
         {
             return allPassengers.Average(c => Math.Pow(c.CarAlightTime.Subtract(c.HallCallTime).TotalSeconds, 2));
         }
+
+        internal static double getLongestWaitingTime()
+        {
+            return allPassengers.Max(c => c.CarBoardTime.Subtract(c.HallCallTime).TotalSeconds);
+        }
+
+        internal static double getLongestTimeToDestination()
+        {
+            return allPassengers.Max(c => c.CarAlightTime.Subtract(c.HallCallTime).TotalSeconds);
+        }
     }
 }

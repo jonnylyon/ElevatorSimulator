@@ -2,7 +2,6 @@
 using ElevatorSimulator.PassengerArrivals;
 using ElevatorSimulator.PhysicalDomain;
 using ElevatorSimulator.Scheduler;
-using ElevatorSimulator.View;
 using ElevatorSimulator.ConfigLoader;
 
 namespace ElevatorSimulator
@@ -65,6 +64,8 @@ namespace ElevatorSimulator
             Simulation.logger.logLine("Average squared waiting time:        " + Simulation.getAverageSquaredWaitingTime());
             Simulation.logger.logLine("Average time to destination:         " + Simulation.getAverageTimeToDestination());
             Simulation.logger.logLine("Average squared time to destination: " + Simulation.getAverageSquaredTimeToDestination());
+            Simulation.logger.logLine("Longest waiting time:                " + Simulation.getLongestWaitingTime());
+            Simulation.logger.logLine("Longest time to destination:         " + Simulation.getLongestTimeToDestination());
             Console.ReadKey();
         }
     }
