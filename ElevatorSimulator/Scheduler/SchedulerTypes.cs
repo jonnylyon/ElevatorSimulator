@@ -10,6 +10,7 @@ namespace ElevatorSimulator.Scheduler
         Manual,
         Random,
         ClosestCar,
-        ClosestCarDirectional
+        ClosestCarDirectional,
+        CarZero
     }
 }

@@ -19,6 +19,8 @@ namespace ElevatorSimulator.Scheduler
                     return new ClosestCarScheduler.ClosestCarScheduler();
                 case SchedulerType.ClosestCarDirectional:
                     return new ClosestCarDirectionalScheduler.ClosestCarDirectionalScheduler();
+                case SchedulerType.CarZero:
+                    return new CarZeroScheduler.CarZeroScheduler();
             }
 
             return null;
