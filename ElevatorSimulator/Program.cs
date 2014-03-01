@@ -67,6 +67,9 @@ namespace ElevatorSimulator
             Simulation.logger.logLine("Longest waiting time:                " + Simulation.getLongestWaitingTime());
             Simulation.logger.logLine("Longest time to destination:         " + Simulation.getLongestTimeToDestination());
             Console.ReadKey();
+
+            Simulation.logPassengerGroupDetails();
+            Console.ReadKey();
         }
     }
 }
