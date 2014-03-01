@@ -1,48 +1,36 @@
 <SimulationConfig>
-	<Scheduler>ClosestCarDirectional</Scheduler>
+	<Scheduler>CarZero</Scheduler>
 	
 	<PassengerDistribution source="load">
 		<SpecificationFile>spec/3 floor short interfloor spec.xml</SpecificationFile>
 		<MaxGroupSize>20</MaxGroupSize>
-		<DistributionFile>dist/3 floor short interfloor 2.xml</DistributionFile>
+		<DistributionFile>dist/manual test distribution 10secs.xml</DistributionFile>
 		<StartTime>13:00</StartTime>
-		<EndTime>14:00</EndTime>
+		<EndTime>13:10</EndTime>
 		<Resolution>200</Resolution>
 	</PassengerDistribution>
 	
 	<CarAttributes name="Standard">
 		<Capacity>20</Capacity>
 		<MaxSpeed>5</MaxSpeed>
-		<Acceleration>2</Acceleration>
-		<Deceleration>4</Deceleration>
-		<DoorsOpenTime>3</DoorsOpenTime>
-		<DoorsCloseTime>3</DoorsCloseTime>
+		<Acceleration>3</Acceleration>
+		<Deceleration>3</Deceleration>
+		<DoorsOpenTime>2</DoorsOpenTime>
+		<DoorsCloseTime>2</DoorsCloseTime>
 		<DirectionChangeTime>1</DirectionChangeTime>
-		<PassengerBoardTime>10</PassengerBoardTime>
-		<PassengerAlightTime>10</PassengerAlightTime>
+		<PassengerBoardTime>2</PassengerBoardTime>
+		<PassengerAlightTime>2</PassengerAlightTime>
 	</CarAttributes>
 	
-	<CarAttributes name="Craig">
-		<Capacity>20</Capacity>
-		<MaxSpeed>5</MaxSpeed>
-		<Acceleration>2</Acceleration>
-		<Deceleration>4</Deceleration>
-		<DoorsOpenTime>3</DoorsOpenTime>
-		<DoorsCloseTime>3</DoorsCloseTime>
-		<DirectionChangeTime>1</DirectionChangeTime>
-		<PassengerBoardTime>10</PassengerBoardTime>
-		<PassengerAlightTime>10</PassengerAlightTime>
-	</CarAttributes>
-	
-	<Building minFloor="10" maxFloor="10" interfloorDistance="5">
+	<Building minFloor="0" maxFloor="3" interfloorDistance="5">
 		<Shaft>
 			<Car type="Single" attributes="Standard" startFloor="0" />
 		</Shaft>
 		<Shaft>
-			<Car type="Single" attributes="Standard" startFloor="10" />
+			<Car type="Single" attributes="Standard" startFloor="1" />
 		</Shaft>
 		<Shaft>
-			<Car type="Single" attributes="Standard" startFloor="-10" />
+			<Car type="Single" attributes="Standard" startFloor="2" />
 		</Shaft>
 	</Building>
 	
