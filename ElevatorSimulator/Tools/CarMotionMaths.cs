@@ -84,7 +84,7 @@ namespace ElevatorSimulator.Tools
                 double P_T; // The time taken to get to point P
 
                 P_T = (attributes.MaxSpeed - state.InitialSpeed) / attributes.Acceleration;
-                P_D = state.InitialSpeed + (0.5 * attributes.Acceleration * Math.Pow(P_T, 2));
+                P_D = (state.InitialSpeed * P_T) + (0.5 * attributes.Acceleration * Math.Pow(P_T, 2));
 
                 // note that R_V = P_V = the max speed of the car
                 double R_D; // The distance to point R from here
