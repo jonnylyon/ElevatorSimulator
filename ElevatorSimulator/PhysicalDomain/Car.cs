@@ -48,7 +48,7 @@ namespace ElevatorSimulator.PhysicalDomain
                 Floor = startFloor,
                 Direction = Direction.Up,
                 InitialSpeed = 0,
-                DoorsOpen = false
+                DoorsOpen = true
             };
 
             this.changeState(State);
@@ -89,7 +89,7 @@ namespace ElevatorSimulator.PhysicalDomain
         public void changeState(CarState newCarState)
         {
             this.State = newCarState;
-            Simulation.logger.logLine(String.Format("{0}: Shaft {1}, {2}, {3}, {4}, {5}, {6}", Simulation.agenda.getCurrentSimTime().ToString(), this.shaftData.ShaftId, this.State.Action, this.State.Direction, this.State.Floor, this.State.InitialSpeed, this.NumberOfPassengers));
+            Simulation.logger.logLine(String.Format("{0}.{1}: Shaft {2}, {3}, {4}, {5}, {6}, {7}", Simulation.agenda.getCurrentSimTime().ToString(), Simulation.agenda.getCurrentSimTime().Millisecond, this.shaftData.ShaftId, this.State.Action, this.State.Direction, this.State.Floor, this.State.InitialSpeed, this.NumberOfPassengers));
             this.updateAgenda();
         }
 
