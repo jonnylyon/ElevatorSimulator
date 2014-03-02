@@ -320,7 +320,7 @@ namespace ElevatorSimulator.PhysicalDomain
             double nextFloorDecisionPointSpeed;
             double nextFloorDecisionPointTime;
 
-            CarMotionMaths.CalculateDecisionPointSpeedAndTime(this.CarAttributes, nextFloorDistance, out nextFloorDecisionPointSpeed, out nextFloorDecisionPointTime);
+            CarMotionMaths.CalculateDecisionPointSpeedAndTime(this.CarAttributes, this.State, nextFloorDistance, out nextFloorDecisionPointSpeed, out nextFloorDecisionPointTime);
 
             // Place event on agenda to fire when car reaches decision point of next floor
             CarState newState = new CarState() { Action = CarAction.Moving, Direction = this.State.Direction, Floor = nextFloor, InitialSpeed = nextFloorDecisionPointSpeed, DoorsOpen = this.State.DoorsOpen };
@@ -356,7 +356,7 @@ namespace ElevatorSimulator.PhysicalDomain
             double nextFloorDecisionPointSpeed;
             double nextFloorDecisionPointTime;
 
-            CarMotionMaths.CalculateDecisionPointSpeedAndTimev2(this.CarAttributes, this.State, nextFloorDistance, out nextFloorDecisionPointSpeed, out nextFloorDecisionPointTime);
+            CarMotionMaths.CalculateDecisionPointSpeedAndTime(this.CarAttributes, this.State, nextFloorDistance, out nextFloorDecisionPointSpeed, out nextFloorDecisionPointTime);
 
             // Place event on agenda to fire when car reaches decision point of next floor
             CarState newCarState = new CarState() { Action = CarAction.Moving, Direction = this.State.Direction, Floor = nextFloor, InitialSpeed = nextFloorDecisionPointSpeed, DoorsOpen = this.State.DoorsOpen };
