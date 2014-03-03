@@ -10,7 +10,7 @@ namespace ElevatorSimulator.Scheduler.ManualScheduler
 {
     class ManualScheduler : IScheduler
     {
-        public void allocateCall(PassengerGroup group, Building building)
+        public void AllocateCall(PassengerGroup group, Building building)
         {
             Console.WriteLine("Please allocate passenger group to car:");
             Console.WriteLine("    Size:        {0}", group.Size);
@@ -29,7 +29,7 @@ namespace ElevatorSimulator.Scheduler.ManualScheduler
         public void reallocateCall(PassengerGroup group, Building building, ICar rejectedFrom)
         {
             Console.WriteLine("Car has rejected a hall call.  Please reallocate.");
-            this.allocateCall(group, building);
+            this.AllocateCall(group, building);
         }
     }
 }

@@ -12,7 +12,7 @@ namespace ElevatorSimulator.Scheduler.RandomScheduler
     {
         private Random random = new Random();
 
-        public void allocateCall(PassengerGroup group, Building building)
+        public void AllocateCall(PassengerGroup group, Building building)
         {
             // choose shaft at random
             var shaft = building.Shafts[random.Next(building.Shafts.Count)];

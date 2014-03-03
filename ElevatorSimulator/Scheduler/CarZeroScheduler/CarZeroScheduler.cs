@@ -10,7 +10,7 @@ namespace ElevatorSimulator.Scheduler.CarZeroScheduler
 {
     class CarZeroScheduler : IScheduler
     {
-        public void allocateCall(PassengerGroup group, Building building)
+        public void AllocateCall(PassengerGroup group, Building building)
         {
             building.Shafts[0].Cars[0].allocateHallCall(new HallCall(group));
 
@@ -19,7 +19,7 @@ namespace ElevatorSimulator.Scheduler.CarZeroScheduler
 
         public void reallocateCall(PassengerGroup group, Building building, ICar rejectedFrom)
         {
-            this.allocateCall(group, building);
+            this.AllocateCall(group, building);
         }
     }
 }

@@ -46,7 +46,7 @@ namespace ElevatorSimulator
                 }
                 else if (nextEvent is PassengerHallCallEvent)
                 {
-                    this.scheduler.allocateCall(nextEvent.Owner as PassengerGroup, this.building);
+                    this.scheduler.AllocateCall(nextEvent.Owner as PassengerGroup, this.building);
                 }
             }
         }

@@ -17,24 +17,30 @@ namespace ElevatorSimulator
             SchedulerType scheduler = simcfg.SchedulerType;
             PassengerDistribution dist = new PassengerDistribution();
 
-            switch (simcfg.PDSource)
+            if (simcfg.PDSource == PassengerDistributionSource.Error)
             {
-                case PassengerDistributionSource.Error:
-                    return;
-                case PassengerDistributionSource.New:
-                    var pdCreator = new PassengerDistributionCreator(simcfg.PDSpecFilePath, simcfg.PDMaxGroupSize);
-                    var pdStart = simcfg.PDStartTime;
-                    var pdEnd = simcfg.PDEndTime;
-                    var pdResolution = simcfg.PDResolution;
-
-                    dist = pdCreator.createPassengerDistribution(pdStart, pdEnd, pdResolution);
-
-                    dist.save(simcfg.PDDistFilePath);
-                    break;
-                case PassengerDistributionSource.Load:
-                    dist.load(simcfg.PDDistFilePath);
-                    break;
+                return;
             }
+
+            // If a new PD is needed, generate it and save it to file
+            if (simcfg.PDSource == PassengerDistributionSource.New)
+            {
+                var pdCreator = new PassengerDistributionCreator(simcfg.PDSpecFilePath, simcfg.PDMaxGroupSize);
+                var pdStart = simcfg.PDStartTime;
+                var pdEnd = simcfg.PDEndTime;
+                var pdResolution = simcfg.PDResolution;
+
+                var newDist = pdCreator.createPassengerDistribution(pdStart, pdEnd, pdResolution);
+
+                newDist.save(simcfg.PDDistFilePath);
+            }
+
+            // Load the PD back from the file (whether it is new or not)
+            // This is implemented like this in case saving and loading
+            // the PD file reduces the accuracy of timestamps, to ensure
+            // that the simulation runs are consistent every time the
+            // same PD is used.
+            dist.load(simcfg.PDDistFilePath);
 
             string logFile = simcfg.LogFile;
 

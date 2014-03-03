@@ -11,7 +11,7 @@ namespace ElevatorSimulator.Scheduler.ClosestCarDirectionalScheduler
     class ClosestCarDirectionalScheduler : IScheduler
     {
 
-        public void allocateCall(PassengerGroup group, Building building)
+        public void AllocateCall(PassengerGroup group, Building building)
         {
             // compile list of all cars (can we do this in one linq expression?)
             List<ICar> cars = new List<ICar>();

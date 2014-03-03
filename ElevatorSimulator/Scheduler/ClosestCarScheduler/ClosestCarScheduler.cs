@@ -10,9 +10,15 @@ namespace ElevatorSimulator.Scheduler.ClosestCarScheduler
 {
     class ClosestCarScheduler : IScheduler
     {
-        public void allocateCall(PassengerGroup group, Building building)
+        /// <summary>
+        /// Allocates a given group of passengers to a specific car within
+        /// the given building, based on the ClosestCar allocation method
+        /// </summary>
+        /// <param name="group">The PassengerGroup to be allocated</param>
+        /// <param name="building">The Building holding the domain model</param>
+        public void AllocateCall(PassengerGroup group, Building building)
         {
-            // compile list of all cars (can we do this in one linq expression?)
+            // compile list of all cars
             List<ICar> cars = new List<ICar>();
             building.Shafts.ForEach(s => s.Cars.ForEach(c => cars.Add(c)));
 
@@ -22,12 +28,9 @@ namespace ElevatorSimulator.Scheduler.ClosestCarScheduler
             // allocate call
             car.allocateHallCall(new HallCall(group));
 
+            // update the PassengerGroup data with the time at which
+            // the hall call was made
             group.changeState(PassengerState.Waiting, Simulation.agenda.getCurrentSimTime());
-        }
-
-        public void reallocateCall(PassengerGroup group, Building building, ICar rejectedFrom)
-        {
-            throw new NotImplementedException();
         }
     }
 }
