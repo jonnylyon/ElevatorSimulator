@@ -2,12 +2,12 @@
 	<Scheduler>CarZero</Scheduler>
 	
 	<PassengerDistribution source="load">
-		<SpecificationFile>spec/3 floor short interfloor spec.xml</SpecificationFile>
+		<SpecificationFile>spec/3 floor up peak sample.xml</SpecificationFile>
 		<MaxGroupSize>20</MaxGroupSize>
-		<DistributionFile>dist/manual test distribution 10secs.xml</DistributionFile>
+		<DistributionFile>dist/3 floor up peak sample.xml</DistributionFile>
 		<StartTime>13:00</StartTime>
 		<EndTime>13:10</EndTime>
-		<Resolution>200</Resolution>
+		<Resolution>1000</Resolution>
 	</PassengerDistribution>
 	
 	<CarAttributes name="Standard">
