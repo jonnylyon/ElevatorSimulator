@@ -17,8 +17,8 @@ namespace ElevatorSimulator.PhysicalDomain
         private CallAllocationList allocatedCalls = new CallAllocationList();
 
         private readonly Shaft shaft;
-
         private int parkFloor;
+        private int carId;
 
         private CarAttributes CarAttributes { get; set; }
 
@@ -82,13 +82,14 @@ namespace ElevatorSimulator.PhysicalDomain
             }
         }
 
-        public TCOSCar(Shaft shaft, ShaftData data, CarAttributes attributes, int startFloor, int parkFloor)
+        public TCOSCar(Shaft shaft, ShaftData data, CarAttributes attributes, int startFloor, int parkFloor, int carId)
         {
             CarAttributes = attributes;
 
             this.shaft = shaft;
             this.shaftData = data;
             this.parkFloor = parkFloor;
+            this.carId = carId;
 
             State = new CarState()
             {
@@ -142,7 +143,7 @@ namespace ElevatorSimulator.PhysicalDomain
 
             allocatedCalls.addHallCall(hallCall, this.State);
 
-            Simulation.logger.logLine(String.Format("{0}: Shaft {1} Hall call allocated; {2}, {3}, {4}", Simulation.agenda.getCurrentSimTime().ToString(), this.shaftData.ShaftId, hallCall.Passengers.Size, hallCall.Passengers.Origin, hallCall.Passengers.Destination));
+            Simulation.logger.logLine(String.Format("{0}: Car {1}.{2} Hall call allocated; {3}, {4}, {5}", Simulation.agenda.getCurrentSimTime().ToString(), this.shaftData.ShaftId, this.carId, hallCall.Passengers.Size, hallCall.Passengers.Origin, hallCall.Passengers.Destination));
 
             if (this.State.Action == CarAction.Idle || this.State.Action == CarAction.Parked)
             {
@@ -156,7 +157,7 @@ namespace ElevatorSimulator.PhysicalDomain
         public void changeState(CarState newCarState)
         {
             this.State = newCarState;
-            Simulation.logger.logLine(String.Format("{0}.{1}: Shaft {2}, {3}, {4}, {5}, {6}, {7}", Simulation.agenda.getCurrentSimTime().ToString(), Simulation.agenda.getCurrentSimTime().Millisecond, this.shaftData.ShaftId, this.State.Action, this.State.Direction, this.State.Floor, this.State.InitialSpeed, this.NumberOfPassengers));
+            Simulation.logger.logLine(String.Format("{0}.{1}: Car {2}.{3}, {4}, {5}, {6}, {7}, {8}", Simulation.agenda.getCurrentSimTime().ToString(), Simulation.agenda.getCurrentSimTime().Millisecond, this.shaftData.ShaftId, this.carId, this.State.Action, this.State.Direction, this.State.Floor, this.State.InitialSpeed, this.NumberOfPassengers));
             this.updateAgenda();
             this.shaft.carStateHasChanged(this);
         }
@@ -476,6 +477,15 @@ namespace ElevatorSimulator.PhysicalDomain
 
             // if we have no calls to serve and this is the park floor, stop
             if (object.ReferenceEquals(nextCall, null) && this.State.Floor == this.parkFloor)
+            {
+                // Put car in stopping state
+                CarState newState = new CarState() { Action = CarAction.Stopping, Direction = this.State.Direction, Floor = this.State.Floor, InitialSpeed = this.State.InitialSpeed, DoorsOpen = this.State.DoorsOpen };
+                this.changeState(newState);
+                return;
+            }
+
+            // if we are not permitted to move to the next floor at this time, stop
+            if (!shaft.canMoveToNextFloorTCOS(this))
             {
                 // Put car in stopping state
                 CarState newState = new CarState() { Action = CarAction.Stopping, Direction = this.State.Direction, Floor = this.State.Floor, InitialSpeed = this.State.InitialSpeed, DoorsOpen = this.State.DoorsOpen };

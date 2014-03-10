@@ -131,7 +131,7 @@ namespace ElevatorSimulator.PhysicalDomain
             //TODO
             allocatedCalls.addHallCall(hallCall, this.State);
 
-            Simulation.logger.logLine(String.Format("{0}: Shaft {1} Hall call allocated; {2}, {3}, {4}", Simulation.agenda.getCurrentSimTime().ToString(), this.shaftData.ShaftId, hallCall.Passengers.Size, hallCall.Passengers.Origin, hallCall.Passengers.Destination));
+            Simulation.logger.logLine(String.Format("{0}: Car {1}.0 Hall call allocated; {2}, {3}, {4}", Simulation.agenda.getCurrentSimTime().ToString(), this.shaftData.ShaftId, hallCall.Passengers.Size, hallCall.Passengers.Origin, hallCall.Passengers.Destination));
 
             if (this.State.Action == CarAction.Idle)
             {
@@ -145,7 +145,7 @@ namespace ElevatorSimulator.PhysicalDomain
         public void changeState(CarState newCarState)
         {
             this.State = newCarState;
-            Simulation.logger.logLine(String.Format("{0}.{1}: Shaft {2}, {3}, {4}, {5}, {6}, {7}", Simulation.agenda.getCurrentSimTime().ToString(), Simulation.agenda.getCurrentSimTime().Millisecond, this.shaftData.ShaftId, this.State.Action, this.State.Direction, this.State.Floor, this.State.InitialSpeed, this.NumberOfPassengers));
+            Simulation.logger.logLine(String.Format("{0}.{1}: Car {2}.0, {3}, {4}, {5}, {6}, {7}", Simulation.agenda.getCurrentSimTime().ToString(), Simulation.agenda.getCurrentSimTime().Millisecond, this.shaftData.ShaftId, this.State.Action, this.State.Direction, this.State.Floor, this.State.InitialSpeed, this.NumberOfPassengers));
             this.updateAgenda();
         }
 

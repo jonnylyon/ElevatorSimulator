@@ -36,7 +36,7 @@ namespace ElevatorSimulator.PhysicalDomain
                     this.Cars.Add(newSingleCar);
                     break;
                 case CarType.TCOS:
-                    var newTCOSCar = new TCOSCar(this, shaftData, attributes, startFloor, parkFloor.Value);
+                    var newTCOSCar = new TCOSCar(this, shaftData, attributes, startFloor, parkFloor.Value, this.Cars.Count);
                     this.Cars.Add(newTCOSCar);
                     break;
                 case CarType.Double:

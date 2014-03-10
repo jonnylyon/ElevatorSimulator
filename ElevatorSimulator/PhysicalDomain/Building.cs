@@ -15,15 +15,13 @@ namespace ElevatorSimulator.PhysicalDomain
         public Building()
         {
             this.Shafts = new List<Shaft>();
-            shaftIdCounter = 1;
         }
 
         public Shaft addShaft(int topFloor, int bottomFloor, double interfloor)
         {
-            var shaftData = new ShaftData(topFloor, bottomFloor, interfloor, shaftIdCounter);
+            var shaftData = new ShaftData(topFloor, bottomFloor, interfloor, this.Shafts.Count);
             var shaft = new Shaft(shaftData);
             this.Shafts.Add(shaft);
-            shaftIdCounter++;
 
             return shaft;
         }
