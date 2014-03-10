@@ -21,5 +21,7 @@ namespace ElevatorSimulator.AbstractDomain
         Reversing, // Time spent changing direction of the car
         DoorsClosing, // From when the doors begin closing to when the car starts moving
         Leaving, // Accelerating from 'Stopped' state
+        Waiting, // Stopped, waiting for another car to do something before we can move
+        Parked, // Idle at the park floor
     }
 }

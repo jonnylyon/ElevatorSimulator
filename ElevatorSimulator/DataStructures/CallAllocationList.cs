@@ -13,6 +13,14 @@ namespace ElevatorSimulator.DataStructures
         private CallsList p2Calls = new CallsList(); // Pass 2 (opposite direction, reverse once)
         private CallsList p3Calls = new CallsList(); // Pass 3 (current direction, reverse twice)
 
+        private CallsList allCalls
+        {
+            get
+            {
+                return (CallsList)p1Calls.Union(p2Calls).Union(p3Calls).ToList();
+            }
+        }
+
         public void addHallCall(HallCall hallCall, CarState state)
         {
             if (state.Direction == Direction.Up)
@@ -174,6 +182,52 @@ namespace ElevatorSimulator.DataStructures
             }
 
             return calls;            
+        }
+
+        internal int? getHighestLocation()
+        {
+            int? highest = null;
+
+            foreach (Call c in allCalls)
+            {
+                if (c is HallCall)
+                {
+                    HallCall hc = c as HallCall;
+                    highest = highest == null || highest < hc.Passengers.Origin ? hc.Passengers.Origin : highest;
+                    highest = highest == null || highest < hc.Passengers.Destination ? hc.Passengers.Destination : highest;
+                }
+
+                if (c is CarCall)
+                {
+                    CarCall cc = c as CarCall;
+                    highest = highest == null || highest < cc.Passengers.Destination ? cc.Passengers.Destination : highest;
+                }
+            }
+
+            return highest;
+        }
+
+        internal int? getLowestLocation()
+        {
+            int? lowest = null;
+
+            foreach (Call c in allCalls)
+            {
+                if (c is HallCall)
+                {
+                    HallCall hc = c as HallCall;
+                    lowest = lowest == null || lowest > hc.Passengers.Origin ? hc.Passengers.Origin : lowest;
+                    lowest = lowest == null || lowest > hc.Passengers.Destination ? hc.Passengers.Destination : lowest;
+                }
+
+                if (c is CarCall)
+                {
+                    CarCall cc = c as CarCall;
+                    lowest = lowest == null || lowest > cc.Passengers.Destination ? cc.Passengers.Destination : lowest;
+                }
+            }
+
+            return lowest;
         }
     }
 }

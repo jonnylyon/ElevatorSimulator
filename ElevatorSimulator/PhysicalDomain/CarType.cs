@@ -8,6 +8,7 @@ namespace ElevatorSimulator.PhysicalDomain
     enum CarType
     {
         Single,
-        Double
+        Double,
+        TCOS
     }
 }

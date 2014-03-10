@@ -12,6 +12,7 @@ namespace ElevatorSimulator.PhysicalDomain
     {
         CarState State { get; }
         void changeState(CarState newCarState);
-        void allocateHallCall(HallCall hallCall, int? deck = null);
+        bool allocateHallCall(HallCall hallCall, int? deck = null);
+        void otherCarStateHasChanged();
     }
 }
