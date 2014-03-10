@@ -13,11 +13,11 @@ namespace ElevatorSimulator.DataStructures
         private CallsList p2Calls = new CallsList(); // Pass 2 (opposite direction, reverse once)
         private CallsList p3Calls = new CallsList(); // Pass 3 (current direction, reverse twice)
 
-        private CallsList allCalls
+        private List<Call> allCalls
         {
             get
             {
-                return (CallsList)p1Calls.Union(p2Calls).Union(p3Calls).ToList();
+                return p1Calls.Union(p2Calls).Union(p3Calls).ToList();
             }
         }
 

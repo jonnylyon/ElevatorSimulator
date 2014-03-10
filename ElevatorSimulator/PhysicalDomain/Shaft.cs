@@ -75,6 +75,34 @@ namespace ElevatorSimulator.PhysicalDomain
                 return true;
             }
 
+            // If the other car has no current zone, and both the origin and destination of the call lie within the range of
+            // floors that the car’s current zone can be extended into without including the current floor of the other car
+            // in the same shaft, the call will be accepted and the car’s current zone will be extended accordingly.
+            if (!otherCar.CurrentZone.Any())
+            {
+                List<int> outOfBoundsZone;
+
+                // Upper car logic
+                if (car.State.Floor > otherCar.State.Floor)
+                {
+                    outOfBoundsZone = Enumerable.Range(shaftData.BottomFloor, otherCar.CurrentFloorsOccupied.Max() + 1 - shaftData.BottomFloor).ToList();
+                }
+                // Lower car logic
+                else
+                {
+                    outOfBoundsZone = Enumerable.Range(otherCar.CurrentFloorsOccupied.Min(), shaftData.TopFloor + 1 - otherCar.CurrentFloorsOccupied.Min()).ToList();
+                }
+
+                var allowableZone = allFloors.Except(outOfBoundsZone).ToList();
+
+                if (allowableZone.Contains(call.Passengers.Origin) && allowableZone.Contains(call.Passengers.Destination))
+                {
+                    return true;
+                }
+
+                return false;
+            }
+
             // If the car’s current floor is not inside the overlap zone, and both the origin and destination of the call
             // are within the other car’s zone without being the last floor in its zone (or the other car is parking), the
             // call will be accepted and the car’s current zone will be extended accordingly.
@@ -95,7 +123,7 @@ namespace ElevatorSimulator.PhysicalDomain
 
                 var allowableZone = allFloors.Except(outOfBoundsZone).ToList();
 
-                if (allowableZone.Contains(call.Passengers.Origin) && currentZone.Contains(call.Passengers.Destination))
+                if (allowableZone.Contains(call.Passengers.Origin) && allowableZone.Contains(call.Passengers.Destination))
                 {
                     return true;
                 }
@@ -121,7 +149,7 @@ namespace ElevatorSimulator.PhysicalDomain
 
                 var allowableZone = allFloors.Except(outOfBoundsZone).ToList();
 
-                if (allowableZone.Contains(call.Passengers.Origin) && currentZone.Contains(call.Passengers.Destination))
+                if (allowableZone.Contains(call.Passengers.Origin) && allowableZone.Contains(call.Passengers.Destination))
                 {
                     return true;
                 }
@@ -192,10 +220,15 @@ namespace ElevatorSimulator.PhysicalDomain
 
         internal void carStateHasChanged(TCOSCar car)
         {
-            // valid for TCOS as there will only be one other car
-            TCOSCar otherCar = (TCOSCar)this.Cars.Where(c => !object.ReferenceEquals(c, car)).First();
+            var otherCars = this.Cars.Where(c => !object.ReferenceEquals(c, car));
 
-            otherCar.otherCarStateHasChanged();
+            if (otherCars.Any())
+            {
+                // valid for TCOS as there will only be at most one other car
+                TCOSCar otherCar = (TCOSCar)otherCars.First();
+
+                otherCar.otherCarStateHasChanged();
+            }
         }
     }
 }

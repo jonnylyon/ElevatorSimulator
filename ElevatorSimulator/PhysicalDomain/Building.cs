@@ -28,7 +28,7 @@ namespace ElevatorSimulator.PhysicalDomain
             return shaft;
         }
 
-        public bool allIdle()
+        public bool allIdleOrParked()
         {
             bool result = true;
 
@@ -36,7 +36,7 @@ namespace ElevatorSimulator.PhysicalDomain
             {
                 foreach (ICar car in shaft.Cars)
                 {
-                    result &= car.State.Action == CarAction.Idle;
+                    result &= car.State.Action == CarAction.Idle || car.State.Action == CarAction.Parked;
                 }
             }
 

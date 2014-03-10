@@ -36,7 +36,7 @@ namespace ElevatorSimulator
 
         internal void Start()
         {
-            while (!(Simulation.agenda.isEmpty() && this.building.allIdle()))
+            while (!(Simulation.agenda.isEmpty() && this.building.allIdleOrParked()))
             {
                 var nextEvent = Simulation.agenda.moveToNextEvent();
 
