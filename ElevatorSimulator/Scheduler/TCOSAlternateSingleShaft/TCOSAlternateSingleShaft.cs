@@ -31,6 +31,11 @@ namespace ElevatorSimulator.Scheduler.TCOSAlternateSingleShaft
             else
             {
                 Simulation.logger.logLine("NB: Call has failed allocation");
+                Simulation.logger.logLine(string.Format("   Origin: {0}, Destination {1}", group.Origin, group.Destination));
+                foreach (TCOSCar car in building.Shafts[0].Cars)
+                {
+                    Simulation.logger.logLine(string.Format("   Car zone: {0}; location: {1}", string.Join(", ", car.CurrentZone.ToArray()), string.Join(", ", car.CurrentFloorsOccupied.ToArray())));
+                }
             }
         }
     }

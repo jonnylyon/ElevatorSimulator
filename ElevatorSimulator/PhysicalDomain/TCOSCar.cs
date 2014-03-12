@@ -45,6 +45,29 @@ namespace ElevatorSimulator.PhysicalDomain
         }
 
         /// <summary>
+        /// This is the minimal set of consecutive floors that includes all call locations
+        /// in the car's current call list, as well as all locations currently occupied
+        /// by the car
+        /// </summary>
+        public List<int> CurrentCompleteZone
+        {
+            get
+            {
+                var both = CurrentFloorsOccupied.Union(CurrentZone).ToList();
+
+                int? highest = both.Max();
+                int? lowest = both.Min();
+
+                if (highest.HasValue && lowest.HasValue)
+                {
+                    return Enumerable.Range(lowest.Value, highest.Value + 1 - lowest.Value).ToList();
+                }
+
+                return new List<int>();
+            }
+        }
+
+        /// <summary>
         /// This is the list of floors currently occupied by the car
         /// i.e. if it is stopped at floor 5, this list will be { 5 }
         /// if it is moving from floor 5 to floor 6, this list will be { 5, 6 }

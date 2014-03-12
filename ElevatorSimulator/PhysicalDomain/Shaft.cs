@@ -66,8 +66,8 @@ namespace ElevatorSimulator.PhysicalDomain
                 }
             }
 
-            var currentZone = car.CurrentZone;
-            var overlapZone = car.CurrentZone.Union(otherCar.CurrentZone).ToList();
+            var currentZone = car.CurrentCompleteZone;
+            var overlapZone = car.CurrentCompleteZone.Union(otherCar.CurrentCompleteZone).ToList();
 
             // If both the origin and destination of the call are within the car’s current zone, the call will be accepted.
             if (currentZone.Contains(call.Passengers.Origin) && currentZone.Contains(call.Passengers.Destination))
@@ -184,8 +184,8 @@ namespace ElevatorSimulator.PhysicalDomain
                 return false;
             }
 
-            var thisCarZone = car.CurrentZone;
-            var otherCarZone = otherCar.CurrentZone;
+            var thisCarZone = car.CurrentCompleteZone;
+            var otherCarZone = otherCar.CurrentCompleteZone;
             var overlapZone = thisCarZone.Union(otherCarZone).ToList();
 
             // If next floor is not within the other car's zone, go ahead and move
