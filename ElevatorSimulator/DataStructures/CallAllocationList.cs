@@ -188,7 +188,7 @@ namespace ElevatorSimulator.DataStructures
         {
             int? highest = null;
 
-            foreach (Call c in allCalls)
+            foreach (Call c in p1Calls.Union(p2Calls))
             {
                 if (c is HallCall)
                 {
@@ -211,7 +211,7 @@ namespace ElevatorSimulator.DataStructures
         {
             int? lowest = null;
 
-            foreach (Call c in allCalls)
+            foreach (Call c in p1Calls.Union(p2Calls))
             {
                 if (c is HallCall)
                 {

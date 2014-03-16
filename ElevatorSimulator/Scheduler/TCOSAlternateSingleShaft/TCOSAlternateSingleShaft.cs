@@ -15,6 +15,12 @@ namespace ElevatorSimulator.Scheduler.TCOSAlternateSingleShaft
         public void AllocateCall(PassengerGroup group, Building building)
         {
             var shaft0Cars = building.Shafts[0].Cars;
+            
+            Simulation.logger.logLine(string.Format("   Origin: {0}, Destination {1}", group.Origin, group.Destination));
+            foreach (TCOSCar car in building.Shafts[0].Cars)
+            {
+                Simulation.logger.logLine(string.Format("   Car zone: {0}; location: {1}; direction {2}", string.Join(", ", car.CurrentZone.ToArray()), string.Join(", ", car.CurrentFloorsOccupied.ToArray()), car.State.Direction.ToString()));
+            }
 
             var nextCar = shaft0Cars.Where(c => !object.ReferenceEquals(c, lastAllocation)).First();
 
@@ -31,11 +37,6 @@ namespace ElevatorSimulator.Scheduler.TCOSAlternateSingleShaft
             else
             {
                 Simulation.logger.logLine("NB: Call has failed allocation");
-                Simulation.logger.logLine(string.Format("   Origin: {0}, Destination {1}", group.Origin, group.Destination));
-                foreach (TCOSCar car in building.Shafts[0].Cars)
-                {
-                    Simulation.logger.logLine(string.Format("   Car zone: {0}; location: {1}", string.Join(", ", car.CurrentZone.ToArray()), string.Join(", ", car.CurrentFloorsOccupied.ToArray())));
-                }
             }
         }
     }

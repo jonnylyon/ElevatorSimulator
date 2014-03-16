@@ -12,6 +12,8 @@ namespace ElevatorSimulator.Scheduler
         ClosestCar,
         ClosestCarDirectional,
         CarZero,
-        TCOSAlternateSingleShaft
+        TCOSAlternateSingleShaft,
+        TCOSTwoZones,
+        TCOSTwoZonesOrigin
     }
 }

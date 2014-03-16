@@ -26,7 +26,7 @@ namespace ElevatorSimulator.PhysicalDomain
 
         /// <summary>
         /// This is the minimal set of consecutive floors that includes all call locations
-        /// in the car's current call list
+        /// in the car's current call list, including the park floor
         /// </summary>
         public List<int> CurrentZone
         {
@@ -37,10 +37,12 @@ namespace ElevatorSimulator.PhysicalDomain
 
                 if (highest.HasValue && lowest.HasValue)
                 {
-                    return Enumerable.Range(lowest.Value, highest.Value + 1 - lowest.Value).ToList();
+                    return Enumerable.Range(Math.Min(lowest.Value, this.parkFloor), Math.Max(highest.Value, this.parkFloor) + 1 - Math.Min(lowest.Value, this.parkFloor)).ToList();
                 }
-
-                return new List<int>();
+                else
+                {
+                    return new List<int>() { this.parkFloor };
+                }            
             }
         }
 
@@ -261,7 +263,7 @@ namespace ElevatorSimulator.PhysicalDomain
             CarState newState;
 
             // Can we park here?
-            if (allocatedCalls.isEmpty() && this.State.Floor == this.parkFloor)
+            if (allocatedCalls.isEmpty() && this.State.Floor == this.parkFloor && !shaft.mustContinueInCurrentDirection(this))
             {
                 newState = new CarState() { Action = CarAction.Parked, Direction = this.State.Direction, Floor = this.State.Floor, InitialSpeed = 0, DoorsOpen = this.State.DoorsOpen };
                 this.changeState(newState);
@@ -287,57 +289,61 @@ namespace ElevatorSimulator.PhysicalDomain
             // Get next call (all car calls for current floor processed by this point)
             var nextCall = this.allocatedCalls.getNextCall(this.State);
 
-            if (this.State.Direction == Direction.Up)
+            // Reversing logic; if we are allowed to reverse at this stage
+            if (!shaft.mustContinueInCurrentDirection(this))
             {
-                if (!object.ReferenceEquals(nextCall, null))
+                if (this.State.Direction == Direction.Up)
                 {
-                    if (nextCall.CallLocation < this.State.Floor
-                        || nextCall.CallLocation == this.State.Floor && nextCall.CallDirection == Direction.Down)
+                    if (!object.ReferenceEquals(nextCall, null))
                     {
-                        var newDirection = this.State.Direction == Direction.Down ? Direction.Up : Direction.Down;
-                        newState = new CarState() { Action = CarAction.Reversing, Direction = newDirection, Floor = this.State.Floor, InitialSpeed = 0, DoorsOpen = this.State.DoorsOpen };
-                        this.changeState(newState);
-                        return;
+                        if (nextCall.CallLocation < this.State.Floor
+                            || nextCall.CallLocation == this.State.Floor && nextCall.CallDirection == Direction.Down)
+                        {
+                            var newDirection = this.State.Direction == Direction.Down ? Direction.Up : Direction.Down;
+                            newState = new CarState() { Action = CarAction.Reversing, Direction = newDirection, Floor = this.State.Floor, InitialSpeed = 0, DoorsOpen = this.State.DoorsOpen };
+                            this.changeState(newState);
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        if (this.parkFloor < this.State.Floor)
+                        {
+                            var newDirection = this.State.Direction == Direction.Down ? Direction.Up : Direction.Down;
+                            newState = new CarState() { Action = CarAction.Reversing, Direction = newDirection, Floor = this.State.Floor, InitialSpeed = 0, DoorsOpen = this.State.DoorsOpen };
+                            this.changeState(newState);
+                            return;
+                        }
                     }
                 }
-                else
+
+                if (this.State.Direction == Direction.Down)
                 {
-                    if (this.parkFloor < this.State.Floor)
+                    if (!object.ReferenceEquals(nextCall, null))
                     {
-                        var newDirection = this.State.Direction == Direction.Down ? Direction.Up : Direction.Down;
-                        newState = new CarState() { Action = CarAction.Reversing, Direction = newDirection, Floor = this.State.Floor, InitialSpeed = 0, DoorsOpen = this.State.DoorsOpen };
-                        this.changeState(newState);
-                        return;
+                        if (nextCall.CallLocation > this.State.Floor
+                            || nextCall.CallLocation == this.State.Floor && nextCall.CallDirection == Direction.Up)
+                        {
+                            var newDirection = this.State.Direction == Direction.Down ? Direction.Up : Direction.Down;
+                            newState = new CarState() { Action = CarAction.Reversing, Direction = newDirection, Floor = this.State.Floor, InitialSpeed = 0, DoorsOpen = this.State.DoorsOpen };
+                            this.changeState(newState);
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        if (this.parkFloor > this.State.Floor)
+                        {
+                            var newDirection = this.State.Direction == Direction.Down ? Direction.Up : Direction.Down;
+                            newState = new CarState() { Action = CarAction.Reversing, Direction = newDirection, Floor = this.State.Floor, InitialSpeed = 0, DoorsOpen = this.State.DoorsOpen };
+                            this.changeState(newState);
+                            return;
+                        }
                     }
                 }
             }
 
-            if (this.State.Direction == Direction.Down)
-            {
-                if (!object.ReferenceEquals(nextCall, null))
-                {
-                    if (nextCall.CallLocation > this.State.Floor
-                        || nextCall.CallLocation == this.State.Floor && nextCall.CallDirection == Direction.Up)
-                    {
-                        var newDirection = this.State.Direction == Direction.Down ? Direction.Up : Direction.Down;
-                        newState = new CarState() { Action = CarAction.Reversing, Direction = newDirection, Floor = this.State.Floor, InitialSpeed = 0, DoorsOpen = this.State.DoorsOpen };
-                        this.changeState(newState);
-                        return;
-                    }
-                }
-                else
-                {
-                    if (this.parkFloor > this.State.Floor)
-                    {
-                        var newDirection = this.State.Direction == Direction.Down ? Direction.Up : Direction.Down;
-                        newState = new CarState() { Action = CarAction.Reversing, Direction = newDirection, Floor = this.State.Floor, InitialSpeed = 0, DoorsOpen = this.State.DoorsOpen };
-                        this.changeState(newState);
-                        return;
-                    }
-                }
-            }
-
-            if (!object.ReferenceEquals(nextCall, null) && nextCall.CallLocation == this.State.Floor)
+            if (!object.ReferenceEquals(nextCall, null) && nextCall.CallLocation == this.State.Floor && nextCall.CallDirection == this.State.Direction)
             {
                 // Open doors if not already.
                 if (!this.State.DoorsOpen)
@@ -487,10 +493,25 @@ namespace ElevatorSimulator.PhysicalDomain
 
         private void updateAgendaHelper_MovingState()
         {
+
             var nextCall = this.allocatedCalls.getNextCall(this.State);
 
             // if we have a call to serve at this floor, stop
+            // (only if we are allowed to according to serve it at this point according to
+            // the mustContinueInCurrentDirection method)
             if (!object.ReferenceEquals(nextCall, null) && this.State.Floor == nextCall.CallLocation)
+            {
+                if (nextCall.CallDirection == Direction.None || nextCall.CallDirection == this.State.Direction || !shaft.mustContinueInCurrentDirection(this))
+                {
+                    // Put car in stopping state
+                    CarState newState = new CarState() { Action = CarAction.Stopping, Direction = this.State.Direction, Floor = this.State.Floor, InitialSpeed = this.State.InitialSpeed, DoorsOpen = this.State.DoorsOpen };
+                    this.changeState(newState);
+                    return;
+                }
+            }
+
+            // if we have no calls to serve and this is the park floor, stop
+            if (object.ReferenceEquals(nextCall, null) && this.State.Floor == this.parkFloor)
             {
                 // Put car in stopping state
                 CarState newState = new CarState() { Action = CarAction.Stopping, Direction = this.State.Direction, Floor = this.State.Floor, InitialSpeed = this.State.InitialSpeed, DoorsOpen = this.State.DoorsOpen };
@@ -498,8 +519,9 @@ namespace ElevatorSimulator.PhysicalDomain
                 return;
             }
 
-            // if we have no calls to serve and this is the park floor, stop
-            if (object.ReferenceEquals(nextCall, null) && this.State.Floor == this.parkFloor)
+
+            // if we have a call to serve at another floor for which we need to reverse, and we are allowed to reverse
+            if (!object.ReferenceEquals(nextCall, null) && !this.shaft.mustContinueInCurrentDirection(this) && directionOfFloor(this.State.Floor, nextCall.CallLocation) != this.State.Direction)
             {
                 // Put car in stopping state
                 CarState newState = new CarState() { Action = CarAction.Stopping, Direction = this.State.Direction, Floor = this.State.Floor, InitialSpeed = this.State.InitialSpeed, DoorsOpen = this.State.DoorsOpen };
@@ -554,6 +576,19 @@ namespace ElevatorSimulator.PhysicalDomain
         public List<Call> getOrderedCalls()
         {
             return this.allocatedCalls.getOrderedCalls(this.State);
+        }
+
+        public Direction directionOfFloor(int thisFloor, int thatFloor)
+        {
+            if (thatFloor > thisFloor) { return Direction.Up; }
+            if (thatFloor < thisFloor) { return Direction.Down; }
+
+            return Direction.None;
+        }
+
+        public bool movingInDirectionOfParkFloor()
+        {
+            return directionOfFloor(this.State.Floor, this.parkFloor) == this.State.Direction;
         }
     }
 }

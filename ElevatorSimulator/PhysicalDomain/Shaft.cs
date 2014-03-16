@@ -66,96 +66,145 @@ namespace ElevatorSimulator.PhysicalDomain
                 }
             }
 
-            var currentZone = car.CurrentCompleteZone;
-            var overlapZone = car.CurrentCompleteZone.Union(otherCar.CurrentCompleteZone).ToList();
+            return true;
 
-            // If both the origin and destination of the call are within the car’s current zone, the call will be accepted.
-            if (currentZone.Contains(call.Passengers.Origin) && currentZone.Contains(call.Passengers.Destination))
+            //var currentZone = car.CurrentCompleteZone;
+            //var overlapZone = car.CurrentCompleteZone.Intersect(otherCar.CurrentCompleteZone).ToList();
+
+            //// If both the origin and destination of the call are within the car’s current zone, the call will be accepted.
+            //if (currentZone.Contains(call.Passengers.Origin) && currentZone.Contains(call.Passengers.Destination))
+            //{
+            //    return true;
+            //}
+
+            //// If the other car has no current zone, and both the origin and destination of the call lie within the range of
+            //// floors that the car’s current zone can be extended into without including the current floor of the other car
+            //// in the same shaft, the call will be accepted and the car’s current zone will be extended accordingly.
+            //if (!otherCar.CurrentZone.Any())
+            //{
+            //    List<int> outOfBoundsZone;
+
+            //    // Upper car logic
+            //    if (car.State.Floor > otherCar.State.Floor)
+            //    {
+            //        outOfBoundsZone = Enumerable.Range(shaftData.BottomFloor, otherCar.CurrentFloorsOccupied.Max() + 1 - shaftData.BottomFloor).ToList();
+            //    }
+            //    // Lower car logic
+            //    else
+            //    {
+            //        outOfBoundsZone = Enumerable.Range(otherCar.CurrentFloorsOccupied.Min(), shaftData.TopFloor + 1 - otherCar.CurrentFloorsOccupied.Min()).ToList();
+            //    }
+
+            //    var allowableZone = allFloors.Except(outOfBoundsZone).ToList();
+
+            //    if (allowableZone.Contains(call.Passengers.Origin) && allowableZone.Contains(call.Passengers.Destination))
+            //    {
+            //        return true;
+            //    }
+
+            //    return false;
+            //}
+
+            //// If the car’s current floor is not inside the overlap zone, and both the origin and destination of the call
+            //// are within the other car’s zone without being the last floor in its zone (or the other car is parking), the
+            //// call will be accepted and the car’s current zone will be extended accordingly.
+            //// Or, if the car is  moving away from its park floor and the other car is moving in the same direction
+            //// (away from this car)
+            //if (!overlapZone.Contains(car.State.Floor) || (!car.movingInDirectionOfParkFloor() && car.State.Direction == otherCar.State.Direction) )
+            //{
+            //    List<int> outOfBoundsZone = null;
+
+            //    // Upper car logic
+            //    if (car.State.Floor > otherCar.State.Floor)
+            //    {
+            //        outOfBoundsZone = Enumerable.Range(shaftData.BottomFloor, otherCar.CurrentZone.Min() + 1 - shaftData.BottomFloor).ToList();
+            //    }
+            //    // Lower car logic
+            //    else
+            //    {
+            //        outOfBoundsZone = Enumerable.Range(otherCar.CurrentZone.Max(), shaftData.TopFloor + 1 - otherCar.CurrentZone.Max()).ToList();
+            //    }
+
+            //    var allowableZone = allFloors.Except(outOfBoundsZone).ToList();
+
+            //    if (allowableZone.Contains(call.Passengers.Origin) && allowableZone.Contains(call.Passengers.Destination))
+            //    {
+            //        return true;
+            //    }
+            //}
+
+            //// If both the origin and destination lie within the range of floors that the car’s current zone can be extended
+            //// into without including the current floor of the other car in the same shaft, the call will be accepted and the
+            //// car’s current zone will be extended accordingly.
+            //if (!overlapZone.Contains(car.State.Floor))
+            //{
+            //    List<int> outOfBoundsZone;
+
+            //    // Upper car logic
+            //    if (car.State.Floor > otherCar.State.Floor)
+            //    {
+            //        outOfBoundsZone = Enumerable.Range(shaftData.BottomFloor, otherCar.CurrentFloorsOccupied.Max() + 1 - shaftData.BottomFloor).ToList();
+            //    }
+            //    // Lower car logic
+            //    else
+            //    {
+            //        outOfBoundsZone = Enumerable.Range(otherCar.CurrentFloorsOccupied.Min(), shaftData.TopFloor + 1 - otherCar.CurrentFloorsOccupied.Min()).ToList();
+            //    }
+
+            //    var allowableZone = allFloors.Except(outOfBoundsZone).ToList();
+
+            //    if (allowableZone.Contains(call.Passengers.Origin) && allowableZone.Contains(call.Passengers.Destination))
+            //    {
+            //        return true;
+            //    }
+            //}
+
+            //// Otherwise, the call will be rejected and the Scheduler will have to allocate the call to another car.
+            //return false;
+        }
+
+        /// <summary>
+        /// Checks whether or not a car is required to keep going in its current direction (so as to
+        /// allow the other car access to this car's current location)
+        /// </summary>
+        /// <param name="car">The car querying</param>
+        /// <returns>true if the car must continue moving, else false</returns>
+        internal bool mustContinueInCurrentDirection(TCOSCar car)
+        {
+            // If the car is currently moving away from its park location (i.e. the lower
+            // car is moving up), then this method never returns true
+            if (!car.movingInDirectionOfParkFloor())
             {
-                return true;
-            }
-
-            // If the other car has no current zone, and both the origin and destination of the call lie within the range of
-            // floors that the car’s current zone can be extended into without including the current floor of the other car
-            // in the same shaft, the call will be accepted and the car’s current zone will be extended accordingly.
-            if (!otherCar.CurrentZone.Any())
-            {
-                List<int> outOfBoundsZone;
-
-                // Upper car logic
-                if (car.State.Floor > otherCar.State.Floor)
-                {
-                    outOfBoundsZone = Enumerable.Range(shaftData.BottomFloor, otherCar.CurrentFloorsOccupied.Max() + 1 - shaftData.BottomFloor).ToList();
-                }
-                // Lower car logic
-                else
-                {
-                    outOfBoundsZone = Enumerable.Range(otherCar.CurrentFloorsOccupied.Min(), shaftData.TopFloor + 1 - otherCar.CurrentFloorsOccupied.Min()).ToList();
-                }
-
-                var allowableZone = allFloors.Except(outOfBoundsZone).ToList();
-
-                if (allowableZone.Contains(call.Passengers.Origin) && allowableZone.Contains(call.Passengers.Destination))
-                {
-                    return true;
-                }
-
                 return false;
             }
 
-            // If the car’s current floor is not inside the overlap zone, and both the origin and destination of the call
-            // are within the other car’s zone without being the last floor in its zone (or the other car is parking), the
-            // call will be accepted and the car’s current zone will be extended accordingly.
-            if (!overlapZone.Contains(car.State.Floor))
-            {
-                List<int> outOfBoundsZone;
+            TCOSCar otherCar = (TCOSCar)this.Cars.Where(c => !object.ReferenceEquals(c, car)).First();
 
-                // Upper car logic
-                if (car.State.Floor > otherCar.State.Floor)
+            var thisCarZone = car.CurrentCompleteZone;
+            var otherCarZone = otherCar.CurrentCompleteZone;
+            var overlapZone = thisCarZone.Intersect(otherCarZone).ToList();
+
+            // if both cars are in the overlap zone and moving in the same direction
+            if (overlapZone.Contains(otherCar.State.Floor) && overlapZone.Contains(car.State.Floor) && car.State.Direction == otherCar.State.Direction)
+            {
+                // if this car is ahead of the other car return true
+                if (car.State.Floor < otherCar.State.Floor)
                 {
-                    outOfBoundsZone = Enumerable.Range(shaftData.BottomFloor, otherCar.CurrentZone.Min() + 1 - shaftData.BottomFloor).ToList();
+                    if (car.State.Direction == Direction.Down)
+                    {
+                        return true;
+                    }
                 }
-                // Lower car logic
                 else
                 {
-                    outOfBoundsZone = Enumerable.Range(otherCar.CurrentZone.Max(), shaftData.TopFloor + 1 - otherCar.CurrentZone.Max()).ToList();
-                }
-
-                var allowableZone = allFloors.Except(outOfBoundsZone).ToList();
-
-                if (allowableZone.Contains(call.Passengers.Origin) && allowableZone.Contains(call.Passengers.Destination))
-                {
-                    return true;
+                    if (car.State.Direction == Direction.Up)
+                    {
+                        return true;
+                    }
                 }
             }
 
-            // If both the origin and destination lie within the range of floors that the car’s current zone can be extended
-            // into without including the current floor of the other car in the same shaft, the call will be accepted and the
-            // car’s current zone will be extended accordingly.
-            if (!overlapZone.Contains(car.State.Floor))
-            {
-                List<int> outOfBoundsZone;
-
-                // Upper car logic
-                if (car.State.Floor > otherCar.State.Floor)
-                {
-                    outOfBoundsZone = Enumerable.Range(shaftData.BottomFloor, otherCar.CurrentFloorsOccupied.Max() + 1 - shaftData.BottomFloor).ToList();
-                }
-                // Lower car logic
-                else
-                {
-                    outOfBoundsZone = Enumerable.Range(otherCar.CurrentFloorsOccupied.Min(), shaftData.TopFloor + 1 - otherCar.CurrentFloorsOccupied.Min()).ToList();
-                }
-
-                var allowableZone = allFloors.Except(outOfBoundsZone).ToList();
-
-                if (allowableZone.Contains(call.Passengers.Origin) && allowableZone.Contains(call.Passengers.Destination))
-                {
-                    return true;
-                }
-            }
-
-            // Otherwise, the call will be rejected and the Scheduler will have to allocate the call to another car.
+            // otherwise, return false
             return false;
         }
 
@@ -186,7 +235,7 @@ namespace ElevatorSimulator.PhysicalDomain
 
             var thisCarZone = car.CurrentCompleteZone;
             var otherCarZone = otherCar.CurrentCompleteZone;
-            var overlapZone = thisCarZone.Union(otherCarZone).ToList();
+            var overlapZone = thisCarZone.Intersect(otherCarZone).ToList();
 
             // If next floor is not within the other car's zone, go ahead and move
             if (!otherCarZone.Contains(nextFloor))
@@ -196,13 +245,13 @@ namespace ElevatorSimulator.PhysicalDomain
 
             // If the zone of this car is the empty list, this car will be parking and moving away from other car
             // If both of those things are true, go ahead and move
-            if (!thisCarZone.Any() && ((nextFloor - car.State.Floor) * (car.State.Floor - otherCar.State.Floor) > 0))
+            if (!car.CurrentZone.Any() && ((nextFloor - car.State.Floor) * (car.State.Floor - otherCar.State.Floor) > 0))
             {
                 return true;
             }
 
             // If the next call is in the overlap zone && the other car is outside of the overlap zone, go ahead and move
-            if (overlapZone.Contains(nextFloor) && !overlapZone.Contains(otherCar.State.Floor))
+            if (overlapZone.Contains(nextFloor) && !overlapZone.Intersect(otherCar.CurrentFloorsOccupied).Any())
             {
                 return true;
             }
@@ -221,6 +270,26 @@ namespace ElevatorSimulator.PhysicalDomain
         internal void carStateHasChanged(TCOSCar car)
         {
             var otherCars = this.Cars.Where(c => !object.ReferenceEquals(c, car));
+
+            var allCarsWaiting = true;
+
+            if (this.Cars.Count() > 1)
+            {
+                foreach (var c in this.Cars)
+                {
+                    allCarsWaiting &= c.State.Action == CarAction.Waiting;
+                }
+
+                if (allCarsWaiting)
+                {
+                    Simulation.logger.logLine(string.Format("All cars are now waiting in Shaft {0}", shaftData.ShaftId));
+
+                    foreach (TCOSCar c in Cars)
+                    {
+                        Simulation.logger.logLine(string.Format("   Car zone: {0}; location: {1}", string.Join(", ", c.CurrentZone.ToArray()), string.Join(", ", c.CurrentFloorsOccupied.ToArray())));
+                    }
+                }
+            }
 
             if (otherCars.Any())
             {

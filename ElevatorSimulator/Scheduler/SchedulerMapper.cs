@@ -23,6 +23,10 @@ namespace ElevatorSimulator.Scheduler
                     return new CarZeroScheduler.CarZeroScheduler();
                 case SchedulerType.TCOSAlternateSingleShaft:
                     return new TCOSAlternateSingleShaft.TCOSAlternateSingleShaft();
+                case SchedulerType.TCOSTwoZones:
+                    return new TCOSTwoZones.TCOSTwoZones();
+                case SchedulerType.TCOSTwoZonesOrigin:
+                    return new TCOSTwoZonesOrigin.TCOSTwoZonesOrigin();
             }
 
             return null;

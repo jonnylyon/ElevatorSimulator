@@ -108,6 +108,8 @@
     <Compile Include="Scheduler\SchedulerMapper.cs" />
     <Compile Include="Scheduler\SchedulerTypes.cs" />
     <Compile Include="Scheduler\TCOSAlternateSingleShaft\TCOSAlternateSingleShaft.cs" />
+    <Compile Include="Scheduler\TCOSTwoZonesOrigin\TCOSTwoZonesOrigin.cs" />
+    <Compile Include="Scheduler\TCOSTwoZones\TCOSTwoZones.cs" />
     <Compile Include="Simulation.cs" />
     <Compile Include="ConfigLoader\SimulationConfigLoader.cs" />
     <Compile Include="Tools\CarMotionMaths.cs" />
