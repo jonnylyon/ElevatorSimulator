@@ -24,48 +24,37 @@ namespace ElevatorSimulator.PhysicalDomain
 
         public CarState State { get; private set; }
 
+        public List<int> ZoneIfReversed
+        {
+            get
+            {
+                var callsZone = this.allocatedCalls.getCallsZoneIfReversed(this.State);
+
+                var includedFloors = callsZone.Union(this.CurrentFloorsOccupied).Union(new List<int>() { this.parkFloor });
+
+                int highest = includedFloors.Max();
+                int lowest = includedFloors.Min();
+
+                return GeneralTools.getRange(lowest, highest);
+            }
+        }
         /// <summary>
         /// This is the minimal set of consecutive floors that includes all call locations
-        /// in the car's current call list, including the park floor
+        /// that the call will visit before reversing, as well as the car's park floor and
+        /// all floors currently occupied by the car
         /// </summary>
         public List<int> CurrentZone
         {
             get
             {
-                int? highest = this.allocatedCalls.getHighestLocation();
-                int? lowest = this.allocatedCalls.getLowestLocation();
+                var callsZone = this.allocatedCalls.getCurrentCallsZone(this.State);
 
-                if (highest.HasValue && lowest.HasValue)
-                {
-                    return Enumerable.Range(Math.Min(lowest.Value, this.parkFloor), Math.Max(highest.Value, this.parkFloor) + 1 - Math.Min(lowest.Value, this.parkFloor)).ToList();
-                }
-                else
-                {
-                    return new List<int>() { this.parkFloor };
-                }            
-            }
-        }
+                var includedFloors = callsZone.Union(this.CurrentFloorsOccupied).Union(new List<int>() { this.parkFloor });
 
-        /// <summary>
-        /// This is the minimal set of consecutive floors that includes all call locations
-        /// in the car's current call list, as well as all locations currently occupied
-        /// by the car
-        /// </summary>
-        public List<int> CurrentCompleteZone
-        {
-            get
-            {
-                var both = CurrentFloorsOccupied.Union(CurrentZone).ToList();
+                int highest = includedFloors.Max();
+                int lowest = includedFloors.Min();
 
-                int? highest = both.Max();
-                int? lowest = both.Min();
-
-                if (highest.HasValue && lowest.HasValue)
-                {
-                    return Enumerable.Range(lowest.Value, highest.Value + 1 - lowest.Value).ToList();
-                }
-
-                return new List<int>();
+                return GeneralTools.getRange(lowest, highest);        
             }
         }
 
@@ -182,7 +171,7 @@ namespace ElevatorSimulator.PhysicalDomain
         public void changeState(CarState newCarState)
         {
             this.State = newCarState;
-            Simulation.logger.logLine(String.Format("{0}.{1}: Car {2}.{3}, {4}, {5}, {6}, {7}, {8}", Simulation.agenda.getCurrentSimTime().ToString(), Simulation.agenda.getCurrentSimTime().Millisecond, this.shaftData.ShaftId, this.carId, this.State.Action, this.State.Direction, this.State.Floor, this.State.InitialSpeed, this.NumberOfPassengers));
+            Simulation.logger.logLine(String.Format("{0}: Car {1}.{2}, {3}, {4}, {5}, {6}, {7}", Simulation.agenda.getCurrentSimTime().ToString("dd/MM/yyyy HH:mm:ss.fff"), this.shaftData.ShaftId, this.carId, this.State.Action, this.State.Direction, this.State.Floor, this.State.InitialSpeed, this.NumberOfPassengers));
             this.updateAgenda();
             this.shaft.carStateHasChanged(this);
         }
@@ -499,6 +488,7 @@ namespace ElevatorSimulator.PhysicalDomain
             // if we have a call to serve at this floor, stop
             // (only if we are allowed to according to serve it at this point according to
             // the mustContinueInCurrentDirection method)
+            // i.e. don't stop if the call requires us to change direction and we're not allowed
             if (!object.ReferenceEquals(nextCall, null) && this.State.Floor == nextCall.CallLocation)
             {
                 if (nextCall.CallDirection == Direction.None || nextCall.CallDirection == this.State.Direction || !shaft.mustContinueInCurrentDirection(this))
@@ -518,7 +508,6 @@ namespace ElevatorSimulator.PhysicalDomain
                 this.changeState(newState);
                 return;
             }
-
 
             // if we have a call to serve at another floor for which we need to reverse, and we are allowed to reverse
             if (!object.ReferenceEquals(nextCall, null) && !this.shaft.mustContinueInCurrentDirection(this) && directionOfFloor(this.State.Floor, nextCall.CallLocation) != this.State.Direction)

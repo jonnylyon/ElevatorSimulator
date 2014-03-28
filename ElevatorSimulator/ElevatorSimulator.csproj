@@ -113,6 +113,7 @@
     <Compile Include="Simulation.cs" />
     <Compile Include="ConfigLoader\SimulationConfigLoader.cs" />
     <Compile Include="Tools\CarMotionMaths.cs" />
+    <Compile Include="Tools\GeneralTools.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assumptions.txt" />

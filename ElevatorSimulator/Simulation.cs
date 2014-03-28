@@ -65,9 +65,19 @@ namespace ElevatorSimulator
             {
                 Simulation.logger.logLine(string.Empty);
                 Simulation.logger.logLine(String.Format("Passenger Group - size: {0}; origin: {1}; destination {2};", pg.Size, pg.Origin, pg.Destination));
-                Simulation.logger.logLine(String.Format("        Hall Call Time: {0}.{1}", pg.HallCallTime, pg.HallCallTime.Millisecond));
-                Simulation.logger.logLine(String.Format("        Car Board Time: {0}.{1}", pg.CarBoardTime, pg.CarBoardTime.Millisecond));
-                Simulation.logger.logLine(String.Format("       Car Alight Time: {0}.{1}", pg.CarAlightTime, pg.CarAlightTime.Millisecond));
+                Simulation.logger.logLine(String.Format("        Hall Call Time: {0}", pg.HallCallTime.ToString("dd/MM/yyyy HH:mm:ss.fff")));
+                Simulation.logger.logLine(String.Format("        Car Board Time: {0}", pg.CarBoardTime.ToString("dd/MM/yyyy HH:mm:ss.fff")));
+                Simulation.logger.logLine(String.Format("       Car Alight Time: {0}", pg.CarAlightTime.ToString("dd/MM/yyyy HH:mm:ss.fff")));
+            }
+        }
+
+        internal static void logUnArrivedPassengerGroupDetails()
+        {
+            Simulation.logger.logLine(string.Empty);
+            Simulation.logger.logLine("Passenger groups that have not arrived:");
+            foreach (PassengerGroup pg in allPassengers.Where(c => c.PassengerState != PassengerState.Arrived))
+            {
+                Simulation.logger.logLine(string.Format("   size: {0}; origin: {1}; destination {2};", pg.Size, pg.Origin, pg.Destination));
             }
         }
     }

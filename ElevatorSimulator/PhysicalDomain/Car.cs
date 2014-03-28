@@ -23,49 +23,6 @@ namespace ElevatorSimulator.PhysicalDomain
         public CarState State { get; private set; }
 
         /// <summary>
-        /// This is the minimal set of consecutive floors that includes all call locations
-        /// in the car's current call list
-        /// </summary>
-        public List<int> CurrentZone
-        {
-            get
-            {
-                int? highest = this.allocatedCalls.getHighestLocation();
-                int? lowest = this.allocatedCalls.getLowestLocation();
-
-                if (highest.HasValue && lowest.HasValue)
-                {
-                    return Enumerable.Range(lowest.Value, highest.Value + 1 - lowest.Value).ToList();
-                }
-
-                return new List<int>();
-            }
-        }
-
-        /// <summary>
-        /// This is the minimal set of consecutive floors that includes all call locations
-        /// in the car's current call list, as well as all locations currently occupied
-        /// by the car
-        /// </summary>
-        public List<int> CurrentCompleteZone
-        {
-            get
-            {
-                var both = CurrentFloorsOccupied.Union(CurrentZone).ToList();
-
-                int? highest = both.Max();
-                int? lowest = both.Min();
-
-                if (highest.HasValue && lowest.HasValue)
-                {
-                    return Enumerable.Range(lowest.Value, highest.Value + 1 - lowest.Value).ToList();
-                }
-
-                return new List<int>();
-            }
-        }
-
-        /// <summary>
         /// This is the list of floors currently occupied by the car
         /// i.e. if it is stopped at floor 5, this list will be { 5 }
         /// if it is moving from floor 5 to floor 6, this list will be { 5, 6 }
@@ -168,7 +125,7 @@ namespace ElevatorSimulator.PhysicalDomain
         public void changeState(CarState newCarState)
         {
             this.State = newCarState;
-            Simulation.logger.logLine(String.Format("{0}.{1}: Car {2}.0, {3}, {4}, {5}, {6}, {7}", Simulation.agenda.getCurrentSimTime().ToString(), Simulation.agenda.getCurrentSimTime().Millisecond, this.shaftData.ShaftId, this.State.Action, this.State.Direction, this.State.Floor, this.State.InitialSpeed, this.NumberOfPassengers));
+            Simulation.logger.logLine(String.Format("{0}: Car {1}.0, {2}, {3}, {4}, {5}, {6}", Simulation.agenda.getCurrentSimTime().ToString("dd/MM/yyyy HH:mm:ss.fff"), this.shaftData.ShaftId, this.State.Action, this.State.Direction, this.State.Floor, this.State.InitialSpeed, this.NumberOfPassengers));
             this.updateAgenda();
         }
 

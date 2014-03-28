@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using ElevatorSimulator.AbstractDomain;
 using ElevatorSimulator.Calls;
+using ElevatorSimulator.Tools;
 
 namespace ElevatorSimulator.DataStructures
 {
@@ -142,7 +143,6 @@ namespace ElevatorSimulator.DataStructures
             return null;
         }
 
-
         public void reverseListsDirection()
         {
             if (!p1Calls.isEmpty())
@@ -184,50 +184,100 @@ namespace ElevatorSimulator.DataStructures
             return calls;            
         }
 
-        internal int? getHighestLocation()
-        {
-            int? highest = null;
-
-            foreach (Call c in p1Calls.Union(p2Calls))
-            {
-                if (c is HallCall)
-                {
-                    HallCall hc = c as HallCall;
-                    highest = highest == null || highest < hc.Passengers.Origin ? hc.Passengers.Origin : highest;
-                    highest = highest == null || highest < hc.Passengers.Destination ? hc.Passengers.Destination : highest;
-                }
-
-                if (c is CarCall)
-                {
-                    CarCall cc = c as CarCall;
-                    highest = highest == null || highest < cc.Passengers.Destination ? cc.Passengers.Destination : highest;
-                }
-            }
-
-            return highest;
-        }
-
-        internal int? getLowestLocation()
+        internal List<int> getCurrentCallsZone(CarState state)
         {
             int? lowest = null;
+            int? highest = null;
 
-            foreach (Call c in p1Calls.Union(p2Calls))
+            if (state.Direction == Direction.Up)
             {
-                if (c is HallCall)
+                int? highestP1 = null;
+                int? highestP2 = null;
+
+                if (!p1Calls.isEmpty())
                 {
-                    HallCall hc = c as HallCall;
-                    lowest = lowest == null || lowest > hc.Passengers.Origin ? hc.Passengers.Origin : lowest;
-                    lowest = lowest == null || lowest > hc.Passengers.Destination ? hc.Passengers.Destination : lowest;
+                    lowest = p1Calls.Min(c => c is HallCall ? Math.Min(c.Passengers.Origin, c.Passengers.Destination) : c.Passengers.Destination);
+                    highestP1 = p1Calls.Max(c => c is HallCall ? Math.Max(c.Passengers.Origin, c.Passengers.Destination) : c.Passengers.Destination);
                 }
 
-                if (c is CarCall)
+                if (!p2Calls.isEmpty())
                 {
-                    CarCall cc = c as CarCall;
-                    lowest = lowest == null || lowest > cc.Passengers.Destination ? cc.Passengers.Destination : lowest;
+                    highestP2 = p2Calls.Max(c => Math.Max(c.Passengers.Origin, c.Passengers.Destination));
                 }
+
+                lowest = GeneralTools.notNullOption(lowest, highestP2);
+                highest = GeneralTools.max(highestP1, highestP2);
             }
 
-            return lowest;
+            if (state.Direction == Direction.Down)
+            {
+                int? lowestP1 = null;
+                int? lowestP2 = null;
+
+                if (!p1Calls.isEmpty())
+                {
+                    highest = p1Calls.Max(c => c is HallCall ? Math.Max(c.Passengers.Origin, c.Passengers.Destination) : c.Passengers.Destination);
+                    lowestP1 = p1Calls.Min(c => c is HallCall ? Math.Min(c.Passengers.Origin, c.Passengers.Destination) : c.Passengers.Destination);
+                }
+
+                if (!p2Calls.isEmpty())
+                {
+                    lowestP2 = p2Calls.Min(c => Math.Min(c.Passengers.Origin, c.Passengers.Destination));
+                }
+
+                lowest = GeneralTools.min(lowestP1, lowestP2);
+                highest = GeneralTools.notNullOption(highest, lowestP2);
+            }
+
+            return GeneralTools.getRange(lowest, highest);
+        }
+
+        internal List<int> getCallsZoneIfReversed(CarState state)
+        {
+            int? lowest = null;
+            int? highest = null;
+
+            if (state.Direction == Direction.Down)
+            {
+                int? highestP2 = null;
+                int? highestP3 = null;
+
+                if (!p2Calls.isEmpty())
+                {
+                    lowest = p2Calls.Min(c => Math.Min(c.Passengers.Origin, c.Passengers.Destination));
+                    highestP2 = p2Calls.Max(c => Math.Max(c.Passengers.Origin, c.Passengers.Destination));
+                }
+
+                if (!p3Calls.isEmpty())
+                {
+                    highestP3 = p3Calls.Max(c => Math.Max(c.Passengers.Origin, c.Passengers.Destination));
+                }
+
+                lowest = GeneralTools.min(lowest, highestP3);
+                highest = GeneralTools.max(highestP2, highestP3);
+            }
+
+            if (state.Direction == Direction.Up)
+            {
+                int? lowestP2 = null;
+                int? lowestP3 = null;
+
+                if (!p2Calls.isEmpty())
+                {
+                    highest = p2Calls.Min(c => Math.Min(c.Passengers.Origin, c.Passengers.Destination));
+                    lowestP2 = p2Calls.Min(c => Math.Min(c.Passengers.Origin, c.Passengers.Destination));
+                }
+
+                if (!p3Calls.isEmpty())
+                {
+                    lowestP3 = p3Calls.Min(c => Math.Min(c.Passengers.Origin, c.Passengers.Destination));
+                }
+
+                lowest = GeneralTools.min(lowestP2, lowestP3);
+                highest = GeneralTools.max(highest, lowestP3);
+            }
+
+            return GeneralTools.getRange(lowest, highest);
         }
     }
 }

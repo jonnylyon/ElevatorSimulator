@@ -26,12 +26,21 @@ namespace ElevatorSimulator.Scheduler.TCOSTwoZonesOrigin
                 otherCar = building.Shafts[0].Cars[1];
             }
 
-            if (!preferredCar.allocateHallCall(new HallCall(group)))
+            if (preferredCar.allocateHallCall(new HallCall(group)))
             {
-                otherCar.allocateHallCall(new HallCall(group));
+                group.changeState(PassengerState.Waiting, Simulation.agenda.getCurrentSimTime());
             }
-
-            group.changeState(PassengerState.Waiting, Simulation.agenda.getCurrentSimTime());
+            else
+            {
+                if (otherCar.allocateHallCall(new HallCall(group)))
+                {
+                    group.changeState(PassengerState.Waiting, Simulation.agenda.getCurrentSimTime());
+                }
+                else
+                {
+                    Simulation.logger.logLine("NB: Call has failed allocation");
+                }
+            } 
         }
     }
 }
