@@ -170,8 +170,9 @@ namespace ElevatorSimulator.PhysicalDomain
             var overlapZone = thisCarZoneIfReversed.Intersect(otherCarZone).ToList();
 
             // if both cars are in the overlap zone and moving in the same direction
-            if (overlapZone.Contains(otherCar.State.Floor) && overlapZone.Contains(car.State.Floor) && car.State.Direction == otherCar.State.Direction)
+            if (overlapZone.Intersect(otherCar.CurrentFloorsOccupied).Any() && overlapZone.Intersect(car.CurrentFloorsOccupied).Any() && car.State.Direction == otherCar.State.Direction)
             {
+                
                 // if this car is ahead of the other car return true
                 if (car.State.Floor < otherCar.State.Floor)
                 {
