@@ -11,7 +11,7 @@ namespace ElevatorSimulator
         [STAThread]
         static void Main(string[] args)
         {
-            string configFile = @"simconfig\TCOS manual test config TwoZones long.xml";
+            string configFile = @"simconfig\TCOS manual test config.xml";
             var simcfg = new SimulationConfigLoader(configFile);
 
             SchedulerType scheduler = simcfg.SchedulerType;
