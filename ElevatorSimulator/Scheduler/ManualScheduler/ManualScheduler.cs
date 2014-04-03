@@ -16,14 +16,26 @@ namespace ElevatorSimulator.Scheduler.ManualScheduler
             Console.WriteLine("    Size:        {0}", group.Size);
             Console.WriteLine("    Origin:      {0}", group.Origin);
             Console.WriteLine("    Destination: {0}", group.Destination);
-            Console.Write("Choose shaft index: ");
-            int shaft = int.Parse(Console.ReadLine());
-            Console.Write("Choose car index: ");
-            int car = int.Parse(Console.ReadLine());
 
-            building.Shafts[shaft].Cars[car].allocateHallCall(new HallCall(group));
+            bool allocated = false;
 
-            group.changeState(PassengerState.Waiting, Simulation.agenda.getCurrentSimTime());
+            while (!allocated)
+            {
+                Console.Write("Choose shaft index: ");
+                int shaft = int.Parse(Console.ReadLine());
+                Console.Write("Choose car index: ");
+                int car = int.Parse(Console.ReadLine());
+
+                if (!building.Shafts[shaft].Cars[car].allocateHallCall(new HallCall(group)))
+                {
+                    Console.WriteLine("The allocation has been rejected.  Please try again.");
+                }
+                else
+                {
+                    group.changeState(PassengerState.Waiting, Simulation.agenda.getCurrentSimTime());
+                    allocated = true;
+                }
+            }
         }
 
         public void reallocateCall(PassengerGroup group, Building building, ICar rejectedFrom)
