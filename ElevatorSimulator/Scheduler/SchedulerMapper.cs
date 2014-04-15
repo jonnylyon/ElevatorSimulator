@@ -27,6 +27,8 @@ namespace ElevatorSimulator.Scheduler
                     return new TCOSTwoZones.TCOSTwoZones();
                 case SchedulerType.TCOSTwoZonesOrigin:
                     return new TCOSTwoZonesOrigin.TCOSTwoZonesOrigin();
+                case SchedulerType.TCOSETABasic:
+                    return new TCOSETABasic.TCOSETABasic();
             }
 
             return null;

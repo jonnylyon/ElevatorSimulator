@@ -14,6 +14,7 @@ namespace ElevatorSimulator.Scheduler
         CarZero,
         TCOSAlternateSingleShaft,
         TCOSTwoZones,
-        TCOSTwoZonesOrigin
+        TCOSTwoZonesOrigin,
+        TCOSETABasic
     }
 }

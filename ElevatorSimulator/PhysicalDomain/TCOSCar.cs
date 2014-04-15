@@ -24,6 +24,14 @@ namespace ElevatorSimulator.PhysicalDomain
 
         public CarState State { get; private set; }
 
+        public CallAllocationList CallAllocationList
+        {
+            get
+            {
+                return allocatedCalls;
+            }
+        }
+
         public List<int> ZoneIfReversed
         {
             get

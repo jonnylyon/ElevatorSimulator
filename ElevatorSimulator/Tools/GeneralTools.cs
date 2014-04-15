@@ -2,11 +2,27 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using ElevatorSimulator.AbstractDomain;
 
 namespace ElevatorSimulator.Tools
 {
     static class GeneralTools
     {
+        public static Direction getDirectionFromHereToThere(int here, int there)
+        {
+            if (there > here)
+            {
+                return Direction.Up;
+            }
+
+            if (there < here)
+            {
+                return Direction.Down;
+            }
+
+            return Direction.None;
+        }
+
         public static List<int> getRange(int? lower, int? higher)
         {
             if (!lower.HasValue || !higher.HasValue || lower > higher)
