@@ -7,11 +7,19 @@ using ElevatorSimulator.Calls;
 using ElevatorSimulator.AbstractDomain;
 using ElevatorSimulator.Tools;
 
-namespace ElevatorSimulator.Scheduler.TCOSETAAdvanced
+namespace ElevatorSimulator.Scheduler.TCOSETAETD
 {
-    class TCOSETAAdvanced : IScheduler
+    enum OptimizationType
     {
-        private int WaitingTimePower;
+        WaitingTime,
+        SystemTime
+    }
+
+    class TCOSETAETD : IScheduler
+    {
+        private OptimizationType OptimizationType;
+        private bool ConflictSensitive;
+        private int EstimationTimePower;
         private bool EnforcePenalties;
 
         private double StopTimeSeconds = 5;
@@ -22,9 +30,11 @@ namespace ElevatorSimulator.Scheduler.TCOSETAAdvanced
         private double FloorTravelTimeSeconds = 1;
         private double NoCapacityAllocationPenaltySeconds = 1000;
 
-        public TCOSETAAdvanced(int WaitingTimePower, bool EnforcePenalties)
+        public TCOSETAETD(OptimizationType OptimizationType, bool ConflictSensitive, int EstimationTimePower, bool EnforcePenalties)
         {
-            this.WaitingTimePower = WaitingTimePower;
+            this.OptimizationType = OptimizationType;
+            this.ConflictSensitive = ConflictSensitive;
+            this.EstimationTimePower = EstimationTimePower;
             this.EnforcePenalties = EnforcePenalties;
         }
 
@@ -75,13 +85,25 @@ namespace ElevatorSimulator.Scheduler.TCOSETAAdvanced
             var originalOverlap = carRangeOriginal.Intersect(otherCarRange).ToList();
             var modifiedOverlap = carRangeModified.Intersect(otherCarRange).ToList();
 
+            double costExcludingAllocation;
+            double costIncludingAllocation;
+
             var originalCarRunResult = PerformCarRun(originalCalls, car, originalOverlap);
             var modifiedCarRunResult = PerformCarRun(modifiedCalls, car, modifiedOverlap);
-            var originalOtherCarRunResult = PerformCarRun(otherCarCalls, otherCar, originalOverlap);
-            var modifiedOtherCarRunResult = PerformCarRun(otherCarCalls, otherCar, modifiedOverlap);
 
-            double costExcludingAllocation = ReconcileCarRuns(originalCarRunResult,originalOtherCarRunResult);
-            double costIncludingAllocation = ReconcileCarRuns(modifiedCarRunResult, modifiedOtherCarRunResult);
+            if (ConflictSensitive)
+            {
+                var originalOtherCarRunResult = PerformCarRun(otherCarCalls, otherCar, originalOverlap);
+                var modifiedOtherCarRunResult = PerformCarRun(otherCarCalls, otherCar, modifiedOverlap);
+
+                costExcludingAllocation = ReconcileCarRuns(originalCarRunResult, originalOtherCarRunResult);
+                costIncludingAllocation = ReconcileCarRuns(modifiedCarRunResult, modifiedOtherCarRunResult);
+            }
+            else
+            {
+                costExcludingAllocation = originalCarRunResult.TotalCost;
+                costIncludingAllocation = modifiedCarRunResult.TotalCost;
+            }
             return costIncludingAllocation - costExcludingAllocation;
         }
 
@@ -160,18 +182,18 @@ namespace ElevatorSimulator.Scheduler.TCOSETAAdvanced
             public List<double> penaltyCosts = new List<double>();
             public List<OverlapEntryExit> overlapEntries = new List<OverlapEntryExit>();
 
-            private int WaitingTimePower;
+            private int EstimationTimePower;
 
-            public CarRunResult(int WaitingTimePower)
+            public CarRunResult(int EstimationTimePower)
             {
-                this.WaitingTimePower = WaitingTimePower;
+                this.EstimationTimePower = EstimationTimePower;
             }
 
             public double TotalCost
             {
                 get
                 {
-                    return systemCosts.Sum(c => Math.Pow(c, WaitingTimePower)) + groupCosts.Sum(c => Math.Pow(c, WaitingTimePower)) + penaltyCosts.Sum(c => Math.Pow(c, WaitingTimePower));
+                    return systemCosts.Sum(c => Math.Pow(c, EstimationTimePower)) + groupCosts.Sum(c => Math.Pow(c, EstimationTimePower)) + penaltyCosts.Sum(c => Math.Pow(c, EstimationTimePower));
                 }
             }
 
@@ -204,7 +226,7 @@ namespace ElevatorSimulator.Scheduler.TCOSETAAdvanced
         {
             var orderedCalls = calls.GetOrderedListOfAllCalls(car.State.Direction);
 
-            CarRunResult result = new CarRunResult(WaitingTimePower);
+            CarRunResult result = new CarRunResult(EstimationTimePower);
 
             double currentTime = 0;
             CarRunResult.OverlapEntryExit thisOverlapEntry = new CarRunResult.OverlapEntryExit();
@@ -231,13 +253,16 @@ namespace ElevatorSimulator.Scheduler.TCOSETAAdvanced
                     // can serve call
                     if (call is HallCall)
                     {
-                        if (!object.ReferenceEquals(call.Passengers, groupUnderAllocation))
+                        if (this.OptimizationType == OptimizationType.WaitingTime)
                         {
-                            result.systemCosts.Add(currentTime);
-                        }
-                        else
-                        {
-                            result.groupCosts.Add(currentTime);
+                            if (!object.ReferenceEquals(call.Passengers, groupUnderAllocation))
+                            {
+                                result.systemCosts.Add(currentTime);
+                            }
+                            else
+                            {
+                                result.groupCosts.Add(currentTime);
+                            }
                         }
 
                         if (currentLoad + call.Passengers.Size > car.TotalCapacity && EnforcePenalties)
@@ -250,6 +275,18 @@ namespace ElevatorSimulator.Scheduler.TCOSETAAdvanced
                     }
                     if (call is CarCall)
                     {
+                        if (this.OptimizationType == OptimizationType.SystemTime)
+                        {
+                            if (!object.ReferenceEquals(call.Passengers, groupUnderAllocation))
+                            {
+                                result.systemCosts.Add(currentTime);
+                            }
+                            else
+                            {
+                                result.groupCosts.Add(currentTime);
+                            }
+                        }
+
                         currentTime += (UnloadPersonTimeSeconds * call.Passengers.Size);
                         currentLoad -= call.Passengers.Size;
                     }

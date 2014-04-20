@@ -111,7 +111,7 @@
     <Compile Include="Scheduler\SchedulerTypes.cs" />
     <Compile Include="Scheduler\TCOSAlternateSingleShaft\TCOSAlternateSingleShaft.cs" />
     <Compile Include="Scheduler\TCOSClosestCar\TCOSClosestCar.cs" />
-    <Compile Include="Scheduler\TCOSETAAdvanced\TCOSETAAdvanced.cs" />
+    <Compile Include="Scheduler\TCOSETAETD\TCOSETAETD.cs" />
     <Compile Include="Scheduler\TCOSETABasic\TCOSETABasic.cs" />
     <Compile Include="Scheduler\TCOSETDAdvanced\TCOSETDAdvanced.cs" />
     <Compile Include="Scheduler\TCOSETDBasic\TCOSETDBasic.cs" />

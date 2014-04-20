@@ -28,35 +28,47 @@ namespace ElevatorSimulator.Scheduler
                 case SchedulerType.TCOSTwoZonesOrigin:
                     return new TCOSTwoZonesOrigin.TCOSTwoZonesOrigin();
                 case SchedulerType.TCOSETABasic:
-                    return new TCOSETABasic.TCOSETABasic();
+                    return new TCOSETAETD.TCOSETAETD(TCOSETAETD.OptimizationType.WaitingTime, false, 1, false);
+                case SchedulerType.TCOSETABasicPenalty:
+                    return new TCOSETAETD.TCOSETAETD(TCOSETAETD.OptimizationType.WaitingTime, false, 1, true);
+                case SchedulerType.TCOSETABasicSquared:
+                    return new TCOSETAETD.TCOSETAETD(TCOSETAETD.OptimizationType.WaitingTime, false, 2, false);
+                case SchedulerType.TCOSETABasicSquaredPenalty:
+                    return new TCOSETAETD.TCOSETAETD(TCOSETAETD.OptimizationType.WaitingTime, false, 2, true);
                 case SchedulerType.TCOSETDBasic:
-                    return new TCOSETDBasic.TCOSETDBasic();
+                    return new TCOSETAETD.TCOSETAETD(TCOSETAETD.OptimizationType.SystemTime, false, 1, false);
+                case SchedulerType.TCOSETDBasicPenalty:
+                    return new TCOSETAETD.TCOSETAETD(TCOSETAETD.OptimizationType.SystemTime, false, 1, true);
+                case SchedulerType.TCOSETDBasicSquared:
+                    return new TCOSETAETD.TCOSETAETD(TCOSETAETD.OptimizationType.SystemTime, false, 2, false);
+                case SchedulerType.TCOSETDBasicSquaredPenalty:
+                    return new TCOSETAETD.TCOSETAETD(TCOSETAETD.OptimizationType.SystemTime, false, 2, true);
                 case SchedulerType.TCOSETAAdvanced:
-                    return new TCOSETAAdvanced.TCOSETAAdvanced(1, false);
+                    return new TCOSETAETD.TCOSETAETD(TCOSETAETD.OptimizationType.WaitingTime, true, 1, false);
                 case SchedulerType.TCOSETAAdvancedSquared:
-                    return new TCOSETAAdvanced.TCOSETAAdvanced(2, false);
+                    return new TCOSETAETD.TCOSETAETD(TCOSETAETD.OptimizationType.WaitingTime, true, 2, false);
                 case SchedulerType.TCOSETAAdvancedSquaredPenalty:
-                    return new TCOSETAAdvanced.TCOSETAAdvanced(2, true);
+                    return new TCOSETAETD.TCOSETAETD(TCOSETAETD.OptimizationType.WaitingTime, true, 2, true);
                 case SchedulerType.TCOSETAAdvancedPenalty:
-                    return new TCOSETAAdvanced.TCOSETAAdvanced(1, true);
+                    return new TCOSETAETD.TCOSETAETD(TCOSETAETD.OptimizationType.WaitingTime, true, 1, true);
                 case SchedulerType.TCOSETDAdvanced:
-                    return new TCOSETDAdvanced.TCOSETDAdvanced(1, false);
+                    return new TCOSETAETD.TCOSETAETD(TCOSETAETD.OptimizationType.SystemTime, true, 1, false);
                 case SchedulerType.TCOSETDAdvancedSquared:
-                    return new TCOSETDAdvanced.TCOSETDAdvanced(2, false);
+                    return new TCOSETAETD.TCOSETAETD(TCOSETAETD.OptimizationType.SystemTime, true, 2, false);
                 case SchedulerType.TCOSETDAdvancedSquaredPenalty:
-                    return new TCOSETDAdvanced.TCOSETDAdvanced(2, true);
+                    return new TCOSETAETD.TCOSETAETD(TCOSETAETD.OptimizationType.SystemTime, true, 2, true);
                 case SchedulerType.TCOSETDAdvancedPenalty:
-                    return new TCOSETDAdvanced.TCOSETDAdvanced(1, true);
+                    return new TCOSETAETD.TCOSETAETD(TCOSETAETD.OptimizationType.SystemTime, true, 1, true);
                 case SchedulerType.TCOSClosestCar:
                     return new TCOSClosestCar.TCOSClosestCar();
                 case SchedulerType.TCOSMinimalOverlap:
                     return new TCOSMinimalOverlap.TCOSMinimalOverlap();
                 case SchedulerType.TCOSTradHybridUniform:
-                    return new TCOSTradHybrid.TCOSTradHybrid(TCOSTradHybrid.TCOSTradHybrid.SplitPointsType.Uniform);
+                    return new TCOSTradHybrid.TCOSTradHybrid(TCOSTradHybrid.SplitPointsType.Uniform);
                 case SchedulerType.TCOSTraDHybridExtremes:
-                    return new TCOSTradHybrid.TCOSTradHybrid(TCOSTradHybrid.TCOSTradHybrid.SplitPointsType.Extremes);
+                    return new TCOSTradHybrid.TCOSTradHybrid(TCOSTradHybrid.SplitPointsType.Extremes);
                 case SchedulerType.TCOSTradHybridCentral:
-                    return new TCOSTradHybrid.TCOSTradHybrid(TCOSTradHybrid.TCOSTradHybrid.SplitPointsType.Central);
+                    return new TCOSTradHybrid.TCOSTradHybrid(TCOSTradHybrid.SplitPointsType.Central);
             }
 
             return null;

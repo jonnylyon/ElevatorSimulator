@@ -9,15 +9,15 @@ using ElevatorSimulator.AbstractDomain;
 
 namespace ElevatorSimulator.Scheduler.TCOSTradHybrid
 {
+    enum SplitPointsType
+    {
+        Uniform,
+        Extremes,
+        Central
+    }
+
     class TCOSTradHybrid : IScheduler
     {
-        public enum SplitPointsType
-        {
-            Uniform,
-            Extremes,
-            Central
-        }
-
         private List<CarRepresentation> cars;
         private List<ICar> carsInOrderOfLastUse;
 
