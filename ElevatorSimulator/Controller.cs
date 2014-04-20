@@ -11,7 +11,7 @@ namespace ElevatorSimulator
 {
     class Controller
     {
-        private Building building;
+        public Building building;
         private IScheduler scheduler;
 
         public Controller(Building building, PassengerDistribution passengerDistribution, IScheduler scheduler)

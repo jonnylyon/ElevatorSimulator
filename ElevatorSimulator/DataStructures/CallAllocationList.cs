@@ -18,7 +18,7 @@ namespace ElevatorSimulator.DataStructures
         public CallsList P2List { get { return p2Calls; } }
         public CallsList P3List { get { return p3Calls; } }
 
-        private List<Call> allCalls
+        public List<Call> allCalls
         {
             get
             {

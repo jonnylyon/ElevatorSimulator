@@ -11,7 +11,16 @@ namespace ElevatorSimulator
         [STAThread]
         static void Main(string[] args)
         {
-            string configFile = @"simconfig\TCOS manual test config.xml";
+            string configFile;
+            if (args.Length == 0)
+            {
+                configFile = @"simconfig\TCOS 30 floor interfloor config.xml";
+            }
+            else
+            {
+                configFile = args[0];
+            }
+
             var simcfg = new SimulationConfigLoader(configFile);
 
             SchedulerType scheduler = simcfg.SchedulerType;
@@ -74,11 +83,14 @@ namespace ElevatorSimulator
             Simulation.logger.logLine("Longest time to destination:         " + Simulation.getLongestTimeToDestination());
             Console.ReadKey();
 
-            Simulation.logPassengerGroupDetails();
-            Console.ReadKey();
+            //Simulation.logTotalNumberOfAllocationsPerCar();
+            //Console.ReadKey();
 
-            Simulation.logUnArrivedPassengerGroupDetails();
-            Console.ReadKey();
+            //Simulation.logPassengerGroupDetails();
+            //Console.ReadKey();
+
+            //Simulation.logUnArrivedPassengerGroupDetails();
+            //Console.ReadKey();
         }
     }
 }

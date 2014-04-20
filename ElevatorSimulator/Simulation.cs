@@ -59,6 +59,19 @@ namespace ElevatorSimulator
             return allArrivedPassengers.Max(c => c.CarAlightTime.Subtract(c.HallCallTime).TotalSeconds);
         }
 
+        internal static void logTotalNumberOfAllocationsPerCar()
+        {
+            Simulation.logger.logLine("Total calls successfully allocated to each shaft:");
+            foreach (Shaft s in controller.building.Shafts)
+            {
+                Simulation.logger.logLine(" Shaft:");
+                foreach (ICar c in s.Cars)
+                {
+                    Simulation.logger.logLine(string.Format("  {0}", c.TotalNumberOfAllocations));
+                }
+            }
+        }
+
         internal static void logPassengerGroupDetails()
         {
             foreach (PassengerGroup pg in allPassengers)

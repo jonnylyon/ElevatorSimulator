@@ -16,13 +16,42 @@ namespace ElevatorSimulator.PhysicalDomain
         private List<PassengerGroup> passengers = new List<PassengerGroup>();
         private CallAllocationList allocatedCalls = new CallAllocationList();
 
-        private readonly Shaft shaft;
-        private int parkFloor;
+        public readonly Shaft shaft;
+        public int ParkFloor
+        {
+            private set;
+            get;
+        }
         private int carId;
 
         private CarAttributes CarAttributes { get; set; }
 
         public CarState State { get; private set; }
+
+        private int _TotalNumberOfAllocations = 0;
+        public int TotalNumberOfAllocations
+        {
+            get
+            {
+                return _TotalNumberOfAllocations;
+            }
+        }
+
+        public int NumberOfCalls
+        {
+            get
+            {
+                return this.allocatedCalls.allCalls.Count();
+            }
+        }
+
+        public int TotalCapacity
+        {
+            get
+            {
+                return this.CarAttributes.Capacity;
+            }
+        }
 
         public CallAllocationList CallAllocationList
         {
@@ -38,7 +67,7 @@ namespace ElevatorSimulator.PhysicalDomain
             {
                 var callsZone = this.allocatedCalls.getCallsZoneIfReversed(this.State);
 
-                var includedFloors = callsZone.Union(this.CurrentFloorsOccupied).Union(new List<int>() { this.parkFloor });
+                var includedFloors = callsZone.Union(this.CurrentFloorsOccupied).Union(new List<int>() { this.ParkFloor });
 
                 int highest = includedFloors.Max();
                 int lowest = includedFloors.Min();
@@ -57,7 +86,7 @@ namespace ElevatorSimulator.PhysicalDomain
             {
                 var callsZone = this.allocatedCalls.getCurrentCallsZone(this.State);
 
-                var includedFloors = callsZone.Union(this.CurrentFloorsOccupied).Union(new List<int>() { this.parkFloor });
+                var includedFloors = callsZone.Union(this.CurrentFloorsOccupied).Union(new List<int>() { this.ParkFloor });
 
                 int highest = includedFloors.Max();
                 int lowest = includedFloors.Min();
@@ -88,7 +117,7 @@ namespace ElevatorSimulator.PhysicalDomain
             }
         }
 
-        private int NumberOfPassengers
+        public int NumberOfPassengers
         {
             get
             {
@@ -110,7 +139,7 @@ namespace ElevatorSimulator.PhysicalDomain
 
             this.shaft = shaft;
             this.shaftData = data;
-            this.parkFloor = parkFloor;
+            this.ParkFloor = parkFloor;
             this.carId = carId;
 
             State = new CarState()
@@ -172,6 +201,8 @@ namespace ElevatorSimulator.PhysicalDomain
                 CarState newState = new CarState() { Action = CarAction.Stopped, Direction = this.State.Direction, Floor = this.State.Floor, InitialSpeed = 0, DoorsOpen = this.State.DoorsOpen };
                 this.changeState(newState);
             }
+
+            _TotalNumberOfAllocations++;
 
             return true;
         }
@@ -260,7 +291,7 @@ namespace ElevatorSimulator.PhysicalDomain
             CarState newState;
 
             // Can we park here?
-            if (allocatedCalls.isEmpty() && this.State.Floor == this.parkFloor && !shaft.mustContinueInCurrentDirection(this))
+            if (allocatedCalls.isEmpty() && this.State.Floor == this.ParkFloor && !shaft.mustContinueInCurrentDirection(this))
             {
                 newState = new CarState() { Action = CarAction.Parked, Direction = this.State.Direction, Floor = this.State.Floor, InitialSpeed = 0, DoorsOpen = this.State.DoorsOpen };
                 this.changeState(newState);
@@ -304,7 +335,7 @@ namespace ElevatorSimulator.PhysicalDomain
                     }
                     else
                     {
-                        if (this.parkFloor < this.State.Floor)
+                        if (this.ParkFloor < this.State.Floor)
                         {
                             var newDirection = this.State.Direction == Direction.Down ? Direction.Up : Direction.Down;
                             newState = new CarState() { Action = CarAction.Reversing, Direction = newDirection, Floor = this.State.Floor, InitialSpeed = 0, DoorsOpen = this.State.DoorsOpen };
@@ -329,7 +360,7 @@ namespace ElevatorSimulator.PhysicalDomain
                     }
                     else
                     {
-                        if (this.parkFloor > this.State.Floor)
+                        if (this.ParkFloor > this.State.Floor)
                         {
                             var newDirection = this.State.Direction == Direction.Down ? Direction.Up : Direction.Down;
                             newState = new CarState() { Action = CarAction.Reversing, Direction = newDirection, Floor = this.State.Floor, InitialSpeed = 0, DoorsOpen = this.State.DoorsOpen };
@@ -509,7 +540,7 @@ namespace ElevatorSimulator.PhysicalDomain
             }
 
             // if we have no calls to serve and this is the park floor, stop
-            if (object.ReferenceEquals(nextCall, null) && this.State.Floor == this.parkFloor)
+            if (object.ReferenceEquals(nextCall, null) && this.State.Floor == this.ParkFloor)
             {
                 // Put car in stopping state
                 CarState newState = new CarState() { Action = CarAction.Stopping, Direction = this.State.Direction, Floor = this.State.Floor, InitialSpeed = this.State.InitialSpeed, DoorsOpen = this.State.DoorsOpen };
@@ -585,7 +616,7 @@ namespace ElevatorSimulator.PhysicalDomain
 
         public bool movingInDirectionOfParkFloor()
         {
-            return directionOfFloor(this.State.Floor, this.parkFloor) == this.State.Direction;
+            return directionOfFloor(this.State.Floor, this.ParkFloor) == this.State.Direction;
         }
     }
 }

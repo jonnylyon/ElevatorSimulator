@@ -15,6 +15,26 @@ namespace ElevatorSimulator.Scheduler
         TCOSAlternateSingleShaft,
         TCOSTwoZones,
         TCOSTwoZonesOrigin,
-        TCOSETABasic
+        TCOSETABasic,
+        TCOSETABasicSquared,
+        TCOSETABasicSquaredPenalty,
+        TCOSETABasicPenalty,
+        TCOSETDBasic,
+        TCOSETDBasicSquared,
+        TCOSETDBasicSquaredPenalty,
+        TCOSETDBasicPenalty,
+        TCOSETAAdvanced,
+        TCOSETAAdvancedSquared,
+        TCOSETAAdvancedSquaredPenalty,
+        TCOSETAAdvancedPenalty,
+        TCOSETDAdvanced,
+        TCOSETDAdvancedSquared,
+        TCOSETDAdvancedSquaredPenalty,
+        TCOSETDAdvancedPenalty,
+        TCOSClosestCar,
+        TCOSMinimalOverlap,
+        TCOSTradHybridUniform,
+        TCOSTradHybridCentral,
+        TCOSTraDHybridExtremes
     }
 }

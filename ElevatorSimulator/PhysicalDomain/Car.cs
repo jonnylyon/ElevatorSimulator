@@ -22,6 +22,23 @@ namespace ElevatorSimulator.PhysicalDomain
 
         public CarState State { get; private set; }
 
+        private int _TotalNumberOfAllocations = 0;
+        public int TotalNumberOfAllocations
+        {
+            get
+            {
+                return _TotalNumberOfAllocations;
+            }
+        }
+
+        public int NumberOfCalls
+        {
+            get
+            {
+                return this.allocatedCalls.allCalls.Count();
+            }
+        }
+
         /// <summary>
         /// This is the list of floors currently occupied by the car
         /// i.e. if it is stopped at floor 5, this list will be { 5 }
@@ -118,6 +135,8 @@ namespace ElevatorSimulator.PhysicalDomain
                 CarState newState = new CarState() { Action = CarAction.Stopped, Direction = this.State.Direction, Floor = this.State.Floor, InitialSpeed = 0, DoorsOpen = this.State.DoorsOpen };
                 this.changeState(newState);
             }
+
+            _TotalNumberOfAllocations++;
 
             return true;
         }

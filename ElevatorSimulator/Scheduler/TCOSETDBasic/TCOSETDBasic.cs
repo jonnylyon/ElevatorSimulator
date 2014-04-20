@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using ElevatorSimulator.PhysicalDomain;
-using ElevatorSimulator.Calls;
-using ElevatorSimulator.AbstractDomain;
-using ElevatorSimulator.DataStructures;
 using ElevatorSimulator.Tools;
+using ElevatorSimulator.PhysicalDomain;
+using ElevatorSimulator.AbstractDomain;
+using ElevatorSimulator.Calls;
+using ElevatorSimulator.DataStructures;
 
-namespace ElevatorSimulator.Scheduler.TCOSETABasic
+namespace ElevatorSimulator.Scheduler.TCOSETDBasic
 {
-    class TCOSETABasic : IScheduler
+    class TCOSETDBasic : IScheduler
     {
         private double StopTimeSeconds = 5;
         private double StartTimeSeconds = 5;
@@ -51,7 +51,7 @@ namespace ElevatorSimulator.Scheduler.TCOSETABasic
         {
             var originalCalls = new ExpandedAllocationList(car.CallAllocationList);
             var modifiedCalls = new ExpandedAllocationList(car.CallAllocationList);
-            
+
             Pass pass = Tools.CalculatePassOfCall(car, group);
 
             modifiedCalls.AddGroupCallsToPass(group, pass);
@@ -68,7 +68,7 @@ namespace ElevatorSimulator.Scheduler.TCOSETABasic
 
             int currentFloor = car.State.Floor;
             Direction currentDirection = car.State.Direction;
-            
+
             double currentTime = 0;
             double systemCost = 0;
             double groupCost = 0;
@@ -83,6 +83,10 @@ namespace ElevatorSimulator.Scheduler.TCOSETABasic
                     // can serve call
                     if (call is HallCall)
                     {
+                        currentTime += (LoadPersonTimeSeconds * call.Passengers.Size);
+                    }
+                    if (call is CarCall)
+                    {
                         if (!object.ReferenceEquals(call.Passengers, groupUnderAllocation))
                         {
                             systemCost += currentTime;
@@ -91,11 +95,7 @@ namespace ElevatorSimulator.Scheduler.TCOSETABasic
                         {
                             groupCost += currentTime;
                         }
-                        
-                        currentTime += (LoadPersonTimeSeconds * call.Passengers.Size);
-                    }
-                    if (call is CarCall)
-                    {
+
                         currentTime += (UnloadPersonTimeSeconds * call.Passengers.Size);
                     }
 
