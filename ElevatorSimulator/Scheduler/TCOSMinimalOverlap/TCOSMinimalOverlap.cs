@@ -11,13 +11,20 @@ namespace ElevatorSimulator.Scheduler.TCOSMinimalOverlap
 {
     class TCOSMinimalOverlap : IScheduler
     {
+        private TCOSETAETD.TCOSETAETD etaCalculator;
+
+        public TCOSMinimalOverlap()
+        {
+            this.etaCalculator = new TCOSETAETD.TCOSETAETD(TCOSETAETD.OptimizationType.WaitingTime, false, 1, false);
+        }
+
         public void AllocateCall(PassengerGroup group, Building building)
         {
             // compile list of all cars (can we do this in one linq expression?)
             List<TCOSCar> cars = new List<TCOSCar>();
             building.Shafts.ForEach(s => s.Cars.ForEach(c => cars.Add((TCOSCar)c)));
 
-            var carPreference = cars.OrderBy(c => CalculateOverlapExtension(c, group)).ToList();
+            var carPreference = cars.OrderBy(c => CalculateOverlapExtension(c, group)).ThenBy(c => etaCalculator.CalculateCost(c, group)).ToList();
             bool allocated = false;
 
             while (!allocated && carPreference.Any())

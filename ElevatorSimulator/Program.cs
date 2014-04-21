@@ -14,7 +14,7 @@ namespace ElevatorSimulator
             string configFile;
             if (args.Length == 0)
             {
-                configFile = @"simconfig\TCOS 30 floor interfloor config.xml";
+                configFile = @"simconfig\evaluation\TCOSTradHybridUniform_downpeak2.xml";
             }
             else
             {
@@ -81,7 +81,7 @@ namespace ElevatorSimulator
             Simulation.logger.logLine("Average squared time to destination: " + Simulation.getAverageSquaredTimeToDestination());
             Simulation.logger.logLine("Longest waiting time:                " + Simulation.getLongestWaitingTime());
             Simulation.logger.logLine("Longest time to destination:         " + Simulation.getLongestTimeToDestination());
-            Console.ReadKey();
+            //Console.ReadKey();
 
             //Simulation.logTotalNumberOfAllocationsPerCar();
             //Console.ReadKey();

@@ -35,6 +35,6 @@ namespace ElevatorSimulator.Scheduler
         TCOSMinimalOverlap,
         TCOSTradHybridUniform,
         TCOSTradHybridCentral,
-        TCOSTraDHybridExtremes
+        TCOSTradHybridExtremes
     }
 }

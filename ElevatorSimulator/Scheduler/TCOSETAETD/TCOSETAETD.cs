@@ -66,7 +66,7 @@ namespace ElevatorSimulator.Scheduler.TCOSETAETD
             }
         }
 
-        private double CalculateCost(TCOSCar car, PassengerGroup group)
+        public double CalculateCost(TCOSCar car, PassengerGroup group)
         {
             TCOSCar otherCar = (TCOSCar)car.shaft.Cars.Where(c => !object.ReferenceEquals(c, car)).First();
 

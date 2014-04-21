@@ -21,18 +21,24 @@ namespace ElevatorSimulator.Scheduler.TCOSTradHybrid
         private List<CarRepresentation> cars;
         private List<ICar> carsInOrderOfLastUse;
 
-        private int[] splitLocations = new int[] { -1, 4, 7, 9, 10, 12, 13, 13, 14, 14, 15, 17, 18, 20, 23 };
-        private int[] locationQuants = new int[] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
+        private int[] splitLocations = new int[] { };
+        private int[] locationQuants = new int[] { };
 
         public TCOSTradHybrid(SplitPointsType type)
         {
             switch (type)
             {
                 case SplitPointsType.Central:
+                    splitLocations = new int[] { -1, 9, 11, 14, 17, 19 };
+                    locationQuants = new int[] { 1, 1, 1, 1, 1, 1 };
                     break;
                 case SplitPointsType.Extremes:
+                    splitLocations = new int[] { -1, 3, 6, 14, 22, 25 };
+                    locationQuants = new int[] { 1, 1, 1, 1, 1, 1 };
                     break;
                 case SplitPointsType.Uniform:
+                    splitLocations = new int[] { -1, 5, 9, 14, 19, 23 };
+                    locationQuants = new int[] { 1, 1, 1, 1, 1, 1 };
                     break;
             }
         }

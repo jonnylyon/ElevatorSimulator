@@ -65,7 +65,7 @@ namespace ElevatorSimulator.Scheduler
                     return new TCOSMinimalOverlap.TCOSMinimalOverlap();
                 case SchedulerType.TCOSTradHybridUniform:
                     return new TCOSTradHybrid.TCOSTradHybrid(TCOSTradHybrid.SplitPointsType.Uniform);
-                case SchedulerType.TCOSTraDHybridExtremes:
+                case SchedulerType.TCOSTradHybridExtremes:
                     return new TCOSTradHybrid.TCOSTradHybrid(TCOSTradHybrid.SplitPointsType.Extremes);
                 case SchedulerType.TCOSTradHybridCentral:
                     return new TCOSTradHybrid.TCOSTradHybrid(TCOSTradHybrid.SplitPointsType.Central);
