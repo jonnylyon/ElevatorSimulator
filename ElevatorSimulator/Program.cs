@@ -53,44 +53,46 @@ namespace ElevatorSimulator
 
             string logFile = simcfg.LogFile;
 
-            Logger.Logger logger = new Logger.Logger(logFile, true);
-
-            Simulation.logger = logger;
-
-            var building = simcfg.Building;
-
-            IScheduler sched = SchedulerMapper.getScheduler(scheduler);
-
-            Simulation.controller = new Controller(building, dist, sched);
-
-            Simulation.controller.Start();
-
-            Simulation.logger.logLine("End");
-
-            Simulation.logger.logLine("");
-
-            if (Simulation.getAllPassengersStillNotAtDestination().Count > 0)
+            using (Logger.Logger logger = new Logger.Logger(logFile, false))
             {
-                Simulation.logger.logLine("ATTENTION: Not all passengers have arrived at their destinations");
+
+                Simulation.logger = logger;
+
+                var building = simcfg.Building;
+
+                IScheduler sched = SchedulerMapper.getScheduler(scheduler);
+
+                Simulation.controller = new Controller(building, dist, sched);
+
+                Simulation.controller.Start();
+
+                Simulation.logger.logLine("End");
+
                 Simulation.logger.logLine("");
+
+                if (Simulation.getAllPassengersStillNotAtDestination().Count > 0)
+                {
+                    Simulation.logger.logLine("ATTENTION: Not all passengers have arrived at their destinations");
+                    Simulation.logger.logLine("");
+                }
+
+                Simulation.logger.logLine("Average waiting time:                " + Simulation.getAverageWaitingTime());
+                Simulation.logger.logLine("Average squared waiting time:        " + Simulation.getAverageSquaredWaitingTime());
+                Simulation.logger.logLine("Average time to destination:         " + Simulation.getAverageTimeToDestination());
+                Simulation.logger.logLine("Average squared time to destination: " + Simulation.getAverageSquaredTimeToDestination());
+                Simulation.logger.logLine("Longest waiting time:                " + Simulation.getLongestWaitingTime());
+                Simulation.logger.logLine("Longest time to destination:         " + Simulation.getLongestTimeToDestination());
+                //Console.ReadKey();
+
+                //Simulation.logTotalNumberOfAllocationsPerCar();
+                //Console.ReadKey();
+
+                //Simulation.logPassengerGroupDetails();
+                //Console.ReadKey();
+
+                //Simulation.logUnArrivedPassengerGroupDetails();
+                //Console.ReadKey();
             }
-
-            Simulation.logger.logLine("Average waiting time:                " + Simulation.getAverageWaitingTime());
-            Simulation.logger.logLine("Average squared waiting time:        " + Simulation.getAverageSquaredWaitingTime());
-            Simulation.logger.logLine("Average time to destination:         " + Simulation.getAverageTimeToDestination());
-            Simulation.logger.logLine("Average squared time to destination: " + Simulation.getAverageSquaredTimeToDestination());
-            Simulation.logger.logLine("Longest waiting time:                " + Simulation.getLongestWaitingTime());
-            Simulation.logger.logLine("Longest time to destination:         " + Simulation.getLongestTimeToDestination());
-            //Console.ReadKey();
-
-            //Simulation.logTotalNumberOfAllocationsPerCar();
-            //Console.ReadKey();
-
-            //Simulation.logPassengerGroupDetails();
-            //Console.ReadKey();
-
-            //Simulation.logUnArrivedPassengerGroupDetails();
-            //Console.ReadKey();
         }
     }
 }

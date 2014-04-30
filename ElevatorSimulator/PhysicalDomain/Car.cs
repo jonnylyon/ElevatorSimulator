@@ -39,6 +39,22 @@ namespace ElevatorSimulator.PhysicalDomain
             }
         }
 
+        public int TotalCapacity
+        {
+            get
+            {
+                return this.CarAttributes.Capacity;
+            }
+        }
+
+        public CallAllocationList CallAllocationList
+        {
+            get
+            {
+                return allocatedCalls;
+            }
+        }
+
         /// <summary>
         /// This is the list of floors currently occupied by the car
         /// i.e. if it is stopped at floor 5, this list will be { 5 }
@@ -61,7 +77,7 @@ namespace ElevatorSimulator.PhysicalDomain
             }
         }
 
-        private int NumberOfPassengers
+        public int NumberOfPassengers
         {
             get
             {

@@ -6,10 +6,12 @@ using System.IO;
 
 namespace ElevatorSimulator.Logger
 {
-    class Logger
+    class Logger : IDisposable
     {
         private string file;
         private bool consolePrint;
+
+        private StreamWriter w;
 
         public Logger(string file, bool consolePrint = false)
         {
@@ -20,19 +22,23 @@ namespace ElevatorSimulator.Logger
             {
                 // do nothing; clears file
             }
+
+            w = File.AppendText(this.file);
         }
 
         public void logLine(string line)
         {
-            using (StreamWriter w = File.AppendText(this.file))
-            {
-                w.WriteLine(line);
-            }
+            w.WriteLine(line);
 
             if (this.consolePrint)
             {
                 Console.WriteLine(line);
             }
+        }
+
+        public void Dispose()
+        {
+            w.Close();
         }
     }
 }

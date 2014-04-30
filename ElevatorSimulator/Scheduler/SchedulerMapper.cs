@@ -69,6 +69,22 @@ namespace ElevatorSimulator.Scheduler
                     return new TCOSTradHybrid.TCOSTradHybrid(TCOSTradHybrid.SplitPointsType.Extremes);
                 case SchedulerType.TCOSTradHybridCentral:
                     return new TCOSTradHybrid.TCOSTradHybrid(TCOSTradHybrid.SplitPointsType.Central);
+                case SchedulerType.ETA:
+                    return new ETAETD.ETAETD(ETAETD.OptimizationType.WaitingTime, 1, false);
+                case SchedulerType.ETAPenalty:
+                    return new ETAETD.ETAETD(ETAETD.OptimizationType.WaitingTime, 1, true);
+                case SchedulerType.ETASquared:
+                    return new ETAETD.ETAETD(ETAETD.OptimizationType.WaitingTime, 2, false);
+                case SchedulerType.ETASquaredPenalty:
+                    return new ETAETD.ETAETD(ETAETD.OptimizationType.WaitingTime, 2, true);
+                case SchedulerType.ETD:
+                    return new ETAETD.ETAETD(ETAETD.OptimizationType.SystemTime, 1, false);
+                case SchedulerType.ETDPenalty:
+                    return new ETAETD.ETAETD(ETAETD.OptimizationType.SystemTime, 1, true);
+                case SchedulerType.ETDSquared:
+                    return new ETAETD.ETAETD(ETAETD.OptimizationType.SystemTime, 2, false);
+                case SchedulerType.ETDSquaredPenalty:
+                    return new ETAETD.ETAETD(ETAETD.OptimizationType.SystemTime, 2, true);
             }
 
             return null;

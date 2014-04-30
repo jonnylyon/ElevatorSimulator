@@ -102,6 +102,7 @@
     <Compile Include="Scheduler\CarZeroScheduler\CarZeroScheduler.cs" />
     <Compile Include="Scheduler\ClosestCarDirectionalScheduler\ClosestCarDirectionalScheduler.cs" />
     <Compile Include="Scheduler\ClosestCarScheduler\ClosestCarScheduler.cs" />
+    <Compile Include="Scheduler\ETAETD\ETAETD.cs" />
     <Compile Include="Scheduler\ExpandedAllocationList.cs" />
     <Compile Include="Scheduler\IScheduler.cs" />
     <Compile Include="Scheduler\ManualScheduler\ManualScheduler.cs" />
